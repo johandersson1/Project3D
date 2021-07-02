@@ -6,7 +6,7 @@
 #include <DirectXMath.h>
 
 //struct för cbVertex, med två matriser för worldViewProj och worldspace
-struct cbVertex
+struct WVP
 {
     DirectX::XMMATRIX worldViewProj;
     DirectX::XMMATRIX worldSpace;

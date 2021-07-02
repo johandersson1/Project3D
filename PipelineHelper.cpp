@@ -110,10 +110,10 @@ bool CreateVertexBuffer(ID3D11Device* device, ID3D11Buffer*& vertexBuffer)
 //funktion för att skapa constantbuffer som används för att uppdatera fyrkanten(TheQuad)
 bool CreateConstantBuffer(ID3D11Device* device, ID3D11Buffer*& constantBuffer)
 {
-	cbVertex Rotation;
+	WVP Rotation;
 
 	D3D11_BUFFER_DESC constantBufferDesc;
-	constantBufferDesc.ByteWidth = sizeof(cbVertex); //Bytesize 
+	constantBufferDesc.ByteWidth = sizeof(WVP); //Bytesize 
 	constantBufferDesc.Usage = D3D11_USAGE_DYNAMIC; //blir tillgänglig för både GPU(read only) och CPU(write only) använd Map.
 	constantBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER; //Binder en buffert som en constantbuffert till ett shader stage
 	constantBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; //resursen ska vara mappable så att CPU kan ändra innehållet

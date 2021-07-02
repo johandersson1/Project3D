@@ -4,7 +4,7 @@
 #include "PipelineHelper.h"
 #include <chrono>
 #include <iostream>
-
+#include "Camera.h"
 void SetUpSpace(DirectX::XMMATRIX &cameraPerspective, DirectX::XMMATRIX &cameraProjection, DirectX::XMVECTOR cameraPos, DirectX::XMVECTOR lookAt, DirectX::XMVECTOR upVector)
 {
 	cameraPerspective = DirectX::XMMatrixLookAtLH(cameraPos, lookAt, upVector); //skapar vänster-orienterat koordinatsystem,
@@ -30,17 +30,22 @@ void SetUpLight(ID3D11Device* device, ID3D11Buffer* &lightConstantBuffer, Light 
 }
 
 void update(DirectX::XMMATRIX &worldSpace, DirectX::XMMATRIX &theRotation, DirectX::XMMATRIX arbitraryPoint, DirectX::XMMATRIX translation, 
-	float &Rotation, float RotationAmount, std::chrono::duration<float> TheDeltaTime)
+	float &Rotation, float RotationAmount, std::chrono::duration<float> TheDeltaTime, Camera camera)
 {
-	Rotation += RotationAmount * TheDeltaTime.count();
-
-    if (Rotation >= DirectX::XM_PI * 2)
-     {
-		Rotation -= DirectX::XM_PI * 2;
-     }
-
-	theRotation = arbitraryPoint * DirectX::XMMatrixRotationY(Rotation); //XMMatrixRotationY = Bygger en matris som roterar runt y-axeln.
-	worldSpace = theRotation * translation; //matris * matristranslation = worldspace
+	//Rotation += RotationAmount * TheDeltaTime.count();
+ //   if (Rotation >= DirectX::XM_PI * 2)
+ //    {
+	//	Rotation -= DirectX::XM_PI * 2;
+ //    }
+	//theRotation = arbitraryPoint * DirectX::XMMatrixRotationY(Rotation); //XMMatrixRotationY = Bygger en matris som roterar runt y-axeln.
+	//worldSpace = theRotation * translation; //matris * matristranslation = worldspace
+	XMMATRIX scalingMatrix = XMMatrixScaling(1, 1, 1);
+	XMMATRIX rotationMatrix = XMMatrixRotationX(0) * DirectX::XMMatrixRotationY(0) * DirectX::XMMatrixRotationZ(0);
+	XMMATRIX translationMatrix = DirectX::XMMatrixTranslation(0, 0, 0);
+	XMMATRIX worldMatrix = scalingMatrix * rotationMatrix * translationMatrix;
+	
+	//XMMATRIX viewMatrix = XMMatrixLookToLH(DirectX::XMVectorSet(camera->getCameraPos().x, camera->getCameraPos().y, camera->getCameraPos().z, 0), DirectX::XMVectorSet(camera->getCameraDir().x, camera->getCameraDir().y, camera->getCameraDir().z, 0), DirectX::XMVectorSet(0, 1, 0, 0));
+	XMMATRIX worldViewProj = XMMatrixTranspose(worldMatrix * camera.cameraPerspective * camera.cameraProjection);
 }
 
 void Render(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv,
@@ -49,7 +54,7 @@ void Render(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv,
 	ID3D11ShaderResourceView* textureSRV, ID3D11SamplerState* sampler, ID3D11Buffer* constantBuffer, 
 	ID3D11Buffer* lightConstantBuffer,DirectX::XMMATRIX worldSpace,
 	DirectX::XMMATRIX cameraPerspective, DirectX::XMMATRIX cameraProjection, 
-	cbVertex &imageCamera, Light &lighting)
+	WVP &imageCamera, Light &lighting)
 {
 	float clearColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
@@ -57,7 +62,7 @@ void Render(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv,
 	HRESULT hr = immediateContext->Map(constantBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &databegin);
 	if (SUCCEEDED(hr))
 	{
-		memcpy(databegin.pData, &imageCamera, sizeof(cbVertex));
+		memcpy(databegin.pData, &imageCamera, sizeof(WVP));
 		immediateContext->Unmap(constantBuffer, NULL);
 	}
 	else
@@ -112,7 +117,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 	//Structs from PipelineHelper
 	Light lighting;
-	cbVertex imageCamera;
+	WVP imageCamera;
+	Camera camera(XMFLOAT3(0,0,-3), XMFLOAT3(0,0,1));
+
+
 
 	DirectX::XMMATRIX cameraPerspective;
 	DirectX::XMMATRIX cameraProjection;
@@ -191,7 +199,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 			Render(immediateContext, rtv, dsView, viewport, vShader, pShader, 
 				   inputLayout, vertexBuffer, textureSRV, sampler, constantBuffer, lightConstantBuffer, worldSpace,
 				   cameraPerspective, cameraProjection, imageCamera, lighting); //Kallar på vår renderfunktion
-			update(worldSpace, theRotation, arbitraryPoint, translation, Rotation, theRotationAmount, TheDeltaTime);
+			update(worldSpace, theRotation, arbitraryPoint, translation, Rotation, theRotationAmount, TheDeltaTime, camera);
 			swapChain->Present(0, 0); //Presents a rendered image to the user.
 		}
 		stopTime = std::chrono::steady_clock::now();
