@@ -20,9 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="D3D11Helper.h" />
-    <ClInclude Include="Image.h" />
     <ClInclude Include="PipelineHelper.h" />
-    <ClInclude Include="stb_image.h" />
     <ClInclude Include="WindowHelper.h" />
   </ItemGroup>
   <ItemGroup>
