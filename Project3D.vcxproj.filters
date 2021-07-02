@@ -15,35 +15,41 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="D3D11Helper.h">
+    <ClInclude Include="..\Hello Triangle New\Hello Triangle\Hello Triangle\D3D11Helper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PipelineHelper.h">
+    <ClInclude Include="..\Hello Triangle New\Hello Triangle\Hello Triangle\Image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WindowHelper.h">
+    <ClInclude Include="..\Hello Triangle New\Hello Triangle\Hello Triangle\PipelineHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Hello Triangle New\Hello Triangle\Hello Triangle\stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Hello Triangle New\Hello Triangle\Hello Triangle\WindowHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="PixelShader.hlsl">
+    <FxCompile Include="..\Hello Triangle New\Hello Triangle\Hello Triangle\PixelShader.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="VertexShader.hlsl">
+    <FxCompile Include="..\Hello Triangle New\Hello Triangle\Hello Triangle\VertexShader.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="D3D11Helper.cpp">
+    <ClCompile Include="..\Hello Triangle New\Hello Triangle\Hello Triangle\D3D11Helper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Main.cpp">
+    <ClCompile Include="..\Hello Triangle New\Hello Triangle\Hello Triangle\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PipelineHelper.cpp">
+    <ClCompile Include="..\Hello Triangle New\Hello Triangle\Hello Triangle\PipelineHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WindowHelper.cpp">
+    <ClCompile Include="..\Hello Triangle New\Hello Triangle\Hello Triangle\WindowHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
