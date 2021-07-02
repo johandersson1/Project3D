@@ -9,7 +9,7 @@ bool LoadShaders(ID3D11Device* device, ID3D11VertexShader*& vShader, ID3D11Pixel
 {
 	std::string shaderData;
 	std::ifstream reader;
-	reader.open("Debug/VertexShader.cso", std::ios::binary | std::ios::ate);
+	reader.open("VertexShader.cso", std::ios::binary | std::ios::ate);
 	if (!reader.is_open())
 	{
 		std::cerr << "Could not open VS file!" << std::endl;
@@ -32,7 +32,7 @@ bool LoadShaders(ID3D11Device* device, ID3D11VertexShader*& vShader, ID3D11Pixel
 	vShaderByteCode = shaderData;
 	shaderData.clear();
 	reader.close();
-	reader.open("Debug/PixelShader.cso", std::ios::binary | std::ios::ate);
+	reader.open("PixelShader.cso", std::ios::binary | std::ios::ate);
 	if (!reader.is_open())
 	{
 		std::cerr << "Could not open PS file!" << std::endl;
@@ -116,7 +116,7 @@ bool CreateTexture(ID3D11Device* device, ID3D11Texture2D*& texture, ID3D11Shader
 	int channels = 3; //RGB
 
 	//Loads the image from the Debug folder
-	unsigned char* imageData = stbi_load("3D Project/wiz.jpg", &textureWidth, &textureHeight, &channels, 4);
+	unsigned char* imageData = stbi_load("wiz.jpg", &textureWidth, &textureHeight, &channels, 4);
 
 	std::vector<unsigned char> textureData;
 	textureData.resize(textureWidth * textureHeight * 4);
