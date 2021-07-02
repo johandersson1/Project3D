@@ -12,7 +12,7 @@ bool LoadShaders(ID3D11Device* device, ID3D11VertexShader*& vShader, ID3D11Pixel
 {
 	std::string shaderData;
 	std::ifstream reader;
-	reader.open("../Debug/VertexShader.cso", std::ios::binary | std::ios::ate); //Öppnar.cso-file
+	reader.open("VertexShader.cso", std::ios::binary | std::ios::ate); //Öppnar.cso-file
 	if (!reader.is_open())
 	{
 		std::cerr << "Could not open VS file!" << std::endl;
@@ -34,7 +34,7 @@ bool LoadShaders(ID3D11Device* device, ID3D11VertexShader*& vShader, ID3D11Pixel
 	vShaderByteCode = shaderData;
 	shaderData.clear();
 	reader.close();
-	reader.open("../Debug/PixelShader.cso", std::ios::binary | std::ios::ate);
+	reader.open("PixelShader.cso", std::ios::binary | std::ios::ate);
 	if (!reader.is_open())
 	{
 		std::cerr << "Could not open PS file!" << std::endl;
@@ -168,7 +168,7 @@ bool CreateTexture(ID3D11Device* device, ID3D11Texture2D*& texture, ID3D11Shader
 	int textureHeight = 512;
 	int channels = 3;
 	//laddar in bilden från Debug folder
-	unsigned char* theImageData = stbi_load("Debug/Testing.png", &textureWidth, &textureHeight, &channels, 4);
+	unsigned char* theImageData = stbi_load("wiz.jpg", &textureWidth, &textureHeight, &channels, 4);
 	std::vector<unsigned char> textureData;
 	textureData.resize(textureWidth * textureHeight * 4);
 	//går igenom för varje pixel och tilldelar färgen beroende på bilden från TheImageData
