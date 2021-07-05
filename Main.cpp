@@ -22,6 +22,7 @@ void RedirectIOToConsole()
 
 	//printf("Hello console on\n");
 }
+
 void SetUpSpace(DirectX::XMMATRIX &cameraPerspective, DirectX::XMMATRIX &cameraProjection, DirectX::XMVECTOR cameraPos, DirectX::XMVECTOR lookAt, DirectX::XMVECTOR upVector)
 {
 	cameraPerspective = DirectX::XMMatrixLookAtLH(cameraPos, lookAt, upVector); //skapar vänster-orienterat koordinatsystem,
@@ -48,21 +49,23 @@ void SetUpLight(ID3D11Device* device, ID3D11Buffer* &lightConstantBuffer, Light 
 
 void update(ID3D11DeviceContext* immediateContext , XMMATRIX &worldSpace, XMMATRIX &theRotation, XMMATRIX arbitraryPoint, 
 		XMMATRIX translation, float &Rotation, float RotationAmount, std::chrono::duration<float> TheDeltaTime, 
-		Camera camera, ID3D11Buffer* constantBuffers)
+		Camera& camera, ID3D11Buffer* constantBuffers)
 {
-	Rotation += RotationAmount * TheDeltaTime.count();
-     if (Rotation >= DirectX::XM_PI * 2)
-     {
-		Rotation -= DirectX::XM_PI * 2;
-     }
-	theRotation = arbitraryPoint * DirectX::XMMatrixRotationY(Rotation); //XMMatrixRotationY = Bygger en matris som roterar runt y-axeln.
-	worldSpace = theRotation * translation; //matris * matristranslation = worldspace
+	//Rotation += RotationAmount * TheDeltaTime.count();
+ //    if (Rotation >= DirectX::XM_PI * 2)
+ //    {
+	//	Rotation -= DirectX::XM_PI * 2;
+ //    }
+	//theRotation = arbitraryPoint * DirectX::XMMatrixRotationY(Rotation); //XMMatrixRotationY = Bygger en matris som roterar runt y-axeln.
+	//worldSpace = theRotation * translation; //matris * matristranslation = worldspace
+
+
 	XMMATRIX scalingMatrix = XMMatrixScaling(1, 1, 1);
 	XMMATRIX rotationMatrix = XMMatrixRotationX(0) * DirectX::XMMatrixRotationY(0) * DirectX::XMMatrixRotationZ(0);
 	XMMATRIX translationMatrix = DirectX::XMMatrixTranslation(0, 0, 0);
 	XMMATRIX worldMatrix = scalingMatrix * rotationMatrix * translationMatrix;
 	
-	//XMMATRIX viewMatrix = XMMatrixLookToLH(DirectX::XMVectorSet(camera->getCameraPos().x, camera->getCameraPos().y, camera->getCameraPos().z, 0), DirectX::XMVectorSet(camera->getCameraDir().x, camera->getCameraDir().y, camera->getCameraDir().z, 0), DirectX::XMVectorSet(0, 1, 0, 0));
+	XMMATRIX viewMatrix = XMMatrixLookToLH(DirectX::XMVectorSet(camera->getCameraPos().x, camera->getCameraPos().y, camera->getCameraPos().z, 0), DirectX::XMVectorSet(camera->getCameraDir().x, camera->getCameraDir().y, camera->getCameraDir().z, 0), DirectX::XMVectorSet(0, 1, 0, 0));
 	XMMATRIX worldViewProj = XMMatrixTranspose(worldMatrix * camera.cameraPerspective * camera.cameraProjection);
 
 	immediateContext->VSSetConstantBuffers(0, 1, &constantBuffers);
@@ -70,7 +73,7 @@ void update(ID3D11DeviceContext* immediateContext , XMMATRIX &worldSpace, XMMATR
 	HRESULT hr = immediateContext->Map(constantBuffers, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &dataBegin);
 	if (SUCCEEDED(hr))
 	{
-		memcpy(dataBegin.pData, &camera, sizeof(WVP));
+		memcpy(dataBegin.pData, &worldViewProj, sizeof(WVP));
 		immediateContext->Unmap(constantBuffers, NULL);
 	}
 	else
@@ -89,7 +92,7 @@ void Render(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv,
 	DirectX::XMMATRIX cameraPerspective, DirectX::XMMATRIX cameraProjection, 
 	WVP &imageCamera, Light &lighting)
 {
-	float clearColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float clearColour[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
 
 	//D3D11_MAPPED_SUBRESOURCE databegin;
 	//HRESULT hr = immediateContext->Map(constantBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &databegin);
@@ -152,23 +155,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	Light lighting;
 	WVP imageCamera;
 
+	Camera camera(XMFLOAT3(0,0,-3), XMFLOAT3(0,0,1), 0.003f);
 
-	Camera camera(XMFLOAT3(0,0,-3), XMFLOAT3(0,0,1));
+	XMMATRIX cameraPerspective;
+	XMMATRIX cameraProjection;
+	XMMATRIX theRotation;
 
-
-
-	DirectX::XMMATRIX cameraPerspective;
-	DirectX::XMMATRIX cameraProjection;
-	DirectX::XMMATRIX theRotation;
-
-	DirectX::XMMATRIX worldSpace = DirectX::XMMatrixIdentity(); //Identitets matris 
-	DirectX::XMMATRIX translation = DirectX::XMMatrixTranslation(0.0f, 0.0f, 1.0f); //translationsmatris 
-	DirectX::XMMATRIX arbitraryPoint = DirectX::XMMatrixTranslation(0.0f, 0.0f, -2.0f); //translationsmatris 
+	XMMATRIX worldSpace = DirectX::XMMatrixIdentity(); //Identitets matris 
+	XMMATRIX translation = DirectX::XMMatrixTranslation(0.0f, 0.0f, 1.0f); //translationsmatris 
+	XMMATRIX arbitraryPoint = DirectX::XMMatrixTranslation(0.0f, 0.0f, -2.0f); //translationsmatris 
 
 	//kopplar in kameran
-	DirectX::XMVECTOR cameraPos = DirectX::XMVectorSet(0.0f, 0.0f, 5.0f, 0.0f); //skapar en vector med 4 floats 
-	DirectX::XMVECTOR lookAt = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-	DirectX::XMVECTOR upVector = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	XMVECTOR cameraPos = DirectX::XMVectorSet(0.0f, 0.0f, 5.0f, 0.0f); //skapar en vector med 4 floats 
+	XMVECTOR lookAt = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	XMVECTOR upVector = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
 	ID3D11Device* device; // används för att skapa resurser.
 	ID3D11DeviceContext* immediateContext; // genererar renderings kommandon.
@@ -234,6 +234,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		}
 		else
 		{
+			camera.detectInput(0.003f, 0.003f);
 			Render(immediateContext, rtv, dsView, viewport, vShader, pShader, 
 				   inputLayout, vertexBuffer, textureSRV, sampler, constantBuffers, lightConstantBuffer, worldSpace,
 				   cameraPerspective, cameraProjection, imageCamera, lighting);
