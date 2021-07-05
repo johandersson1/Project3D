@@ -2,42 +2,11 @@
 char debugText[100];
 Camera::Camera()
 {
-	//this->cameraPerspective;
-	//this->cameraProjection;
-	//this->position = { 0.0f,0.0f,0.0f };
-	//this->direction = { 0.0f,0.0f,0.0f };
-	//this->lookAt = { 0.0f,0.0f,0.0f };
-	//this->upVector = { 0.0f, 0.0f, 0.0f };
-	//this->camRotationMatrix;
-	//this->speed = 0.003f;
-	//this->moveBackForward = 0.0f;
-	//this->moveLeftRight = 0.0f;
-	//this->camYaw = 0.0f;
-	//this->camPitch = 0.0f;
-	//this->camForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-	//this->defaultForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-	//this->camRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
-	//this->defaultRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
+	
 }
 
 Camera::Camera(XMFLOAT3 position, XMFLOAT3 direction, float speed)
 {
-	//this->cameraPerspective;
-	//this->cameraProjection;
-	//this->position = position;
-	//this->direction = direction;
-	//this->lookAt = { 0.0f,0.0f,0.0f };
-	//this->upVector = { 0.0f, 0.0f, 0.0f };
-	//this->camRotationMatrix;
-	//this->speed = 0.003f;
-	//this->moveBackForward = 0.0f;
-	//this->moveLeftRight = 0.0f;
-	//this->camYaw = 0.0f;
-	//this->camPitch = 0.0f;
-	//this->camForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-	//this->defaultForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-	//this->camRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
-	//this->defaultRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
 	this->position = position;
 	this->direction = direction;
 	this->xRotdir = 0;
@@ -138,15 +107,10 @@ void Camera::rotateCamera(float xRot, float yRot, float zRot, float scalar)
 	this->xRotdir += yRot * scalar;
 	this->zRotdir += zRot * scalar;
 
-	sprintf_s(debugText, "My variable is %f\n", yRotdir);
+	//sprintf_s(debugText, "My variable is %f\n", yRotdir);
 
-	OutputDebugStringA(debugText);
-	sprintf_s(debugText, "My variable is %f\n", xRotdir);
+	//OutputDebugStringA(debugText);
 
-	OutputDebugStringA(debugText);
-	sprintf_s(debugText, "My variable is %f\n", zRotdir);
-
-	OutputDebugStringA(debugText);
 	DirectX::XMMATRIX xRotMatrix = DirectX::XMMatrixRotationX(xRot * scalar);
 	DirectX::XMMATRIX yRotMatrix = DirectX::XMMatrixRotationY(yRot * scalar);
 	DirectX::XMMATRIX zRotMatrix = DirectX::XMMatrixRotationZ(zRot * scalar);
@@ -180,5 +144,4 @@ void Camera::clean()
 	this->yRotdir = 0;
 	this->zRotdir = 0;
 
-	
 }

@@ -39,7 +39,7 @@ public:
 	Camera(XMFLOAT3 position, XMFLOAT3 direction, float speed);
 	~Camera();
 	void setupCam();
-	void detectInput(float movementSpeed, float lookSpeed);
+	void detectInput(float movementSpeed, float lookSpeed); 
 	void moveCamera(DirectX::XMFLOAT3 translationPos, float scalar);
 	void rotateCamera(float xRot, float yRot, float zRot, float scalar);
 	void clean();

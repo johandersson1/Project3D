@@ -47,7 +47,7 @@ void SetUpLight(ID3D11Device* device, ID3D11Buffer* &lightConstantBuffer, Light 
 	device->CreateBuffer(&cbLight, nullptr, &lightConstantBuffer);
 }
 
-void update(ID3D11DeviceContext* immediateContext , XMMATRIX &worldSpace, XMMATRIX &theRotation, XMMATRIX arbitraryPoint, 
+void update(ID3D11DeviceContext* immediateContext , XMMATRIX &worldSpace, XMMATRIX &theRotation, XMMATRIX arbitraryPoint, //Ändrat så at vi gör alla uträkningar i update istället för i olika funktioner
 		XMMATRIX translation, float &Rotation, float RotationAmount, std::chrono::duration<float> TheDeltaTime, 
 		Camera& camera, ID3D11Buffer* constantBuffers)
 {
