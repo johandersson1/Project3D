@@ -108,7 +108,7 @@ bool CreateVertexBuffer(ID3D11Device* device, ID3D11Buffer*& vertexBuffer)
 	return !FAILED(hr);
 }
 //funktion för att skapa constantbuffer som används för att uppdatera fyrkanten(TheQuad)
-bool CreateConstantBuffer(ID3D11Device* device, ID3D11Buffer*& constantBuffer)
+bool CreateConstantBuffer(ID3D11Device* device, ID3D11Buffer*& constantBuffers)
 {
 	WVP Rotation;
 
@@ -125,7 +125,7 @@ bool CreateConstantBuffer(ID3D11Device* device, ID3D11Buffer*& constantBuffer)
 	TheData.SysMemPitch = 0; //distansen mellan början av en rad i en texture till nästa rad, i bytes
 	TheData.SysMemSlicePitch = 0; // Avståndet(i byte) från början av en djupnivå till nästa.
 
-	HRESULT hr = device->CreateBuffer(&constantBufferDesc, &TheData, &constantBuffer);
+	HRESULT hr = device->CreateBuffer(&constantBufferDesc, &TheData, &constantBuffers);
 
 	return !FAILED(hr);
 }
@@ -230,7 +230,7 @@ bool CreateTexture(ID3D11Device* device, ID3D11Texture2D*& texture, ID3D11Shader
 
 //Kallar på de olika funktionerna
 bool SetupPipeline(ID3D11Device* device, ID3D11Buffer*& vertexBuffer, ID3D11VertexShader*& vShader,
-	ID3D11PixelShader*& pShader, ID3D11InputLayout*& inputLayout, ID3D11Buffer*& constantBuffer,
+	ID3D11PixelShader*& pShader, ID3D11InputLayout*& inputLayout, ID3D11Buffer*& constantBuffers,
 	ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& textureSRV, ID3D11SamplerState*& sampler)
 {
 	std::string vShaderByteCode;
@@ -258,7 +258,7 @@ bool SetupPipeline(ID3D11Device* device, ID3D11Buffer*& vertexBuffer, ID3D11Vert
 		return false;
 	}
 
-	if (!CreateConstantBuffer(device, constantBuffer))
+	if (!CreateConstantBuffer(device, constantBuffers))
 	{
 		std::cerr << "Error creating constant buffer!" << std::endl;
 		return false;

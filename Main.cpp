@@ -5,6 +5,7 @@
 #include <chrono>
 #include <iostream>
 #include "Camera.h"
+
 void SetUpSpace(DirectX::XMMATRIX &cameraPerspective, DirectX::XMMATRIX &cameraProjection, DirectX::XMVECTOR cameraPos, DirectX::XMVECTOR lookAt, DirectX::XMVECTOR upVector)
 {
 	cameraPerspective = DirectX::XMMatrixLookAtLH(cameraPos, lookAt, upVector); //skapar vänster-orienterat koordinatsystem,
@@ -29,16 +30,17 @@ void SetUpLight(ID3D11Device* device, ID3D11Buffer* &lightConstantBuffer, Light 
 	device->CreateBuffer(&cbLight, nullptr, &lightConstantBuffer);
 }
 
-void update(DirectX::XMMATRIX &worldSpace, DirectX::XMMATRIX &theRotation, DirectX::XMMATRIX arbitraryPoint, DirectX::XMMATRIX translation, 
-	float &Rotation, float RotationAmount, std::chrono::duration<float> TheDeltaTime, Camera camera)
+void update(ID3D11DeviceContext* immediateContext , XMMATRIX &worldSpace, XMMATRIX &theRotation, XMMATRIX arbitraryPoint, 
+		XMMATRIX translation, float &Rotation, float RotationAmount, std::chrono::duration<float> TheDeltaTime, 
+		Camera camera, ID3D11Buffer* constantBuffers)
 {
-	//Rotation += RotationAmount * TheDeltaTime.count();
- //   if (Rotation >= DirectX::XM_PI * 2)
- //    {
-	//	Rotation -= DirectX::XM_PI * 2;
- //    }
-	//theRotation = arbitraryPoint * DirectX::XMMatrixRotationY(Rotation); //XMMatrixRotationY = Bygger en matris som roterar runt y-axeln.
-	//worldSpace = theRotation * translation; //matris * matristranslation = worldspace
+	Rotation += RotationAmount * TheDeltaTime.count();
+     if (Rotation >= DirectX::XM_PI * 2)
+     {
+		Rotation -= DirectX::XM_PI * 2;
+     }
+	theRotation = arbitraryPoint * DirectX::XMMatrixRotationY(Rotation); //XMMatrixRotationY = Bygger en matris som roterar runt y-axeln.
+	worldSpace = theRotation * translation; //matris * matristranslation = worldspace
 	XMMATRIX scalingMatrix = XMMatrixScaling(1, 1, 1);
 	XMMATRIX rotationMatrix = XMMatrixRotationX(0) * DirectX::XMMatrixRotationY(0) * DirectX::XMMatrixRotationZ(0);
 	XMMATRIX translationMatrix = DirectX::XMMatrixTranslation(0, 0, 0);
@@ -46,29 +48,44 @@ void update(DirectX::XMMATRIX &worldSpace, DirectX::XMMATRIX &theRotation, Direc
 	
 	//XMMATRIX viewMatrix = XMMatrixLookToLH(DirectX::XMVectorSet(camera->getCameraPos().x, camera->getCameraPos().y, camera->getCameraPos().z, 0), DirectX::XMVectorSet(camera->getCameraDir().x, camera->getCameraDir().y, camera->getCameraDir().z, 0), DirectX::XMVectorSet(0, 1, 0, 0));
 	XMMATRIX worldViewProj = XMMatrixTranspose(worldMatrix * camera.cameraPerspective * camera.cameraProjection);
+
+	immediateContext->VSSetConstantBuffers(0, 1, &constantBuffers);
+	D3D11_MAPPED_SUBRESOURCE dataBegin;
+	HRESULT hr = immediateContext->Map(constantBuffers, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &dataBegin);
+	if (SUCCEEDED(hr))
+	{
+		memcpy(dataBegin.pData, &camera, sizeof(WVP));
+		immediateContext->Unmap(constantBuffers, NULL);
+	}
+	else
+	{
+		std::cerr << "Failed to update ConstantBuffer (update function)" << std::endl;
+	}
+
+	
 }
 
 void Render(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv,
 	ID3D11DepthStencilView* dsView, D3D11_VIEWPORT& viewport, ID3D11VertexShader* vShader,
 	ID3D11PixelShader* pShader, ID3D11InputLayout* inputLayout, ID3D11Buffer* vertexBuffer,
-	ID3D11ShaderResourceView* textureSRV, ID3D11SamplerState* sampler, ID3D11Buffer* constantBuffer, 
+	ID3D11ShaderResourceView* textureSRV, ID3D11SamplerState* sampler, ID3D11Buffer* constantBuffers, 
 	ID3D11Buffer* lightConstantBuffer,DirectX::XMMATRIX worldSpace,
 	DirectX::XMMATRIX cameraPerspective, DirectX::XMMATRIX cameraProjection, 
 	WVP &imageCamera, Light &lighting)
 {
 	float clearColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
-	D3D11_MAPPED_SUBRESOURCE databegin;
-	HRESULT hr = immediateContext->Map(constantBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &databegin);
-	if (SUCCEEDED(hr))
-	{
-		memcpy(databegin.pData, &imageCamera, sizeof(WVP));
-		immediateContext->Unmap(constantBuffer, NULL);
-	}
-	else
-	{
-		OutputDebugString((L"Failed to update ConstantBuffer"));
-	}
+	//D3D11_MAPPED_SUBRESOURCE databegin;
+	//HRESULT hr = immediateContext->Map(constantBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &databegin);
+	//if (SUCCEEDED(hr))
+	//{
+	//	memcpy(databegin.pData, &imageCamera, sizeof(WVP));
+	//	immediateContext->Unmap(constantBuffer, NULL);
+	//}
+	//else
+	//{
+	//	OutputDebugString((L"Failed to update ConstantBuffer"));
+	//}
 
 	D3D11_MAPPED_SUBRESOURCE databegin2;
 	HRESULT hr1 = immediateContext->Map(lightConstantBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &databegin2);
@@ -82,11 +99,11 @@ void Render(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv,
 		OutputDebugString((L"Failed to update lightConstantBuffer "));
 	}
 	
-	imageCamera.worldSpace = XMMatrixTranspose(worldSpace); 
-	//Transponering av scale ger samma matris
-	//Transponering av ren rotation producerar invers som behövs
-	//Ange kamerans invers på objekt för att “centrera”
-	imageCamera.worldViewProj = XMMatrixTranspose(worldSpace * cameraPerspective * cameraProjection); //Skapar en ny matris
+	//imageCamera.worldSpace = XMMatrixTranspose(worldSpace); 
+	////Transponering av scale ger samma matris
+	////Transponering av ren rotation producerar invers som behövs
+	////Ange kamerans invers på objekt för att “centrera”
+	//imageCamera.worldViewProj = XMMatrixTranspose(worldSpace * cameraPerspective * cameraProjection); //Skapar en ny matris
 	
 	UINT stride = sizeof(SimpleVertex);
 	UINT offset = 0;
@@ -102,7 +119,7 @@ void Render(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv,
 	immediateContext->PSSetSamplers(0, 1, &sampler);
 	immediateContext->OMSetRenderTargets(1, &rtv, dsView);
 	immediateContext->PSSetConstantBuffers(0, 1, &lightConstantBuffer);
-	immediateContext->VSSetConstantBuffers(0, 1, &constantBuffer);
+	immediateContext->VSSetConstantBuffers(0, 1, &constantBuffers);
 	immediateContext->Draw(4,0);
 }
 
@@ -118,6 +135,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	//Structs from PipelineHelper
 	Light lighting;
 	WVP imageCamera;
+
+
 	Camera camera(XMFLOAT3(0,0,-3), XMFLOAT3(0,0,1));
 
 
@@ -152,6 +171,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	ID3D11ShaderResourceView* textureSRV; // anger de (sub resources) en shader kan komma åt under rendering
 	ID3D11SamplerState* sampler; // sampler-state som du kan bindar till valfritt shader stage i pipelinen.
 
+	//ConstantBuffer(s)
+	ID3D11Buffer* constantBuffers;
+
 	// tiden
 	std::chrono::steady_clock::time_point startTime;
 	std::chrono::steady_clock::time_point stopTime;
@@ -173,7 +195,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	}
 
 	if (!SetupPipeline(device, vertexBuffer, vShader, pShader, inputLayout, 
-		constantBuffer, texture, textureSRV, sampler))
+		constantBuffers, texture, textureSRV, sampler))
 	{
 		std::cerr << "Failed to setup pipeline!" << std::endl;
 		return -3;
@@ -197,19 +219,23 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		else
 		{
 			Render(immediateContext, rtv, dsView, viewport, vShader, pShader, 
-				   inputLayout, vertexBuffer, textureSRV, sampler, constantBuffer, lightConstantBuffer, worldSpace,
-				   cameraPerspective, cameraProjection, imageCamera, lighting); //Kallar på vår renderfunktion
-			update(worldSpace, theRotation, arbitraryPoint, translation, Rotation, theRotationAmount, TheDeltaTime, camera);
+				   inputLayout, vertexBuffer, textureSRV, sampler, constantBuffers, lightConstantBuffer, worldSpace,
+				   cameraPerspective, cameraProjection, imageCamera, lighting);
+			//Kallar på vår renderfunktion
+			update(immediateContext, worldSpace, theRotation, arbitraryPoint, translation, Rotation, theRotationAmount, 
+		    		TheDeltaTime, camera, constantBuffers);
+
 			swapChain->Present(0, 0); //Presents a rendered image to the user.
 		}
 		stopTime = std::chrono::steady_clock::now();
 	}
 
+	constantBuffers->Release();
 	texture->Release();
 	sampler->Release();
 	textureSRV->Release();
 	lightConstantBuffer->Release();
-	constantBuffer->Release();
+	//constantBuffer->Release();
 	vertexBuffer->Release();
 	inputLayout->Release();
 	pShader->Release();
