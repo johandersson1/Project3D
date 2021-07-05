@@ -15,11 +15,9 @@ private:
 	XMFLOAT3 lookAt;
 	XMFLOAT3 upVector;
 	XMFLOAT3 previousFrameCamPos;
-	
 	float xRotdir;
 	float yRotdir;
 	float zRotdir;
-
 	XMMATRIX camRotationMatrix;
 	XMVECTOR lookAtVector;
 	XMVECTOR defaultForward;
@@ -31,9 +29,6 @@ private:
 	float speed;
 	float camPitch;
 	float camYaw;
-
-
-	
 public:
 	Camera();
 	Camera(XMFLOAT3 position, XMFLOAT3 direction, float speed);

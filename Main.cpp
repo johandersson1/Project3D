@@ -28,7 +28,7 @@ void SetUpLight(ID3D11Device* device, ID3D11Buffer* &lightConstantBuffer, Light 
 	lighting.lightColour = DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f };
 	lighting.lightAmbient = DirectX::XMFLOAT3{ 0.5f, 0.5f, 0.5f };
 	lighting.lightDiffuse = DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f };
-	//lighting.lightCamPos = DirectX::XMFLOAT3{ 0.0f, 0.0f, -5.0f }; //ljusinställningar 
+	lighting.lightCamPos = DirectX::XMFLOAT3{ 0.0f, 0.0f, -5.0f }; //ljusinställningar 
 
 	D3D11_BUFFER_DESC cbLight;
 	ZeroMemory(&cbLight, sizeof(D3D11_BUFFER_DESC)); //nollställer
