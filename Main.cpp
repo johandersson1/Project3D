@@ -23,11 +23,11 @@ void RedirectIOToConsole()
 	//printf("Hello console on\n");
 }
 
-void SetUpSpace(DirectX::XMMATRIX &cameraPerspective, DirectX::XMMATRIX &cameraProjection, DirectX::XMVECTOR cameraPos, DirectX::XMVECTOR lookAt, DirectX::XMVECTOR upVector)
-{
-	cameraPerspective = DirectX::XMMatrixLookAtLH(cameraPos, lookAt, upVector); //skapar vänster-orienterat koordinatsystem,
-	cameraProjection = DirectX::XMMatrixPerspectiveFovLH(0.45f * 3.14f, (float)640 / 480, 0.1f, 20.0f); //projicering matris baserad på field of view, 
-}
+//void SetUpSpace(DirectX::XMMATRIX &cameraPerspective, DirectX::XMMATRIX &cameraProjection, DirectX::XMVECTOR cameraPos, DirectX::XMVECTOR lookAt, DirectX::XMVECTOR upVector)
+//{
+//	cameraPerspective = DirectX::XMMatrixLookAtLH(cameraPos, lookAt, upVector); //skapar vänster-orienterat koordinatsystem,
+//	cameraProjection = DirectX::XMMatrixPerspectiveFovLH(0.45f * 3.14f, (float)640 / 480, 0.1f, 20.0f); //projicering matris baserad på field of view, 
+//}
 
 void SetUpLight(ID3D11Device* device, ID3D11Buffer* &lightConstantBuffer, Light &lighting)
 {
@@ -65,15 +65,15 @@ void update(ID3D11DeviceContext* immediateContext , XMMATRIX &worldSpace, XMMATR
 	XMMATRIX translationMatrix = DirectX::XMMatrixTranslation(0, 0, 0);
 	XMMATRIX worldMatrix = scalingMatrix * rotationMatrix * translationMatrix;
 	
-	XMMATRIX viewMatrix = XMMatrixLookToLH(DirectX::XMVectorSet(camera->getCameraPos().x, camera->getCameraPos().y, camera->getCameraPos().z, 0), DirectX::XMVectorSet(camera->getCameraDir().x, camera->getCameraDir().y, camera->getCameraDir().z, 0), DirectX::XMVectorSet(0, 1, 0, 0));
-	XMMATRIX worldViewProj = XMMatrixTranspose(worldMatrix * camera.cameraPerspective * camera.cameraProjection);
+	XMMATRIX viewMatrix = XMMatrixLookToLH(DirectX::XMVectorSet(camera.getCameraPos().x, camera.getCameraPos().y, camera.getCameraPos().z, 0), DirectX::XMVectorSet(camera.getCameraDir().x, camera.getCameraDir().y, camera.getCameraDir().z, 0), DirectX::XMVectorSet(0, 1, 0, 0));
+	XMMATRIX worldViewProj = XMMatrixTranspose(worldMatrix * viewMatrix * camera.cameraProjection);
 
 	immediateContext->VSSetConstantBuffers(0, 1, &constantBuffers);
 	D3D11_MAPPED_SUBRESOURCE dataBegin;
 	HRESULT hr = immediateContext->Map(constantBuffers, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &dataBegin);
 	if (SUCCEEDED(hr))
 	{
-		memcpy(dataBegin.pData, &worldViewProj, sizeof(WVP));
+		memcpy(dataBegin.pData, &worldViewProj, sizeof(XMMATRIX));
 		immediateContext->Unmap(constantBuffers, NULL);
 	}
 	else
@@ -81,7 +81,6 @@ void update(ID3D11DeviceContext* immediateContext , XMMATRIX &worldSpace, XMMATR
 		std::cerr << "Failed to update ConstantBuffer (update function)" << std::endl;
 	}
 
-	
 }
 
 void Render(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv,
@@ -89,7 +88,7 @@ void Render(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv,
 	ID3D11PixelShader* pShader, ID3D11InputLayout* inputLayout, ID3D11Buffer* vertexBuffer,
 	ID3D11ShaderResourceView* textureSRV, ID3D11SamplerState* sampler, ID3D11Buffer* constantBuffers, 
 	ID3D11Buffer* lightConstantBuffer,DirectX::XMMATRIX worldSpace,
-	DirectX::XMMATRIX cameraPerspective, DirectX::XMMATRIX cameraProjection, 
+	/*DirectX::XMMATRIX cameraPerspective, DirectX::XMMATRIX cameraProjection,*/ 
 	WVP &imageCamera, Light &lighting)
 {
 	float clearColour[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
@@ -155,7 +154,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	Light lighting;
 	WVP imageCamera;
 
-	Camera camera(XMFLOAT3(0,0,-3), XMFLOAT3(0,0,1), 0.003f);
+	Camera camera(XMFLOAT3(0,0,-3), XMFLOAT3(0,0,1), 1.0f);
 
 	XMMATRIX cameraPerspective;
 	XMMATRIX cameraProjection;
@@ -216,8 +215,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		std::cerr << "Failed to setup pipeline!" << std::endl;
 		return -3;
 	}
+	using Clock = std::chrono::high_resolution_clock;
 
-	SetUpSpace(cameraPerspective, cameraProjection, cameraPos, lookAt, upVector); //kallar på SetUpSpace
+	auto currentTime = std::chrono::high_resolution_clock::now();
+	auto timeSinceLastUpdate = std::chrono::high_resolution_clock::now();
+
+	currentTime = std::chrono::high_resolution_clock::now();
+	Clock::duration delay = std::chrono::nanoseconds(16666667);
+	float deltaTime = float(std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - timeSinceLastUpdate).count()) / 1000.f;
+	timeSinceLastUpdate = currentTime;
+	//SetUpSpace(cameraPerspective, cameraProjection, cameraPos, lookAt, upVector); //kallar på SetUpSpace
 	SetUpLight(device, lightConstantBuffer, lighting); //kallar på SetUpLight
 
 	MSG msg = {};
@@ -235,9 +242,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		else
 		{
 			camera.detectInput(0.003f, 0.003f);
+			camera.clean();
 			Render(immediateContext, rtv, dsView, viewport, vShader, pShader, 
 				   inputLayout, vertexBuffer, textureSRV, sampler, constantBuffers, lightConstantBuffer, worldSpace,
-				   cameraPerspective, cameraProjection, imageCamera, lighting);
+				  /* cameraPerspective, cameraProjection,*/ imageCamera, lighting);
 			//Kallar på vår renderfunktion
 			update(immediateContext, worldSpace, theRotation, arbitraryPoint, translation, Rotation, theRotationAmount, 
 		    		TheDeltaTime, camera, constantBuffers);

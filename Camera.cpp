@@ -1,44 +1,50 @@
 #include "Camera.h"
-
+char debugText[100];
 Camera::Camera()
 {
-	this->cameraPerspective;
-	this->cameraProjection;
-	this->position = { 0.0f,0.0f,0.0f };
-	this->direction = { 0.0f,0.0f,0.0f };
-	this->lookAt = { 0.0f,0.0f,0.0f };
-	this->upVector = { 0.0f, 0.0f, 0.0f };
-	this->camRotationMatrix;
-	this->speed = 0.003f;
-	this->moveBackForward = 0.0f;
-	this->moveLeftRight = 0.0f;
-	this->camYaw = 0.0f;
-	this->camPitch = 0.0f;
-	this->camForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-	this->defaultForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-	this->camRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
-	this->defaultRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
+	//this->cameraPerspective;
+	//this->cameraProjection;
+	//this->position = { 0.0f,0.0f,0.0f };
+	//this->direction = { 0.0f,0.0f,0.0f };
+	//this->lookAt = { 0.0f,0.0f,0.0f };
+	//this->upVector = { 0.0f, 0.0f, 0.0f };
+	//this->camRotationMatrix;
+	//this->speed = 0.003f;
+	//this->moveBackForward = 0.0f;
+	//this->moveLeftRight = 0.0f;
+	//this->camYaw = 0.0f;
+	//this->camPitch = 0.0f;
+	//this->camForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+	//this->defaultForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+	//this->camRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
+	//this->defaultRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
 }
 
 Camera::Camera(XMFLOAT3 position, XMFLOAT3 direction, float speed)
 {
-	this->cameraPerspective;
-	this->cameraProjection;
+	//this->cameraPerspective;
+	//this->cameraProjection;
+	//this->position = position;
+	//this->direction = direction;
+	//this->lookAt = { 0.0f,0.0f,0.0f };
+	//this->upVector = { 0.0f, 0.0f, 0.0f };
+	//this->camRotationMatrix;
+	//this->speed = 0.003f;
+	//this->moveBackForward = 0.0f;
+	//this->moveLeftRight = 0.0f;
+	//this->camYaw = 0.0f;
+	//this->camPitch = 0.0f;
+	//this->camForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+	//this->defaultForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+	//this->camRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
+	//this->defaultRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
 	this->position = position;
 	this->direction = direction;
-	this->lookAt = { 0.0f,0.0f,0.0f };
-	this->upVector = { 0.0f, 0.0f, 0.0f };
-	this->camRotationMatrix;
-	this->speed = 0.003f;
-	this->moveBackForward = 0.0f;
-	this->moveLeftRight = 0.0f;
-	this->camYaw = 0.0f;
-	this->camPitch = 0.0f;
-	this->camForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-	this->defaultForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-	this->camRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
-	this->defaultRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
-
+	this->xRotdir = 0;
+	this->yRotdir = 0;
+	this->zRotdir = 0;
+	POINT cursorData;
+	GetCursorPos(&cursorData);
 
 	setupCam();
 }
@@ -58,6 +64,7 @@ void Camera::detectInput(float movementSpeed, float lookSpeed)
 	if (GetAsyncKeyState('W'))
 	{
 		moveCamera(XMFLOAT3(0, 0, 1), movementSpeed);
+		
 	}
 	if (GetAsyncKeyState('S'))
 	{
@@ -98,25 +105,21 @@ void Camera::detectInput(float movementSpeed, float lookSpeed)
 	{
 		rotateCamera((XM_PI)*lookSpeed, 0, 0, lookSpeed);
 	}
-
-	std::cout << "tedectInput" << std::endl;
-
-
 }
 
 void Camera::moveCamera(DirectX::XMFLOAT3 translationPos, float scalar)
 {
 	this->previousFrameCamPos = this->position;
 
-	this->xRot;
-	this->yRot;
-	this->zRot;
+	this->xRotdir;
+	this->yRotdir;
+	this->zRotdir;
 
 	DirectX::XMFLOAT3 scrapVar = translationPos;
 
-	DirectX::XMMATRIX xRotMatrix = DirectX::XMMatrixRotationX(this->xRot);
-	DirectX::XMMATRIX yRotMatrix = DirectX::XMMatrixRotationY(this->yRot);
-	DirectX::XMMATRIX zRotMatrix = DirectX::XMMatrixRotationZ(this->zRot);
+	DirectX::XMMATRIX xRotMatrix = DirectX::XMMatrixRotationX(this->xRotdir);
+	DirectX::XMMATRIX yRotMatrix = DirectX::XMMatrixRotationY(this->yRotdir);
+	DirectX::XMMATRIX zRotMatrix = DirectX::XMMatrixRotationZ(this->zRotdir);
 	DirectX::XMMATRIX xyzMatrix = xRotMatrix * yRotMatrix * zRotMatrix;
 	DirectX::XMVECTOR translationPosVectorFrom = DirectX::XMVectorSet(translationPos.x, translationPos.y, translationPos.z, 1);
 	DirectX::XMVector3Transform(translationPosVectorFrom, xyzMatrix);
@@ -125,10 +128,57 @@ void Camera::moveCamera(DirectX::XMFLOAT3 translationPos, float scalar)
 	this->position.x += scrapVar.x * scalar;
 	this->position.y += scrapVar.y * scalar;
 	this->position.z += scrapVar.z * scalar;
-
-	//std::cout << camPos.x << " " << camPos.y << " " << camPos.z << " " << std::endl;
+	//std::cout << "tedectInput" << std::endl;
+	std::cout << position.x << " " << position.y << " " << position.z << " " << std::endl;
 }
 
 void Camera::rotateCamera(float xRot, float yRot, float zRot, float scalar)
 {
+	this->yRotdir += xRot * scalar;
+	this->xRotdir += yRot * scalar;
+	this->zRotdir += zRot * scalar;
+
+	sprintf_s(debugText, "My variable is %f\n", yRotdir);
+
+	OutputDebugStringA(debugText);
+	sprintf_s(debugText, "My variable is %f\n", xRotdir);
+
+	OutputDebugStringA(debugText);
+	sprintf_s(debugText, "My variable is %f\n", zRotdir);
+
+	OutputDebugStringA(debugText);
+	DirectX::XMMATRIX xRotMatrix = DirectX::XMMatrixRotationX(xRot * scalar);
+	DirectX::XMMATRIX yRotMatrix = DirectX::XMMatrixRotationY(yRot * scalar);
+	DirectX::XMMATRIX zRotMatrix = DirectX::XMMatrixRotationZ(zRot * scalar);
+	DirectX::XMMATRIX xyzMatrix = xRotMatrix * yRotMatrix * zRotMatrix;
+	DirectX::XMVECTOR camDirXMVEC = DirectX::XMVectorSet(this->direction.x, this->direction.y, this->direction.z, 0);
+	camDirXMVEC = DirectX::XMVector3Transform(camDirXMVEC, xyzMatrix);
+	DirectX::XMStoreFloat3(&this->direction, camDirXMVEC);
+}
+
+void Camera::clean()
+{
+	
+	if (xRotdir > 6.28318530718)
+	{
+		xRotdir = 0;
+	}
+	else if (xRotdir < 0)
+	{
+		xRotdir = 6.28318530718;
+	}
+	1.57079632679;
+
+	if (yRotdir > 1.57079632679)
+	{
+		yRotdir = 1.57079632679;
+	}
+	else if (yRotdir < -1.57079632679)
+	{
+		yRotdir = -1.57079632679;
+	}
+	this->yRotdir = 0;
+	this->zRotdir = 0;
+
+	
 }

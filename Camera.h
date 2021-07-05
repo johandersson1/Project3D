@@ -16,9 +16,9 @@ private:
 	XMFLOAT3 upVector;
 	XMFLOAT3 previousFrameCamPos;
 	
-	float xRot;
-	float yRot;
-	float zRot;
+	float xRotdir;
+	float yRotdir;
+	float zRotdir;
 
 	XMMATRIX camRotationMatrix;
 	XMVECTOR lookAtVector;
@@ -33,7 +33,7 @@ private:
 	float camYaw;
 
 
-	char debugText[100];
+	
 public:
 	Camera();
 	Camera(XMFLOAT3 position, XMFLOAT3 direction, float speed);
@@ -42,6 +42,7 @@ public:
 	void detectInput(float movementSpeed, float lookSpeed);
 	void moveCamera(DirectX::XMFLOAT3 translationPos, float scalar);
 	void rotateCamera(float xRot, float yRot, float zRot, float scalar);
+	void clean();
 	XMMATRIX cameraPerspective;
 	XMMATRIX cameraProjection;
 	XMFLOAT3 getCameraPos() {return this->position; };
