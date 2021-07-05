@@ -33,6 +33,7 @@ float4 main(PixelShaderInput input) : SV_TARGET
     float3 ColourOfPixel = testTexture.Sample(testSampler, input.uv).xyz; //sätter färg på varje pixel
     
     //diffuse calculations
+
     float3 pixelToLight = normalize(light.lightCamPos - input.worldPos); //normaliserar vektorn mellan lightsource och worldpos för vårt objekt
     float3 diffuse = light.lightColour * (max(0, dot(input.normal, pixelToLight))); // max tar in två stycken floats och ger oss max värdet, sedan jämför 0  med * skalär mellan input.norma och pixelToLight
   
@@ -44,8 +45,8 @@ float4 main(PixelShaderInput input) : SV_TARGET
     //ambient calculations
     float3 ambientLight = light.lightColour * light.lightAmbient; //tilldelar färg till ambientLight genom att * colour med ambient 
    
-    float3 finalColour = ColourOfPixel * (ambientLight + diffuse) + specular; //tilldelar finalcolour genom att 
-    return float4(finalColour, 1.0f); //en float4 där allt kombineras från tidigare uträkningar
+   /* float3 finalColour = ColourOfPixel *//** (ambientLight + diffuse) + specular;*/ //tilldelar finalcolour genom att 
+    return float4(ColourOfPixel, 1.0f); //en float4 där allt kombineras från tidigare uträkningar
 }
 
 
