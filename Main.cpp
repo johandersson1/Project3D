@@ -5,7 +5,23 @@
 #include <chrono>
 #include <iostream>
 #include "Camera.h"
+//Console Setup
+#include<io.h>
+#include<fcntl.h>
+void RedirectIOToConsole()
+{
+	AllocConsole();
+	HANDLE stdHandle;
+	int hConsole;
+	FILE* fp;
+	stdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+	hConsole = _open_osfhandle((intptr_t)stdHandle, _O_TEXT);
+	fp = _fdopen(hConsole, "w");
 
+	freopen_s(&fp, "CONOUT$", "w", stdout);
+
+	//printf("Hello console on\n");
+}
 void SetUpSpace(DirectX::XMMATRIX &cameraPerspective, DirectX::XMMATRIX &cameraProjection, DirectX::XMVECTOR cameraPos, DirectX::XMVECTOR lookAt, DirectX::XMVECTOR upVector)
 {
 	cameraPerspective = DirectX::XMMatrixLookAtLH(cameraPos, lookAt, upVector); //skapar vänster-orienterat koordinatsystem,
@@ -129,7 +145,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	const UINT WIDTH = 1024; //bredd för fönstret 
 	const UINT HEIGHT = 1024;//höjd för fönstret 
 	HWND window; //A handle to a window.
-
+	RedirectIOToConsole();
 	//std::chrono::steady_clock::time_point theDeltaTime = std::chrono::steady_clock::now();
 
 	//Structs from PipelineHelper
