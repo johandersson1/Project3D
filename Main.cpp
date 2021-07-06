@@ -10,6 +10,7 @@
 #include<io.h>
 #include<fcntl.h>
 
+
 void RedirectIOToConsole()
 {
 	AllocConsole();
@@ -39,6 +40,14 @@ void SetUpLight(ID3D11Device* device, ID3D11Buffer* &lightConstantBuffer, Light 
 	cbLight.MiscFlags = 0; //används inte
 
 	device->CreateBuffer(&cbLight, nullptr, &lightConstantBuffer);
+}
+
+void clearView(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsView)
+{
+	//Background
+	float clearColour[4] = { 0.5f, 1.0f, 1.0f,1 };
+	immediateContext->ClearRenderTargetView(rtv, clearColour);
+	immediateContext->ClearDepthStencilView(dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 }
 
 void update(ID3D11DeviceContext* immediateContext , XMMATRIX &worldSpace, XMMATRIX &theRotation, XMMATRIX arbitraryPoint, //Ändrat så at vi gör alla uträkningar i update istället för i olika funktioner
@@ -74,6 +83,81 @@ void update(ID3D11DeviceContext* immediateContext , XMMATRIX &worldSpace, XMMATR
 		std::cerr << "Failed to update ConstantBuffer (update function)" << std::endl;
 	}
 	lighting.lightCamPos = camera.getCameraPos();
+}
+
+
+void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsView, D3D11_VIEWPORT& viewport,
+	ID3D11PixelShader* pShaderDeferredRender, ID3D11VertexShader* vShaderDeferred,
+	ID3D11InputLayout* inputLayout, ID3D11SamplerState* sampler, GeometryBuffer gBuffer,
+	ID3D11ShaderResourceView* textureSRV, ID3D11Buffer* vertexBuffer)
+{
+	//D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST
+
+	clearView(immediateContext, rtv, dsView);
+	float clearcolor[4] = { 0.75f,0.75f,0.3f,0 };
+	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[0], clearcolor);
+	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[1], clearcolor);
+	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[2], clearcolor);
+	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[3], clearcolor);
+	
+
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+	immediateContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+	//immediateContext->IASetVertexBuffers(1, 2, &groundBuffer, &stride, &offset);
+	immediateContext->IASetInputLayout(inputLayout);
+	immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+
+	//immediateContext->HSSetShader(hshader, nullptr, 0);
+	//immediateContext->DSSetShader(dshader, nullptr, 0);
+	//immediateContext->RSSetState(rasterizerState);
+	immediateContext->VSSetShader(vShaderDeferred, nullptr, 0);
+	immediateContext->RSSetViewports(1, &viewport);
+	immediateContext->PSSetShader(pShaderDeferredRender, nullptr, 0);
+	/*immediateContext->PSSetShaderResources(0, 1, gBuffer.gBufferSrv);*/
+	immediateContext->PSSetShaderResources(0, 1, &textureSRV);
+	immediateContext->PSSetSamplers(0, 1, &sampler);
+	immediateContext->OMSetRenderTargets(gBuffer.NROFBUFFERS, gBuffer.gBuffergBufferRtv, dsView);
+	immediateContext->Draw(4, 0);
+
+	//test
+	//Clean up
+	ID3D11RenderTargetView* nullArr[gBuffer.NROFBUFFERS];
+	for (int i = 0; i < gBuffer.NROFBUFFERS; i++)
+	{
+		nullArr[i] = nullptr;
+	}
+	immediateContext->OMSetRenderTargets(gBuffer.NROFBUFFERS, nullArr, dsView);
+}
+
+void RenderLightPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsView, D3D11_VIEWPORT& viewport,
+	ID3D11PixelShader* pShaderDeferredRender,ID3D11VertexShader* vShaderDeferred, ID3D11InputLayout* inputLayout, ID3D11Buffer* vertexBuffer,
+	ID3D11ShaderResourceView* textureSRV, ID3D11SamplerState* sampler, GeometryBuffer gBuffer, ID3D11PixelShader* lightPShaderDeferred, 
+	ID3D11VertexShader* lightVShaderDeferred, ID3D11InputLayout* renderTargetMeshInputLayout, ID3D11Buffer* screenQuadMesh)
+{
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+	immediateContext->IASetVertexBuffers(0, 1, &screenQuadMesh, &stride, &offset);
+	immediateContext->IASetInputLayout(renderTargetMeshInputLayout);
+	immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+	immediateContext->VSSetShader(lightVShaderDeferred, nullptr, 0);
+	//immediateContext->HSSetShader(nullptr, nullptr, 0);
+	//immediateContext->DSSetShader(nullptr, nullptr, 0);
+	immediateContext->RSSetViewports(1, &viewport);
+	immediateContext->PSSetShader(lightPShaderDeferred, NULL, 0);
+	immediateContext->PSSetShaderResources(0, gBuffer.NROFBUFFERS, gBuffer.gBufferSrv);
+	immediateContext->PSSetSamplers(0, 1, &sampler);
+	immediateContext->RSSetState(nullptr);
+	immediateContext->OMSetRenderTargets(1, &rtv, dsView);
+	immediateContext->Draw(4, 0);
+
+	//Clean up
+	ID3D11ShaderResourceView* nullArr[gBuffer.NROFBUFFERS];
+	for (int i = 0; i < gBuffer.NROFBUFFERS; i++)
+	{
+		nullArr[i] = nullptr;
+	}
+	immediateContext->PSSetShaderResources(0, gBuffer.NROFBUFFERS, nullArr);
 }
 
 void Render(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv,
@@ -114,7 +198,7 @@ void Render(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv,
 	////Ange kamerans invers på objekt för att “centrera”
 	//imageCamera.worldViewProj = XMMatrixTranspose(worldSpace * cameraPerspective * cameraProjection); //Skapar en ny matris
 	
-	UINT stride = sizeof(SimpleVertex);
+	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 	immediateContext->ClearRenderTargetView(rtv, clearColour);
 	immediateContext->ClearDepthStencilView(dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
@@ -177,6 +261,32 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	ID3D11ShaderResourceView* textureSRV; // anger de (sub resources) en shader kan komma åt under rendering
 	ID3D11SamplerState* sampler; // sampler-state som du kan bindar till valfritt shader stage i pipelinen.
 
+
+	//Deferred light
+	ID3D11PixelShader* lightPShaderDeferred;
+	ID3D11VertexShader* lightVShaderDeferred;
+
+	ID3D11InputLayout* renderTargetMeshInputLayout;
+	ID3D11Buffer* screenQuadMesh;
+
+	ID3D11Buffer* groundBuffer;
+
+	//ID3D11Buffer* groundBuffer;
+
+	//Gbuffer
+	DirectionalLight defferedPS;
+	GeometryBuffer gBuffer;
+	ID3D11PixelShader* pShaderDeferred;
+	ID3D11VertexShader* vShaderDeferred;
+
+	gBuffer.screenWidth = WIDTH;
+	gBuffer.screenHeight = HEIGHT;
+	for (int i = 0; i < gBuffer.NROFBUFFERS; i++)
+	{
+		gBuffer.gBufferTexture[i] = nullptr;
+	}
+
+
 	//ConstantBuffer(s)
 	ID3D11Buffer* constantBuffers;
 
@@ -194,14 +304,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	}
 
 	if (!SetupD3D11(WIDTH, HEIGHT, window, device, immediateContext, 
-		swapChain, rtv, dsTexture, dsView, viewport))
+		swapChain, rtv, dsTexture, dsView, viewport, gBuffer))
 	{
 		std::cerr << "Failed to setup d3d11!" << std::endl;
 		return -2;
 	}
 
 	if (!SetupPipeline(device, vertexBuffer, vShader, pShader, inputLayout, 
-		constantBuffers, texture, textureSRV, sampler))
+		constantBuffers, texture, textureSRV, sampler, pShaderDeferred, vShaderDeferred, lightPShaderDeferred, lightVShaderDeferred,
+		renderTargetMeshInputLayout, screenQuadMesh))
 	{
 		std::cerr << "Failed to setup pipeline!" << std::endl;
 		return -3;
@@ -224,8 +335,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		{
 			camera.detectInput(0.003f, 0.005f);
 			camera.clean();
-			Render(immediateContext, rtv, dsView, viewport, vShader, pShader, inputLayout, vertexBuffer, 
-					textureSRV, sampler, constantBuffers, lightConstantBuffer, worldSpace, imageCamera, lighting);
+
+			/*Render(immediateContext, rtv, dsView, viewport, vShader, pShader, inputLayout, vertexBuffer, 
+					textureSRV, sampler, constantBuffers, lightConstantBuffer, worldSpace, imageCamera, lighting);*/
+
+			RenderGBufferPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout,
+				sampler, gBuffer, textureSRV, vertexBuffer);
+
+			RenderLightPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout, vertexBuffer,
+				textureSRV, sampler, gBuffer, lightPShaderDeferred,
+				lightVShaderDeferred, renderTargetMeshInputLayout, screenQuadMesh);
+
+
 			//Kallar på vår renderfunktion
 			update(immediateContext, worldSpace, theRotation, arbitraryPoint, translation, Rotation, theRotationAmount, 
 		    	   TheDeltaTime, camera, constantBuffers, lighting);

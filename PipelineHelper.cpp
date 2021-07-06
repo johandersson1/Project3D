@@ -67,7 +67,7 @@ bool LoadShadersGbuffer(ID3D11Device* device, ID3D11PixelShader*& pShaderDeferre
 	std::ifstream reader;
 	//Clears the reader and shaderData and does the same thing for the PixelShader
 
-	reader.open(L"VertexShaderDeferred.cso", std::ios::binary | std::ios::ate);
+	reader.open(L"x64/Debug/VertexShaderDeferred.cso", std::ios::binary | std::ios::ate);
 	if (!reader.is_open())
 	{
 		std::cerr << "Could not open VS file!" << std::endl;
@@ -90,7 +90,7 @@ bool LoadShadersGbuffer(ID3D11Device* device, ID3D11PixelShader*& pShaderDeferre
 
 	shaderData.clear();
 	reader.close();
-	reader.open(L"PixelShaderDeferred.cso", std::ios::binary | std::ios::ate);
+	reader.open(L"x64/Debug/PixelShaderDeferred.cso", std::ios::binary | std::ios::ate);
 	if (!reader.is_open())
 	{
 		std::cerr << "Could not open PS file!" << std::endl;
@@ -119,7 +119,7 @@ bool LoadShadersLight(ID3D11Device* device, ID3D11PixelShader*& lightPShaderDefe
 	std::ifstream reader;
 	//Clears the reader and shaderData and does the same thing for the PixelShader
 
-	reader.open(L"VertexShaderDeferredLight.cso", std::ios::binary | std::ios::ate);
+	reader.open(L"x64/Debug/VertexShaderDeferredLight.cso", std::ios::binary | std::ios::ate);
 	if (!reader.is_open())
 	{
 		std::cerr << "Could not open VS file!" << std::endl;
@@ -142,7 +142,7 @@ bool LoadShadersLight(ID3D11Device* device, ID3D11PixelShader*& lightPShaderDefe
 
 	shaderData.clear();
 	reader.close();
-	reader.open(L"PixelShaderDeferredLight.cso", std::ios::binary | std::ios::ate);
+	reader.open(L"x64/Debug/PixelShaderDeferredLight.cso", std::ios::binary | std::ios::ate);
 	if (!reader.is_open())
 	{
 		std::cerr << "Could not open PS file!" << std::endl;

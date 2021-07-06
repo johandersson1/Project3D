@@ -1,16 +1,15 @@
 struct VertexShaderInput
 {
-    float3 position : POSITION;
-    float2 uv : UV;
-    float3 normal : NORMAL;
+    float4 position : POSITION;
+    float2 tex : TEXCOORD;
+
 };
 
 struct VertexShaderOutput
 {
     float4 position : SV_POSITION; // Kamerans clipspace
-    float2 uv : UV;
-    float3 normal : NORMAL;
-    float3 worldPosition : WORLDPOSITION;
+    float2 tex : TEXCOORD;
+   
 };
 
 cbuffer worldViewProjectionMatrixBuffer : register(b0)
@@ -27,3 +26,13 @@ cbuffer lightProjection : register(b2)
 {
     matrix lightProjectionMatrix;
 };
+VertexShaderOutput main(VertexShaderInput input)
+{
+    VertexShaderOutput output;
+    output.position = input.position;
+    output.tex = input.tex;
+	//output.normal = input.normal;
+	//output.colour = input.colour;
+    
+    return output;
+}

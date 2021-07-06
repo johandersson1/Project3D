@@ -38,10 +38,16 @@
     <FxCompile Include="VertexShader.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="PixelShaderDeferedLight.hlsl">
+    <FxCompile Include="PixelShaderDeferredLight.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="VertexShaderDeferedLight.hlsl">
+    <FxCompile Include="VertexShaderDeferredLight.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="VertexShaderDeferred.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="PixelShaderDeferred.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
   </ItemGroup>

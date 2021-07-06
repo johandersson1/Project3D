@@ -97,13 +97,85 @@ void SetViewPort(D3D11_VIEWPORT& viewport, UINT width, UINT height)
     viewport.MinDepth = 0;
     viewport.MaxDepth = 1;
 }
+
+bool CreateGbuffer(ID3D11Device* device, GeometryBuffer& gBuffer)
+{
+    //device->CreateTexture2D();
+    //device->CreateRenderTargetView();
+    //device->CreateShaderResourceView();
+    HRESULT hr;
+
+    D3D11_TEXTURE2D_DESC TextureGbufferDesc;
+    ZeroMemory(&TextureGbufferDesc, sizeof(TextureGbufferDesc));
+
+    TextureGbufferDesc.Width = gBuffer.screenWidth;
+    TextureGbufferDesc.Height = gBuffer.screenHeight;
+    TextureGbufferDesc.MipLevels = 1;
+    TextureGbufferDesc.ArraySize = 1;
+    TextureGbufferDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+    TextureGbufferDesc.SampleDesc.Count = 1;
+    TextureGbufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    TextureGbufferDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+    TextureGbufferDesc.CPUAccessFlags = 0;
+    TextureGbufferDesc.MiscFlags = 0;
+
+    for (int i = 0; i < gBuffer.NROFBUFFERS; i++)
+    {
+        hr = device->CreateTexture2D(&TextureGbufferDesc, nullptr, &gBuffer.gBufferTexture[i]);
+        if (FAILED(hr))
+        {
+            return false;
+        }
+    }
+
+    D3D11_RENDER_TARGET_VIEW_DESC rtvGbufferDesc;
+    ZeroMemory(&rtvGbufferDesc, sizeof(rtvGbufferDesc));
+    rtvGbufferDesc.Format = TextureGbufferDesc.Format;
+    rtvGbufferDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+    rtvGbufferDesc.Texture2D.MipSlice = 0;
+
+    for (int i = 0; i < gBuffer.NROFBUFFERS; i++)
+    {
+        hr = device->CreateRenderTargetView(gBuffer.gBufferTexture[i], nullptr, &gBuffer.gBuffergBufferRtv[i]);
+        if (FAILED(hr))
+        {
+            return false;
+        }
+    }
+
+    D3D11_SHADER_RESOURCE_VIEW_DESC srvGbufferDesc;
+    ZeroMemory(&srvGbufferDesc, sizeof(srvGbufferDesc));
+    srvGbufferDesc.Format = TextureGbufferDesc.Format;
+    srvGbufferDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    srvGbufferDesc.Texture2D.MostDetailedMip = 0;
+    srvGbufferDesc.Texture2D.MipLevels = 1;
+
+    for (int i = 0; i < gBuffer.NROFBUFFERS; i++)
+    {
+        hr = device->CreateShaderResourceView(gBuffer.gBufferTexture[i], nullptr, &gBuffer.gBufferSrv[i]);
+        if (FAILED(hr))
+        {
+            return false;
+        }
+
+    }
+    return true;
+
+}
+
 //Kallar på funktionerna
 bool SetupD3D11(UINT width, UINT height, HWND window, ID3D11Device*& device, ID3D11DeviceContext*& immidateContext, 
-                IDXGISwapChain*& swapChain, ID3D11RenderTargetView*& rtv, ID3D11Texture2D*& dsTexture, ID3D11DepthStencilView*& dsView, D3D11_VIEWPORT& viewport)
+                IDXGISwapChain*& swapChain, ID3D11RenderTargetView*& rtv, ID3D11Texture2D*& dsTexture, ID3D11DepthStencilView*& dsView, D3D11_VIEWPORT& viewport, GeometryBuffer& gBuffer)
 {
     if (!CreateInterfaces(width, height, window, device, immidateContext, swapChain))
     {
         std::cerr << "Error creating interfaces!" << std::endl;
+        return false;
+    }
+
+    if (!CreateGbuffer(device, gBuffer))
+    {
+        OutputDebugString(L"Failed to create Gbuffer!");
         return false;
     }
 
