@@ -160,61 +160,61 @@ void RenderLightPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetVi
 	immediateContext->PSSetShaderResources(0, gBuffer.NROFBUFFERS, nullArr);
 }
 
-void Render(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv,
-	ID3D11DepthStencilView* dsView, D3D11_VIEWPORT& viewport, ID3D11VertexShader* vShader,
-	ID3D11PixelShader* pShader, ID3D11InputLayout* inputLayout, ID3D11Buffer* vertexBuffer,
-	ID3D11ShaderResourceView* textureSRV, ID3D11SamplerState* sampler, ID3D11Buffer* constantBuffers, 
-	ID3D11Buffer* lightConstantBuffer,DirectX::XMMATRIX worldSpace, WVP &imageCamera, Light &lighting)
-{
-	float clearColour[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
-
-	//D3D11_MAPPED_SUBRESOURCE databegin;
-	//HRESULT hr = immediateContext->Map(constantBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &databegin);
-	//if (SUCCEEDED(hr))
-	//{
-	//	memcpy(databegin.pData, &imageCamera, sizeof(WVP));
-	//	immediateContext->Unmap(constantBuffer, NULL);
-	//}
-	//else
-	//{
-	//	OutputDebugString((L"Failed to update ConstantBuffer"));
-	//}
-
-	D3D11_MAPPED_SUBRESOURCE databegin2;
-	HRESULT hr1 = immediateContext->Map(lightConstantBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &databegin2);
-	if (SUCCEEDED(hr1))
-	{
-		memcpy(databegin2.pData, &lighting, sizeof(Light));
-		immediateContext->Unmap(lightConstantBuffer, NULL);
-	}
-	else
-	{
-		OutputDebugString((L"Failed to update lightConstantBuffer "));
-	}
-	
-	//imageCamera.worldSpace = XMMatrixTranspose(worldSpace); 
-	////Transponering av scale ger samma matris
-	////Transponering av ren rotation producerar invers som behövs
-	////Ange kamerans invers på objekt för att “centrera”
-	//imageCamera.worldViewProj = XMMatrixTranspose(worldSpace * cameraPerspective * cameraProjection); //Skapar en ny matris
-	
-	UINT stride = sizeof(Vertex);
-	UINT offset = 0;
-	immediateContext->ClearRenderTargetView(rtv, clearColour);
-	immediateContext->ClearDepthStencilView(dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
-	immediateContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-	immediateContext->IASetInputLayout(inputLayout);
-	immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-	immediateContext->VSSetShader(vShader, NULL, 0);
-	immediateContext->RSSetViewports(1, &viewport);
-	immediateContext->PSSetShader(pShader, NULL, 0);
-	immediateContext->PSSetShaderResources(0, 1, &textureSRV);
-	immediateContext->PSSetSamplers(0, 1, &sampler);
-	immediateContext->OMSetRenderTargets(1, &rtv, dsView);
-	immediateContext->PSSetConstantBuffers(0, 1, &lightConstantBuffer);
-	immediateContext->VSSetConstantBuffers(0, 1, &constantBuffers);
-	immediateContext->Draw(4,0);
-}
+//void Render(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv,
+//	ID3D11DepthStencilView* dsView, D3D11_VIEWPORT& viewport/*, ID3D11VertexShader* vShader,
+//	ID3D11PixelShader* pShader*/, ID3D11InputLayout* inputLayout, ID3D11Buffer* vertexBuffer,
+//	ID3D11ShaderResourceView* textureSRV, ID3D11SamplerState* sampler, ID3D11Buffer* constantBuffers, 
+//	ID3D11Buffer* lightConstantBuffer,DirectX::XMMATRIX worldSpace, WVP &imageCamera, Light &lighting)
+//{
+//	float clearColour[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
+//
+//	//D3D11_MAPPED_SUBRESOURCE databegin;
+//	//HRESULT hr = immediateContext->Map(constantBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &databegin);
+//	//if (SUCCEEDED(hr))
+//	//{
+//	//	memcpy(databegin.pData, &imageCamera, sizeof(WVP));
+//	//	immediateContext->Unmap(constantBuffer, NULL);
+//	//}
+//	//else
+//	//{
+//	//	OutputDebugString((L"Failed to update ConstantBuffer"));
+//	//}
+//
+//	D3D11_MAPPED_SUBRESOURCE databegin2;
+//	HRESULT hr1 = immediateContext->Map(lightConstantBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &databegin2);
+//	if (SUCCEEDED(hr1))
+//	{
+//		memcpy(databegin2.pData, &lighting, sizeof(Light));
+//		immediateContext->Unmap(lightConstantBuffer, NULL);
+//	}
+//	else
+//	{
+//		OutputDebugString((L"Failed to update lightConstantBuffer "));
+//	}
+//	
+//	//imageCamera.worldSpace = XMMatrixTranspose(worldSpace); 
+//	////Transponering av scale ger samma matris
+//	////Transponering av ren rotation producerar invers som behövs
+//	////Ange kamerans invers på objekt för att “centrera”
+//	//imageCamera.worldViewProj = XMMatrixTranspose(worldSpace * cameraPerspective * cameraProjection); //Skapar en ny matris
+//	
+//	UINT stride = sizeof(Vertex);
+//	UINT offset = 0;
+//	immediateContext->ClearRenderTargetView(rtv, clearColour);
+//	immediateContext->ClearDepthStencilView(dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+//	immediateContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+//	immediateContext->IASetInputLayout(inputLayout);
+//	immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+//	immediateContext->VSSetShader(vShader, NULL, 0);
+//	immediateContext->RSSetViewports(1, &viewport);
+//	immediateContext->PSSetShader(pShader, NULL, 0);
+//	immediateContext->PSSetShaderResources(0, 1, &textureSRV);
+//	immediateContext->PSSetSamplers(0, 1, &sampler);
+//	immediateContext->OMSetRenderTargets(1, &rtv, dsView);
+//	immediateContext->PSSetConstantBuffers(0, 1, &lightConstantBuffer);
+//	immediateContext->VSSetConstantBuffers(0, 1, &constantBuffers);
+//	immediateContext->Draw(4,0);
+//}
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
@@ -252,8 +252,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	D3D11_VIEWPORT viewport; // definierar dimensionerna för en viewport.
 	ID3D11Texture2D* dsTexture; // en ID3D11Texture2D är ett objekt som lagrar en platt bild. 
 	ID3D11Texture2D* texture;
-	ID3D11VertexShader* vShader; // hanterar ett körbart program för att styra vertex-shader-scenen
-	ID3D11PixelShader* pShader; // hanterar ett körbart program för att styra pixel-shader-scenen
+	//ID3D11VertexShader* vShader; // hanterar ett körbart program för att styra vertex-shader-scenen
+	//ID3D11PixelShader* pShader; // hanterar ett körbart program för att styra pixel-shader-scenen
 	ID3D11InputLayout* inputLayout; // information som lagras med varje vertex för att förbättra renderingshastigheten
 	ID3D11Buffer* vertexBuffer; // buffert resurs, som är ostrukturerat minne
 	ID3D11Buffer* constantBuffer;
@@ -268,10 +268,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 	ID3D11InputLayout* renderTargetMeshInputLayout;
 	ID3D11Buffer* screenQuadMesh;
-
-	ID3D11Buffer* groundBuffer;
-
-	//ID3D11Buffer* groundBuffer;
 
 	//Gbuffer
 	DirectionalLight defferedPS;
@@ -310,7 +306,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		return -2;
 	}
 
-	if (!SetupPipeline(device, vertexBuffer, vShader, pShader, inputLayout, 
+	if (!SetupPipeline(device, vertexBuffer, inputLayout, 
 		constantBuffers, texture, textureSRV, sampler, pShaderDeferred, vShaderDeferred, lightPShaderDeferred, lightVShaderDeferred,
 		renderTargetMeshInputLayout, screenQuadMesh))
 	{
@@ -342,9 +338,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 			RenderGBufferPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout,
 				sampler, gBuffer, textureSRV, vertexBuffer);
 
-			RenderLightPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout, vertexBuffer,
+			/*RenderLightPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout, vertexBuffer,
 				textureSRV, sampler, gBuffer, lightPShaderDeferred,
-				lightVShaderDeferred, renderTargetMeshInputLayout, screenQuadMesh);
+				lightVShaderDeferred, renderTargetMeshInputLayout, screenQuadMesh);*/
 
 
 			//Kallar på vår renderfunktion
@@ -356,6 +352,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		stopTime = std::chrono::steady_clock::now();
 	}
 
+	vShaderDeferred->Release();
+	pShaderDeferred->Release();
+	screenQuadMesh->Release();
+	renderTargetMeshInputLayout->Release();
+	lightVShaderDeferred->Release();
+	lightPShaderDeferred->Release();
 	constantBuffers->Release();
 	texture->Release();
 	sampler->Release();
@@ -363,8 +365,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	lightConstantBuffer->Release();
 	vertexBuffer->Release();
 	inputLayout->Release();
-	pShader->Release();
-	vShader->Release();
+	//pShader->Release();
+	//vShader->Release();
 	dsTexture->Release();
 	dsView->Release();
 	rtv->Release();

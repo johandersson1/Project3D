@@ -165,7 +165,7 @@ bool LoadShadersLight(ID3D11Device* device, ID3D11PixelShader*& lightPShaderDefe
 
 }
 //Funktion för att beskriva input-buffer data
-bool CreateInputLayout(ID3D11Device* device, ID3D11InputLayout*& inputLayout, const std::string& vShaderByteCode)
+bool CreateInputLayout(ID3D11Device* device, ID3D11InputLayout*& inputLayout, const std::string& defVShaderByteCode)
 {
 	//array av element med en beskrivning
 	D3D11_INPUT_ELEMENT_DESC inputDesc[] =
@@ -173,11 +173,11 @@ bool CreateInputLayout(ID3D11Device* device, ID3D11InputLayout*& inputLayout, co
 		//name, index, format, slot, byteOffset, inputSlotClass, stepRate
         {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}, //Input data is per-vertex data.
         {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-        {"COLOUR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-	    {"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0 }
+        {"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+	    {"WORLDPOS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0 }
     };
 	//Viktigt!! Allt behöver vara i rätt ordning för om det laddas in i fel ordning så funkar det ej
-    HRESULT hr = device->CreateInputLayout(inputDesc, ARRAYSIZE(inputDesc), vShaderByteCode.c_str(), vShaderByteCode.length(), &inputLayout);
+    HRESULT hr = device->CreateInputLayout(inputDesc, ARRAYSIZE(inputDesc), defVShaderByteCode.c_str(), defVShaderByteCode.length(), &inputLayout);
 
     return !FAILED(hr);
 }
@@ -387,8 +387,7 @@ bool CreateTexture(ID3D11Device* device, ID3D11Texture2D*& texture, ID3D11Shader
 //}
 
 //Kallar på de olika funktionerna
-bool SetupPipeline(ID3D11Device* device, ID3D11Buffer*& vertexBuffer, ID3D11VertexShader*& vShader,
-	ID3D11PixelShader*& pShader, ID3D11InputLayout*& inputLayout, ID3D11Buffer*& constantBuffers,
+bool SetupPipeline(ID3D11Device* device, ID3D11Buffer*& vertexBuffer, ID3D11InputLayout*& inputLayout, ID3D11Buffer*& constantBuffers,
 	ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& textureSRV, ID3D11SamplerState*& sampler, 
 	ID3D11PixelShader*& pShaderDeferred, ID3D11VertexShader*& vShaderDeferred, ID3D11PixelShader*& lightPShaderDeferred,
 	ID3D11VertexShader*& lightVShaderDeferred, ID3D11InputLayout*& renderTargetMesh, ID3D11Buffer*& screenQuadMesh)
@@ -427,7 +426,7 @@ bool SetupPipeline(ID3D11Device* device, ID3D11Buffer*& vertexBuffer, ID3D11Vert
 	//	return false;
 	//}
 
-	if (!CreateInputLayout(device, inputLayout, vShaderByteCode))
+	if (!CreateInputLayout(device, inputLayout, defVShaderByteCode))
 	{
 		std::cerr << "Error creating input layout!" << std::endl;
 		return false;
