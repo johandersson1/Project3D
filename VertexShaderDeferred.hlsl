@@ -1,15 +1,10 @@
-cbuffer constantBuffer
+cbuffer constantBuffer : register(b0)
 {
     float4x4 WVP; //projectionMatrix
     //float4x4 WV; // viewMatrix
     float4x4 worldSpace; // worldMatrix
     //float3 lightPos;
 }
-
-//cbuffer CameraBuffer
-//{
-//    float3 cameraPosition;
-//};
 
 struct VertexInput
 {

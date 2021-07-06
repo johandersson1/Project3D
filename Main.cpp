@@ -52,7 +52,7 @@ void clearView(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rt
 
 void update(ID3D11DeviceContext* immediateContext , XMMATRIX &worldSpace, XMMATRIX &theRotation, XMMATRIX arbitraryPoint, //Ändrat så at vi gör alla uträkningar i update istället för i olika funktioner
 		XMMATRIX translation, float &Rotation, float RotationAmount, std::chrono::duration<float> TheDeltaTime, 
-		Camera& camera, ID3D11Buffer* constantBuffers, Light& lighting)
+		Camera& camera, ID3D11Buffer* constantBuffers, ID3D11Buffer* lightConstantBuffer, Light& lighting, WVP& wvp)
 {
 	//Rotation += RotationAmount * TheDeltaTime.count();
  //    if (Rotation >= DirectX::XM_PI * 2)
@@ -69,13 +69,15 @@ void update(ID3D11DeviceContext* immediateContext , XMMATRIX &worldSpace, XMMATR
 	
 	XMMATRIX viewMatrix = XMMatrixLookToLH(DirectX::XMVectorSet(camera.getCameraPos().x, camera.getCameraPos().y, camera.getCameraPos().z, 0), DirectX::XMVectorSet(camera.getCameraDir().x, camera.getCameraDir().y, camera.getCameraDir().z, 0), DirectX::XMVectorSet(0, 1, 0, 0));
 	XMMATRIX worldViewProj = XMMatrixTranspose(worldMatrix * viewMatrix * camera.cameraProjection);
-
+	wvp.worldSpace = worldMatrix;
+	wvp.worldViewProj = worldViewProj;
 	immediateContext->VSSetConstantBuffers(0, 1, &constantBuffers);
+
 	D3D11_MAPPED_SUBRESOURCE dataBegin;
 	HRESULT hr = immediateContext->Map(constantBuffers, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &dataBegin);
 	if (SUCCEEDED(hr))
 	{
-		memcpy(dataBegin.pData, &worldViewProj, sizeof(XMMATRIX));
+		memcpy(dataBegin.pData, &wvp.worldViewProj, sizeof(XMMATRIX));
 		immediateContext->Unmap(constantBuffers, NULL);
 	}
 	else
@@ -83,6 +85,18 @@ void update(ID3D11DeviceContext* immediateContext , XMMATRIX &worldSpace, XMMATR
 		std::cerr << "Failed to update ConstantBuffer (update function)" << std::endl;
 	}
 	lighting.lightCamPos = camera.getCameraPos();
+	
+	immediateContext->PSSetConstantBuffers(0, 1, &lightConstantBuffer); // sets the CB used by the PS pipeline stage
+	hr = immediateContext->Map(lightConstantBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &dataBegin);
+	if (SUCCEEDED(hr))
+	{
+		memcpy(dataBegin.pData, &lighting, sizeof(lighting));
+		immediateContext->Unmap(lightConstantBuffer, 0);
+	}
+	else
+	{
+		std::cerr << "Failed to update ConstantBuffer (update function)" << std::endl;
+	}
 }
 
 
@@ -227,7 +241,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 	//Structs from PipelineHelper
 	Light lighting;
-	WVP imageCamera;
+	WVP wvp;
+	wvp.worldSpace;
+	wvp.worldViewProj;
 
 	Camera camera(XMFLOAT3(0,0,-3), XMFLOAT3(0,0,1), 1.0f);
 
@@ -260,7 +276,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	ID3D11Buffer* lightConstantBuffer;
 	ID3D11ShaderResourceView* textureSRV; // anger de (sub resources) en shader kan komma åt under rendering
 	ID3D11SamplerState* sampler; // sampler-state som du kan bindar till valfritt shader stage i pipelinen.
-
+	
 
 	//Deferred light
 	ID3D11PixelShader* lightPShaderDeferred;
@@ -345,7 +361,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 			//Kallar på vår renderfunktion
 			update(immediateContext, worldSpace, theRotation, arbitraryPoint, translation, Rotation, theRotationAmount, 
-		    	   TheDeltaTime, camera, constantBuffers, lighting);
+		    	   TheDeltaTime, camera, constantBuffers, lightConstantBuffer, lighting, wvp);
 
 			swapChain->Present(0, 0); //Presents a rendered image to the user.
 		}

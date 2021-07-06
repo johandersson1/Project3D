@@ -1,5 +1,5 @@
-Texture2D gDiffuseTexture : register(t0);
-Texture2D gNormalTexture : register(t1);
+Texture2D albedoTex : register(t0);
+Texture2D normalTex : register(t1);
 
 SamplerState mySampler : register(s0);
 
@@ -41,9 +41,9 @@ PixelOutputType main(PixelInputType input)
     PixelOutputType output;
     
     output.position = input.position;
-    output.normal = gNormalTexture.Sample(mySampler, input.tex).rgb;
+    output.normal = normalTex.Sample(mySampler, input.tex).rgb;
     output.worldPos = input.worldPos;
-    output.diffuse = gDiffuseTexture.Sample(mySampler, input.tex);
+    output.diffuse = albedoTex.Sample(mySampler, input.tex);
     
     return output;
     

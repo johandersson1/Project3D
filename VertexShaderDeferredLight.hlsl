@@ -2,14 +2,12 @@ struct VertexShaderInput
 {
     float4 position : POSITION;
     float2 tex : TEXCOORD;
-
 };
 
 struct VertexShaderOutput
 {
     float4 position : SV_POSITION; // Kamerans clipspace
     float2 tex : TEXCOORD;
-   
 };
 
 cbuffer worldViewProjectionMatrixBuffer : register(b0)
