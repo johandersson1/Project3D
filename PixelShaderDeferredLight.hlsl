@@ -7,9 +7,9 @@ SamplerState mySampler : register(s0);
 struct PixelInputType
 {
     float4 position : SV_POSITION;
-    float2 uv : UV;
-    float3 normal : NORMAL;
-    float3 worldPosition : WORLDPOSITION;
+    float2 tex : TEXCOORD;
+    //float3 normal : NORMAL;
+    //float3 worldPosition : WORLDPOSITION;
 };
 
 struct PixelShaderOutput
@@ -37,9 +37,9 @@ PixelShaderOutput main(PixelInputType input) : SV_Target
 {
     PixelShaderOutput output;
     
-    float4 normal = normalTex.Sample(mySampler, input.uv);
-    float4 albedo = albedoTex.Sample(mySampler, input.uv);
-    float4 worldPos = worldPosTex.Sample(mySampler, input.uv);
+    float4 normal = normalTex.Sample(mySampler, input.tex);
+    float4 albedo = albedoTex.Sample(mySampler, input.tex);
+    float4 worldPos = worldPosTex.Sample(mySampler, input.tex);
     //float4 shadowPosH = shadowMapTexture.Sample(testSampler, input.uv);
     
     normal = normalize(normal);
@@ -54,29 +54,29 @@ PixelShaderOutput main(PixelInputType input) : SV_Target
     //float4 specularMaterial = specularMtlTexture.Sample(testSampler, input.uv);
     
     //float4 ambientComponent = lightAmbient * ambientMaterial;
-    float diffuseFactor = dot(float4(lightVector, 0), normal);
-    float4 diffuseComponent = float4(0, 0, 0, 1);
+    //float diffuseFactor = dot(float4(lightVector, 0), normal);
+    //float4 diffuseComponent = float4(0, 0, 0, 1);
     
-    float ShinynessFactor = 64;
-    float specularFactor = 0;
-    float att = 0;
-    float4 specularComponent = float4(0, 0, 0, 1);
+    //float ShinynessFactor = 64;
+    //float specularFactor = 0;
+    //float att = 0;
+    //float4 specularComponent = float4(0, 0, 0, 1);
     
-    if (diffuseFactor > 0)
-    {
-        float3 v = reflect(float4(-lightVector, 0), normal);
-        float3 toEye = normalize(float4(camPos.xyz, 1) - worldPos);
-        specularFactor = pow(max(dot(toEye, v), 0), ShinynessFactor);
-        att = lightStrength / (att0 + att1 * lightDistance + att2 * pow(lightDistance, 2));
-        specularComponent = (lightSpecular /** specularMaterial*/) * specularFactor * att;
-        diffuseComponent = lightDiffuse /** diffuseMaterial*/ * diffuseFactor * att;
-    }
+    //if (diffuseFactor > 0)
+    //{
+    //    float3 v = reflect(float4(-lightVector, 0), normal);
+    //    float3 toEye = normalize(float4(camPos.xyz, 1) - worldPos);
+    //    specularFactor = pow(max(dot(toEye, v), 0), ShinynessFactor);
+    //    att = lightStrength / (att0 + att1 * lightDistance + att2 * pow(lightDistance, 2));
+    //    specularComponent = (lightSpecular /** specularMaterial*/) * specularFactor * att;
+    //    diffuseComponent = lightDiffuse /** diffuseMaterial*/ * diffuseFactor * att;
+    //}
     //ambientComponent *= shadowMapTexture.Sample(testSampler, input.uv).x;
     //diffuseComponent *= shadowMapTexture.Sample(testSampler, input.uv).x;
     //specularComponent *= shadowMapTexture.Sample(testSampler, input.uv).x;
     
     //Output
-    finalOutput = albedo * (diffuseComponent) + specularComponent;
+    finalOutput = albedo;
     output.lightOutput = finalOutput;
     return output;
     

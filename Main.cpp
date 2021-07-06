@@ -338,9 +338,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 			RenderGBufferPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout,
 				sampler, gBuffer, textureSRV, vertexBuffer);
 
-			/*RenderLightPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout, vertexBuffer,
+			RenderLightPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout, vertexBuffer,
 				textureSRV, sampler, gBuffer, lightPShaderDeferred,
-				lightVShaderDeferred, renderTargetMeshInputLayout, screenQuadMesh);*/
+				lightVShaderDeferred, renderTargetMeshInputLayout, screenQuadMesh);
 
 
 			//Kallar på vår renderfunktion
