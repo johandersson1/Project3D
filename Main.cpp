@@ -69,15 +69,15 @@ void update(ID3D11DeviceContext* immediateContext , XMMATRIX &worldSpace, XMMATR
 	
 	XMMATRIX viewMatrix = XMMatrixLookToLH(DirectX::XMVectorSet(camera.getCameraPos().x, camera.getCameraPos().y, camera.getCameraPos().z, 0), DirectX::XMVectorSet(camera.getCameraDir().x, camera.getCameraDir().y, camera.getCameraDir().z, 0), DirectX::XMVectorSet(0, 1, 0, 0));
 	XMMATRIX worldViewProj = XMMatrixTranspose(worldMatrix * viewMatrix * camera.cameraProjection);
-	wvp.worldSpace = worldMatrix;
-	wvp.worldViewProj = worldViewProj;
+	//wvp.worldSpace = worldMatrix;
+	//wvp.worldViewProj = worldViewProj;
 	immediateContext->VSSetConstantBuffers(0, 1, &constantBuffers);
 
 	D3D11_MAPPED_SUBRESOURCE dataBegin;
 	HRESULT hr = immediateContext->Map(constantBuffers, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &dataBegin);
 	if (SUCCEEDED(hr))
 	{
-		memcpy(dataBegin.pData, &wvp.worldViewProj, sizeof(XMMATRIX));
+		memcpy(dataBegin.pData, &worldViewProj, sizeof(XMMATRIX));
 		immediateContext->Unmap(constantBuffers, NULL);
 	}
 	else
@@ -354,14 +354,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 			RenderGBufferPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout,
 				sampler, gBuffer, textureSRV, vertexBuffer);
 
+			update(immediateContext, worldSpace, theRotation, arbitraryPoint, translation, Rotation, theRotationAmount,
+				TheDeltaTime, camera, constantBuffers, lightConstantBuffer, lighting, wvp);
+
 			RenderLightPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout, vertexBuffer,
 				textureSRV, sampler, gBuffer, lightPShaderDeferred,
 				lightVShaderDeferred, renderTargetMeshInputLayout, screenQuadMesh);
 
 
 			//Kallar på vår renderfunktion
-			update(immediateContext, worldSpace, theRotation, arbitraryPoint, translation, Rotation, theRotationAmount, 
-		    	   TheDeltaTime, camera, constantBuffers, lightConstantBuffer, lighting, wvp);
+
 
 			swapChain->Present(0, 0); //Presents a rendered image to the user.
 		}

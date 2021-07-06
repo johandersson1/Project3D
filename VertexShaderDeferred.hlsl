@@ -1,11 +1,3 @@
-cbuffer constantBuffer : register(b0)
-{
-    float4x4 WVP; //projectionMatrix
-    //float4x4 WV; // viewMatrix
-    float4x4 worldSpace; // worldMatrix
-    //float3 lightPos;
-}
-
 struct VertexInput
 {
     float3 position : POSITION; //deferred
@@ -22,18 +14,28 @@ struct PixelInput
 
 };
 
+cbuffer worldViewProjectionMatrixBuffer : register(b0)
+{
+    matrix viewProjectionMatrix;
+};
+
+cbuffer viewProjectionMatrixBuffer : register(b1)
+{
+    matrix worldMatrix;
+};
+
 PixelInput main(VertexInput input)
 {
     PixelInput output;
     
     output.position = float4(input.position, 1);
-    output.position = mul(output.position, worldSpace);
+    output.position = mul(output.position, worldMatrix);
     //output.position = mul(output.position, WV);
-    output.position = mul(output.position, WVP);
+    output.position = mul(output.position, viewProjectionMatrix);
     output.tex = input.tex;
-    output.normal = mul(float4(input.normal, 0), worldSpace);
+    output.normal = mul(float4(input.normal, 0), worldMatrix);
     output.normal = normalize(output.normal);
-    output.worldPos = mul(float4(input.position, 1), worldSpace);
+    output.worldPos = mul(float4(input.position, 1), worldMatrix);
 
     return output;
 }
