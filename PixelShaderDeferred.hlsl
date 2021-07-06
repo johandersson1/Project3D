@@ -47,30 +47,5 @@ PixelOutputType main(PixelInputType input)
     
     return output;
     
-    //float3 finalColour = { 0.0f, 0.0f, 0.0f };
-    //input.normal = normalize(input.normal);
-
-    //float lightIntensity = 200;
-    //float3 pixelColour = gDiffuseTexture.Sample(mySampler, input.tex).xyz;
-    
-    ////Ambient
-    //float3 ambientLight = gPointLight.colour * gPointLight.ambient;
-    
-    ////Diffuse
-    //float3 pixelToLight = normalize(gPointLight.camPos - input.worldPos);
-    //float3 diffuse = gPointLight.colour * (max(0, dot(input.normal, pixelToLight)));
-    
-    ////Distance from the lightsource to the surface
-    ////float d = length(pixelToLight);
-
-    ////Specular
-    //float3 reflection = reflect(-pixelToLight, input.normal);
-    //float3 specular = pow(max(0, dot(reflection, pixelToLight)), lightIntensity);
-   
-    ////float att = lightIntensity / gPointLight.att0 + (gPointLight.att1 * d) + (gPointLight.range * pow(d, 2));
-      
-    //finalColour = pixelColour * (ambientLight + diffuse) + specular /*/ att*/;
-    //return float4(finalColour, 1.0f);
-
 }
 
