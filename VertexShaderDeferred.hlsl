@@ -40,6 +40,5 @@ PixelInput main(VertexInput input)
     output.normal = normalize(output.normal);
     output.worldPos = mul(float4(input.position, 1), worldSpace);
 
-
     return output;
 }
