@@ -7,58 +7,6 @@
 #include <string>
 #include <iostream>
 
-//Ladda in shaders funktion
-
-//bool LoadShaders(ID3D11Device* device, ID3D11VertexShader*& vShader, ID3D11PixelShader*& pShader, std::string& vShaderByteCode)
-//{
-//	std::string shaderData;
-//	std::ifstream reader;
-//	reader.open("VertexShader.cso", std::ios::binary | std::ios::ate); //Öppnar.cso-file 
-//	//ändra till nya!!
-//	if (!reader.is_open())
-//	{
-//		std::cerr << "Could not open VS file!" << std::endl;
-//		return false;
-//	}
-//	reader.seekg(0, std::ios::end); //Läser in cso filen och hämtar den totala storleken på filen
-//	shaderData.reserve(static_cast<unsigned int>(reader.tellg())); //Sätter stringen till den minsta tillåtna storleken för att den ska passa
-//	reader.seekg(0, std::ios::beg); //Flyttar tillbaka till början av .cso filen (beg)
-//
-//	shaderData.assign((std::istreambuf_iterator<char>(reader)), //Tilldelar datan av parametrarna till shaderData
-//	std::istreambuf_iterator<char>());
-//
-//	if (FAILED(device->CreateVertexShader(shaderData.c_str(), shaderData.length(), nullptr, &vShader))) //fail check 
-//	{
-//		std::cerr << "Failed to create vertex shader!" << std::endl;
-//		return false;
-//	}
-//	//Rensar upp för shaderData och reader sedan utför vi samma sak för PixelShader
-//	vShaderByteCode = shaderData;
-//	shaderData.clear();
-//	reader.close();
-//	reader.open("PixelShader.cso", std::ios::binary | std::ios::ate);
-//	//ändra till nya!!
-//	if (!reader.is_open())
-//	{
-//		std::cerr << "Could not open PS file!" << std::endl;
-//		return false;
-//	}
-//
-//	reader.seekg(0, std::ios::end);
-//	shaderData.reserve(static_cast<unsigned int>(reader.tellg()));
-//	reader.seekg(0, std::ios::beg);
-//
-//	shaderData.assign((std::istreambuf_iterator<char>(reader)),
-//	std::istreambuf_iterator<char>());
-//
-//	if (FAILED(device->CreatePixelShader(shaderData.c_str(), shaderData.length(), nullptr, &pShader)))
-//	{
-//		std::cerr << "Failed to create pixel shader!" << std::endl;
-//		return false;
-//	}
-//
-//	return true;
-//}
 
 bool LoadShadersGbuffer(ID3D11Device* device, ID3D11PixelShader*& pShaderDeferred, ID3D11VertexShader*& vShaderDeferred, std::string& defVShaderByteCode)
 {
@@ -108,7 +56,7 @@ bool LoadShadersGbuffer(ID3D11Device* device, ID3D11PixelShader*& pShaderDeferre
 		std::cerr << "Failed to create pixel shader!" << std::endl;
 		return false;
 	}
-
+	reader.close();
 	return true;
 }
 

@@ -11,7 +11,6 @@ struct GeometryBuffer
         indexPosition,
         indexColor,
         indexNormal,
-
         indexCount
     };
     static const int NROFBUFFERS = 4;

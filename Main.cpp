@@ -7,7 +7,9 @@
 #include "D3D11Helper.h"
 #include "PipelineHelper.h"
 #include "Model.h"
-
+//#include "ShaderData.h"
+//#include "ParticleSystem.h"
+#include "PartcileSystemRenderer.h"
 
 //Console Setup
 #include<io.h>
@@ -54,8 +56,9 @@ void clearView(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rt
 }
 
 void update(ID3D11DeviceContext* immediateContext , XMMATRIX &worldSpace, XMMATRIX &theRotation, XMMATRIX arbitraryPoint, //Ändrat så at vi gör alla uträkningar i update istället för i olika funktioner
-		XMMATRIX translation, float &Rotation, float RotationAmount, std::chrono::duration<float> TheDeltaTime, 
-		Camera& camera, ID3D11Buffer* constantBuffers, ID3D11Buffer* lightConstantBuffer, Light& lighting, WVP& wvp, Model bike)
+		XMMATRIX translation, float &Rotation, float RotationAmount, std::chrono::duration<float> dt, 
+		Camera& camera, ID3D11Buffer* constantBuffers, ID3D11Buffer* lightConstantBuffer, 
+		Light& lighting, WVP& wvp, Model bike, ParticleSystem* particlesystem)
 {
 	//Rotation += RotationAmount * TheDeltaTime.count();
  //    if (Rotation >= DirectX::XM_PI * 2)
@@ -70,9 +73,11 @@ void update(ID3D11DeviceContext* immediateContext , XMMATRIX &worldSpace, XMMATR
 	//XMMATRIX translationMatrix = DirectX::XMMatrixTranslation(0, 0, 0);
 	//XMMATRIX worldMatrix = scalingMatrix * rotationMatrix * translationMatrix;
 
-	
+
+
+	particlesystem->Update(immediateContext, dt.count());
 	XMMATRIX viewMatrix = XMMatrixLookToLH(DirectX::XMVectorSet(camera.getCameraPos().x, camera.getCameraPos().y, camera.getCameraPos().z, 0), DirectX::XMVectorSet(camera.getCameraDir().x, camera.getCameraDir().y, camera.getCameraDir().z, 0), DirectX::XMVectorSet(0, 1, 0, 0));
-	XMMATRIX worldViewProj = XMMatrixTranspose(bike.GetWorldMatrix() * viewMatrix * camera.cameraProjection);
+	XMMATRIX worldViewProj = XMMatrixTranspose(bike.GetWorldMatrix() * viewMatrix * camera.cameraPerspective);
 
 	XMStoreFloat4x4(&wvp.worldSpace, bike.GetWorldMatrix());
 	XMStoreFloat4x4(&wvp.worldViewProj, worldViewProj);
@@ -108,7 +113,7 @@ void update(ID3D11DeviceContext* immediateContext , XMMATRIX &worldSpace, XMMATR
 void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsView, D3D11_VIEWPORT& viewport,
 	ID3D11PixelShader* pShaderDeferredRender, ID3D11VertexShader* vShaderDeferred,
 	ID3D11InputLayout* inputLayout, ID3D11SamplerState* sampler, GeometryBuffer gBuffer,
-	ID3D11ShaderResourceView* textureSRV, ID3D11Buffer* vertexBuffer, Model biker)
+	ID3D11ShaderResourceView* textureSRV, ID3D11Buffer* vertexBuffer, Model biker, ParticleSystem* particlesystem, ParticleRenderer* pRenderer)
 {
 	//D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST
 
@@ -140,6 +145,7 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	immediateContext->PSSetSamplers(0, 1, &sampler);
 	immediateContext->OMSetRenderTargets(gBuffer.NROFBUFFERS, gBuffer.gBuffergBufferRtv, dsView);
 	immediateContext->Draw(biker.GetVertexCount(), 0);
+	pRenderer->Render(immediateContext, particlesystem);
 
 	//test
 	//Clean up
@@ -194,8 +200,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	Light lighting;
 	WVP wvp;
 
-
-	Camera camera(XMFLOAT3(0,0,-10), XMFLOAT3(0,0,1), 1.0f);
+	Camera camera(XMFLOAT3(0,0,-5), XMFLOAT3(0,0,1), 1.0f);
 
 	XMMATRIX cameraPerspective;
 	XMMATRIX cameraProjection;
@@ -226,7 +231,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	ID3D11Buffer* lightConstantBuffer;
 	ID3D11ShaderResourceView* textureSRV; // anger de (sub resources) en shader kan komma åt under rendering
 	ID3D11SamplerState* sampler; // sampler-state som du kan bindar till valfritt shader stage i pipelinen.
-	
 
 	//Deferred light
 	ID3D11PixelShader* lightPShaderDeferred;
@@ -241,15 +245,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	ID3D11PixelShader* pShaderDeferred;
 	ID3D11VertexShader* vShaderDeferred;
 
-	
-
 	gBuffer.screenWidth = WIDTH;
 	gBuffer.screenHeight = HEIGHT;
 	for (int i = 0; i < gBuffer.NROFBUFFERS; i++)
 	{
 		gBuffer.gBufferTexture[i] = nullptr;
 	}
-
 
 	//ConstantBuffer(s)
 	ID3D11Buffer* constantBuffers;
@@ -283,9 +284,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	}
 
 	Model bike(device, "biker", { 0.0f, -2.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.75f, 0.75f, 0.75f });
-	//bike.Update();
-
-
+	ParticleSystem* particlesystem = new ParticleSystem(device, 500, 20, 10, { 10,10,10 }, { 0,10,0 });
+	ParticleRenderer* pRenderer = new ParticleRenderer(device);
+	ShaderData::Initialize(device);
 
 	SetUpLight(device, lightConstantBuffer, lighting); //kallar på SetUpLight
 
@@ -293,7 +294,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 	while (!(GetKeyState(VK_ESCAPE) & 0x8000) && msg.message != WM_QUIT)
 	{
-		const std::chrono::duration <float> TheDeltaTime = stopTime - startTime;
+		const std::chrono::duration <float> dt = stopTime - startTime;
 		startTime = std::chrono::steady_clock::now();
 
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) //if kanske endast visar ett meddelande(while visar alla)
@@ -303,30 +304,32 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		}
 		else
 		{
-			camera.detectInput(0.008f, 0.035f);
+			camera.detectInput(0.008f, 0.05f);
 			camera.clean();
 
 			/*Render(immediateContext, rtv, dsView, viewport, vShader, pShader, inputLayout, vertexBuffer, 
 					textureSRV, sampler, constantBuffers, lightConstantBuffer, worldSpace, imageCamera, lighting);*/
 
+			ShaderData::Update(camera);
+
 			RenderGBufferPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout,
-				sampler, gBuffer, textureSRV, vertexBuffer, bike);
+				sampler, gBuffer, textureSRV, vertexBuffer, bike, particlesystem, pRenderer);
 
 						//Kallar på vår renderfunktion
 			update(immediateContext, worldSpace, theRotation, arbitraryPoint, translation, Rotation, theRotationAmount, 
-		    	   TheDeltaTime, camera, constantBuffers, lightConstantBuffer, lighting, wvp, bike);
+		    	   dt, camera, constantBuffers, lightConstantBuffer, lighting, wvp, bike, particlesystem);
 
 			RenderLightPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout, vertexBuffer,
 				textureSRV, sampler, gBuffer, lightPShaderDeferred,
 				lightVShaderDeferred, renderTargetMeshInputLayout, screenQuadMesh);
 
-
-
-
 			swapChain->Present(0, 0); //Presents a rendered image to the user.
 		}
 		stopTime = std::chrono::steady_clock::now();
 	}
+
+	delete particlesystem;
+	delete pRenderer;
 
 	vShaderDeferred->Release();
 	pShaderDeferred->Release();

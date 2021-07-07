@@ -11,7 +11,7 @@ class Camera
 {
 private:
 	XMFLOAT3 position;
-	XMFLOAT3 direction;;
+	XMFLOAT3 direction;
 	XMFLOAT3 lookAt;
 	XMFLOAT3 upVector;
 	XMFLOAT3 previousFrameCamPos;
@@ -38,8 +38,8 @@ public:
 	void moveCamera(DirectX::XMFLOAT3 translationPos, float scalar);
 	void rotateCamera(float xRot, float yRot, float zRot, float scalar);
 	void clean();
+	XMMATRIX viewMatrix;
 	XMMATRIX cameraPerspective;
-	XMMATRIX cameraProjection;
 	XMFLOAT3 getCameraPos() {return this->position; };
 	XMFLOAT3 getCameraDir() {return this->direction; };
 };
