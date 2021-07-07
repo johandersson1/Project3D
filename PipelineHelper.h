@@ -8,8 +8,8 @@
 //struct för cbVertex, med två matriser för worldViewProj och worldspace
 struct WVP
 {
-    DirectX::XMMATRIX worldViewProj;
-    DirectX::XMMATRIX worldSpace;
+    DirectX::XMFLOAT4X4 worldViewProj;
+    DirectX::XMFLOAT4X4 worldSpace;
 };
 //struct för Light
 struct Light

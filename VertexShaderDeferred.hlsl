@@ -22,6 +22,7 @@ struct PixelInput
 
 };
 
+
 PixelInput main(VertexInput input)
 {
     PixelInput output;

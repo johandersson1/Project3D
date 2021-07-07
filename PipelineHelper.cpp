@@ -60,7 +60,7 @@
 //	return true;
 //}
 
-bool LoadShadersGbuffer(ID3D11Device* device, ID3D11PixelShader*& pShaderDeferred, ID3D11VertexShader*& vShaderDeferred, std::string& vShaderByteCode)
+bool LoadShadersGbuffer(ID3D11Device* device, ID3D11PixelShader*& pShaderDeferred, ID3D11VertexShader*& vShaderDeferred, std::string& defVShaderByteCode)
 {
 
 	std::string shaderData;
@@ -86,7 +86,7 @@ bool LoadShadersGbuffer(ID3D11Device* device, ID3D11PixelShader*& pShaderDeferre
 		return false;
 	}
 
-	vShaderByteCode = shaderData;
+	defVShaderByteCode = shaderData;
 
 	shaderData.clear();
 	reader.close();

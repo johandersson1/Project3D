@@ -4,7 +4,7 @@ Texture2D worldPosTex : register(t2);
 
 SamplerState mySampler : register(s0);
 
-struct PixelInputType
+struct PixelInput
 {
     float4 position : SV_POSITION;
     float2 tex : TEXCOORD;
@@ -12,7 +12,7 @@ struct PixelInputType
     //float3 worldPosition : WORLDPOSITION;
 };
 
-struct PixelShaderOutput
+struct PixelOutput
 {
     float4 lightOutput : SV_Target0;
 };
@@ -33,9 +33,9 @@ cbuffer DirectionalLight : register(b0)
     float att2;
 };
 
-PixelShaderOutput main(PixelInputType input) : SV_Target
+PixelOutput main(PixelInput input) : SV_Target
 {
-    PixelShaderOutput output;
+    PixelOutput output;
     
     float4 normal = normalTex.Sample(mySampler, input.tex);
     float4 albedo = albedoTex.Sample(mySampler, input.tex);
