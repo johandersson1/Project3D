@@ -1,21 +1,14 @@
-Texture2D albedoTex : register(t0);
-Texture2D normalTex : register(t1);
-Texture2D worldPosTex : register(t2);
+Texture2D posTexture : register(t0);
+Texture2D albedoTex : register(t1);
+Texture2D normalTex : register(t2);
+Texture2D worldPosTex : register(t3);
 
 SamplerState mySampler : register(s0);
 
-struct PixelInput
-{
-    float4 position : SV_POSITION;
-    float2 tex : TEXCOORD;
-    //float3 normal : NORMAL;
-    //float3 worldPosition : WORLDPOSITION;
-};
-
-struct PixelOutput
-{
-    float4 lightOutput : SV_Target0;
-};
+//struct PixelOutput
+//{
+//    float4 lightOutput : SV_Target0;
+//};
 
 cbuffer DirectionalLight : register(b0)
 {
@@ -33,23 +26,27 @@ cbuffer DirectionalLight : register(b0)
     float att2;
 };
 
-PixelOutput main(PixelInput input) : SV_Target
+struct PixelInput
 {
-    PixelOutput output;
-    
+    float4 position : SV_POSITION;
+    float2 tex : TEXCOORD;
+    //float3 normal : NORMAL;
+    //float3 worldPosition : WORLDPOSITION;
+};
+
+float4 main(PixelInput input) : SV_Target
+{
     int3 sampleIndices = int3(input.position.xy, 0);
     
     float3 diffuseAlbedo = albedoTex.Sample(mySampler, input.tex).rgb;
+    float3 posTex = posTexture.Sample(mySampler, input.tex).rgb;
     float3 worldPos = worldPosTex.Sample(mySampler, input.tex).rgb;
-    float3 normaltex = normalTex.Sample(mySampler, input.tex).rgb;
- 
+    float3 normalTexture = normalTex.Sample(mySampler, input.tex).rgb;
+    float3 normal = normalTexture.xyz;
         
-    //float4 lighting = LightTexture.Load(sampleIndices);
+  
 
-    //float3 diffuse = lighting.xyz * diffuseAlbedo;
-    //float3 specular = lighting.w * gPointLight.SpecularAlbedo;
-
-    return float4(diffuseAlbedo + worldPos + normalTex, 1.0f);
+    return float4(worldPos, 1.0f);
     
     
   
