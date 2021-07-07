@@ -55,7 +55,7 @@ void clearView(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rt
 
 void update(ID3D11DeviceContext* immediateContext , XMMATRIX &worldSpace, XMMATRIX &theRotation, XMMATRIX arbitraryPoint, //Ändrat så at vi gör alla uträkningar i update istället för i olika funktioner
 		XMMATRIX translation, float &Rotation, float RotationAmount, std::chrono::duration<float> TheDeltaTime, 
-		Camera& camera, ID3D11Buffer* constantBuffers, ID3D11Buffer* lightConstantBuffer, Light& lighting, WVP& wvp)
+		Camera& camera, ID3D11Buffer* constantBuffers, ID3D11Buffer* lightConstantBuffer, Light& lighting, WVP& wvp, Model bike)
 {
 	//Rotation += RotationAmount * TheDeltaTime.count();
  //    if (Rotation >= DirectX::XM_PI * 2)
@@ -65,16 +65,16 @@ void update(ID3D11DeviceContext* immediateContext , XMMATRIX &worldSpace, XMMATR
 	//theRotation = arbitraryPoint * DirectX::XMMatrixRotationY(Rotation); //XMMatrixRotationY = Bygger en matris som roterar runt y-axeln.
 	//worldSpace = theRotation * translation; //matris * matristranslation = worldspace
 
-	XMMATRIX scalingMatrix = XMMatrixScaling(1, 1, 1);
-	XMMATRIX rotationMatrix = XMMatrixRotationX(0) * DirectX::XMMatrixRotationY(0) * DirectX::XMMatrixRotationZ(0);
-	XMMATRIX translationMatrix = DirectX::XMMatrixTranslation(0, 0, 0);
-	XMMATRIX worldMatrix = scalingMatrix * rotationMatrix * translationMatrix;
+	//XMMATRIX scalingMatrix = XMMatrixScaling(1, 1, 1);
+	//XMMATRIX rotationMatrix = XMMatrixRotationX(0) * DirectX::XMMatrixRotationY(0) * DirectX::XMMatrixRotationZ(0);
+	//XMMATRIX translationMatrix = DirectX::XMMatrixTranslation(0, 0, 0);
+	//XMMATRIX worldMatrix = scalingMatrix * rotationMatrix * translationMatrix;
+
 	
 	XMMATRIX viewMatrix = XMMatrixLookToLH(DirectX::XMVectorSet(camera.getCameraPos().x, camera.getCameraPos().y, camera.getCameraPos().z, 0), DirectX::XMVectorSet(camera.getCameraDir().x, camera.getCameraDir().y, camera.getCameraDir().z, 0), DirectX::XMVectorSet(0, 1, 0, 0));
-	XMMATRIX worldViewProj = XMMatrixTranspose(worldMatrix * viewMatrix * camera.cameraProjection);
-	//wvp.worldSpace = worldMatrix;
-	XMStoreFloat4x4(&wvp.worldSpace, worldMatrix);
-	//wvp.worldViewProj = worldViewProj;
+	XMMATRIX worldViewProj = XMMatrixTranspose(bike.GetWorldMatrix() * viewMatrix * camera.cameraProjection);
+
+	XMStoreFloat4x4(&wvp.worldSpace, bike.GetWorldMatrix());
 	XMStoreFloat4x4(&wvp.worldViewProj, worldViewProj);
 	immediateContext->VSSetConstantBuffers(0, 1, &constantBuffers);
 
@@ -181,67 +181,11 @@ void RenderLightPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetVi
 	immediateContext->PSSetShaderResources(0, gBuffer.NROFBUFFERS, nullArr);
 }
 
-//void Render(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv,
-//	ID3D11DepthStencilView* dsView, D3D11_VIEWPORT& viewport/*, ID3D11VertexShader* vShader,
-//	ID3D11PixelShader* pShader*/, ID3D11InputLayout* inputLayout, ID3D11Buffer* vertexBuffer,
-//	ID3D11ShaderResourceView* textureSRV, ID3D11SamplerState* sampler, ID3D11Buffer* constantBuffers, 
-//	ID3D11Buffer* lightConstantBuffer,DirectX::XMMATRIX worldSpace, WVP &imageCamera, Light &lighting)
-//{
-//	float clearColour[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
-//
-//	//D3D11_MAPPED_SUBRESOURCE databegin;
-//	//HRESULT hr = immediateContext->Map(constantBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &databegin);
-//	//if (SUCCEEDED(hr))
-//	//{
-//	//	memcpy(databegin.pData, &imageCamera, sizeof(WVP));
-//	//	immediateContext->Unmap(constantBuffer, NULL);
-//	//}
-//	//else
-//	//{
-//	//	OutputDebugString((L"Failed to update ConstantBuffer"));
-//	//}
-//
-//	D3D11_MAPPED_SUBRESOURCE databegin2;
-//	HRESULT hr1 = immediateContext->Map(lightConstantBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &databegin2);
-//	if (SUCCEEDED(hr1))
-//	{
-//		memcpy(databegin2.pData, &lighting, sizeof(Light));
-//		immediateContext->Unmap(lightConstantBuffer, NULL);
-//	}
-//	else
-//	{
-//		OutputDebugString((L"Failed to update lightConstantBuffer "));
-//	}
-//	
-//	//imageCamera.worldSpace = XMMatrixTranspose(worldSpace); 
-//	////Transponering av scale ger samma matris
-//	////Transponering av ren rotation producerar invers som behövs
-//	////Ange kamerans invers på objekt för att “centrera”
-//	//imageCamera.worldViewProj = XMMatrixTranspose(worldSpace * cameraPerspective * cameraProjection); //Skapar en ny matris
-//	
-//	UINT stride = sizeof(Vertex);
-//	UINT offset = 0;
-//	immediateContext->ClearRenderTargetView(rtv, clearColour);
-//	immediateContext->ClearDepthStencilView(dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
-//	immediateContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-//	immediateContext->IASetInputLayout(inputLayout);
-//	immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-//	immediateContext->VSSetShader(vShader, NULL, 0);
-//	immediateContext->RSSetViewports(1, &viewport);
-//	immediateContext->PSSetShader(pShader, NULL, 0);
-//	immediateContext->PSSetShaderResources(0, 1, &textureSRV);
-//	immediateContext->PSSetSamplers(0, 1, &sampler);
-//	immediateContext->OMSetRenderTargets(1, &rtv, dsView);
-//	immediateContext->PSSetConstantBuffers(0, 1, &lightConstantBuffer);
-//	immediateContext->VSSetConstantBuffers(0, 1, &constantBuffers);
-//	immediateContext->Draw(4,0);
-//}
-
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
-	const UINT WIDTH = 1024; //bredd för fönstret 
-	const UINT HEIGHT = 1024;//höjd för fönstret 
+	const UINT WIDTH = 1280; //bredd för fönstret 
+	const UINT HEIGHT = 720;//höjd för fönstret 
 	HWND window; //A handle to a window.
 	RedirectIOToConsole();
 	//std::chrono::steady_clock::time_point theDeltaTime = std::chrono::steady_clock::now();
@@ -251,7 +195,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	WVP wvp;
 
 
-	Camera camera(XMFLOAT3(0,0,-3), XMFLOAT3(0,0,1), 1.0f);
+	Camera camera(XMFLOAT3(0,0,-10), XMFLOAT3(0,0,1), 1.0f);
 
 	XMMATRIX cameraPerspective;
 	XMMATRIX cameraProjection;
@@ -338,8 +282,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		return -3;
 	}
 
-	Model bike(device, "biker");
-
+	Model bike(device, "biker", { 0.0f, -2.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.75f, 0.75f, 0.75f });
+	//bike.Update();
 
 
 
@@ -359,7 +303,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		}
 		else
 		{
-			camera.detectInput(0.003f, 0.005f);
+			camera.detectInput(0.008f, 0.035f);
 			camera.clean();
 
 			/*Render(immediateContext, rtv, dsView, viewport, vShader, pShader, inputLayout, vertexBuffer, 
@@ -370,7 +314,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 						//Kallar på vår renderfunktion
 			update(immediateContext, worldSpace, theRotation, arbitraryPoint, translation, Rotation, theRotationAmount, 
-		    	   TheDeltaTime, camera, constantBuffers, lightConstantBuffer, lighting, wvp);
+		    	   TheDeltaTime, camera, constantBuffers, lightConstantBuffer, lighting, wvp, bike);
 
 			RenderLightPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout, vertexBuffer,
 				textureSRV, sampler, gBuffer, lightPShaderDeferred,

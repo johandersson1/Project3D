@@ -40,5 +40,4 @@ void Model::Update()
 	XMMATRIX scale = XMMatrixScalingFromVector(transform.scale);
 	worldMatrix = scale * rotation * translation;
 
-
 }

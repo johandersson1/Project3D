@@ -25,7 +25,7 @@ Camera::~Camera()
 void Camera::setupCam()
 {
 	this->cameraPerspective = DirectX::XMMatrixLookAtLH(XMVectorSet(this->position.x, this->position.y, this->position.z, 0), XMVectorSet(this->direction.x, this->direction.y, this->direction.z, 0), XMVectorSet(0,1,0,0)); //skapar vänster-orienterat koordinatsystem,
-	this->cameraProjection = DirectX::XMMatrixPerspectiveFovLH(0.45f * 3.14f, (float)640 / 480, 0.1f, 20.0f); //projicering matris baserad på field of view, 
+	this->cameraProjection = DirectX::XMMatrixPerspectiveFovLH(XM_PIDIV4, (float)1280 / 720, 0.1f, 20.0f); //projicering matris baserad på field of view, 
 }
 
 void Camera::detectInput(float movementSpeed, float lookSpeed)

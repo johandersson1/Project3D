@@ -27,7 +27,7 @@ public:
 
 	Model() = default;
 	Model(ID3D11Device* device, std::string name, XMVECTOR position = { 0.0f,0.0f,0.0f }, 
-		  XMVECTOR rotation = { 0.0f,0.0f,0.0f }, XMVECTOR scale = { 0.0f,0.0f,0.0f });
+		  XMVECTOR rotation = { 0.0f,0.0f,0.0f }, XMVECTOR scale = { 1.0f, 1.0f, 1.0f });
 
 	void Update();
 	int GetVertexCount() { return this->mesh.vertexCount; }
