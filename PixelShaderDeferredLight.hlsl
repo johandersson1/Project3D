@@ -5,11 +5,6 @@ Texture2D diffuseAlbedoTex : register(t3);
 
 SamplerState mySampler : register(s0);
 
-//struct PixelOutput
-//{
-//    float4 lightOutput : SV_Target0;
-//};
-
 cbuffer DirectionalLight : register(b0)
 {
     float4 lightAmbient;
@@ -47,5 +42,17 @@ float4 main(PixelInput input) : SV_Target
     return float4(diffuseAlbedo, 1.0f);
     
     
+//// Sample the diffuse map 
+//    float3 diffuseAlbedo = DiffuseMap.Sample(AnisoSampler, input.TexCoord).rgb;
+//// Determine our indices for sampling the texture based on the current 
+//// screen position 
+//    int3 sampleIndices = int3(input.ScreenPos.xy, 0);
+//// Sample the light target 
+//    float4 lighting = LightTexture.Load(samplelndices);
+//// Apply the diffuse and specular albedo to the lighting value 
+//    float3 diffuse = lighting.xyz * diffuseAlbedo;
+//    float3 specular = lighting.w * SpecularAlbedo;
+//// Final output is the sum of diffuse + specular 
+//    return float4(diffuse + specular, 1.0f);
   
 }

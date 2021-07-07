@@ -1,10 +1,13 @@
 #include <DirectXMath.h>
+#include <chrono>
+#include <iostream>
+
+#include "Camera.h"
 #include "WindowHelper.h"
 #include "D3D11Helper.h"
 #include "PipelineHelper.h"
-#include <chrono>
-#include <iostream>
-#include "Camera.h"
+#include "Model.h"
+
 
 //Console Setup
 #include<io.h>
@@ -105,7 +108,7 @@ void update(ID3D11DeviceContext* immediateContext , XMMATRIX &worldSpace, XMMATR
 void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsView, D3D11_VIEWPORT& viewport,
 	ID3D11PixelShader* pShaderDeferredRender, ID3D11VertexShader* vShaderDeferred,
 	ID3D11InputLayout* inputLayout, ID3D11SamplerState* sampler, GeometryBuffer gBuffer,
-	ID3D11ShaderResourceView* textureSRV, ID3D11Buffer* vertexBuffer)
+	ID3D11ShaderResourceView* textureSRV, ID3D11Buffer* vertexBuffer, Model biker)
 {
 	//D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST
 
@@ -116,25 +119,27 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[2], clearcolor);
 	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[3], clearcolor);
 	
-
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
-	immediateContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+	immediateContext->IASetVertexBuffers(0, 1, biker.GetBuffer(), &stride, &offset);
 	//immediateContext->IASetVertexBuffers(1, 2, &groundBuffer, &stride, &offset);
 	immediateContext->IASetInputLayout(inputLayout);
-	immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+	immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	//immediateContext->HSSetShader(hshader, nullptr, 0);
 	//immediateContext->DSSetShader(dshader, nullptr, 0);
 	//immediateContext->RSSetState(rasterizerState);
+
+
 	immediateContext->VSSetShader(vShaderDeferred, nullptr, 0);
 	immediateContext->RSSetViewports(1, &viewport);
 	immediateContext->PSSetShader(pShaderDeferredRender, nullptr, 0);
 	/*immediateContext->PSSetShaderResources(0, 1, gBuffer.gBufferSrv);*/
-	immediateContext->PSSetShaderResources(0, 1, &textureSRV);
+
+	immediateContext->PSSetShaderResources(0, 1, biker.GetTexture());
 	immediateContext->PSSetSamplers(0, 1, &sampler);
 	immediateContext->OMSetRenderTargets(gBuffer.NROFBUFFERS, gBuffer.gBuffergBufferRtv, dsView);
-	immediateContext->Draw(4, 0);
+	immediateContext->Draw(biker.GetVertexCount(), 0);
 
 	//test
 	//Clean up
@@ -151,7 +156,7 @@ void RenderLightPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetVi
 	ID3D11ShaderResourceView* textureSRV, ID3D11SamplerState* sampler, GeometryBuffer gBuffer, ID3D11PixelShader* lightPShaderDeferred, 
 	ID3D11VertexShader* lightVShaderDeferred, ID3D11InputLayout* renderTargetMeshInputLayout, ID3D11Buffer* screenQuadMesh)
 {
-	UINT stride = sizeof(Vertex);
+	UINT stride = sizeof(Vertex2);
 	UINT offset = 0;
 	immediateContext->IASetVertexBuffers(0, 1, &screenQuadMesh, &stride, &offset);
 	immediateContext->IASetInputLayout(renderTargetMeshInputLayout);
@@ -292,6 +297,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	ID3D11PixelShader* pShaderDeferred;
 	ID3D11VertexShader* vShaderDeferred;
 
+	
+
 	gBuffer.screenWidth = WIDTH;
 	gBuffer.screenHeight = HEIGHT;
 	for (int i = 0; i < gBuffer.NROFBUFFERS; i++)
@@ -330,6 +337,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		std::cerr << "Failed to setup pipeline!" << std::endl;
 		return -3;
 	}
+
+	Model bike(device, "biker");
+
+
+
+
 	SetUpLight(device, lightConstantBuffer, lighting); //kallar på SetUpLight
 
 	MSG msg = {};
@@ -353,7 +366,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 					textureSRV, sampler, constantBuffers, lightConstantBuffer, worldSpace, imageCamera, lighting);*/
 
 			RenderGBufferPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout,
-				sampler, gBuffer, textureSRV, vertexBuffer);
+				sampler, gBuffer, textureSRV, vertexBuffer, bike);
 
 						//Kallar på vår renderfunktion
 			update(immediateContext, worldSpace, theRotation, arbitraryPoint, translation, Rotation, theRotationAmount, 

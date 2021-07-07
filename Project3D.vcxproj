@@ -25,6 +25,7 @@
     <ClInclude Include="Lights.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="PipelineHelper.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="WindowHelper.h" />
@@ -83,6 +84,7 @@
     <ClCompile Include="D3D11Helper.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="PipelineHelper.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="WindowHelper.cpp" />

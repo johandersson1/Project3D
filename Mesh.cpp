@@ -1,8 +1,6 @@
 #include "Mesh.h"
 #include <fstream>
 
-using namespace DirectX;
-
 bool Mesh::LoadModel(std::string name)
 {
 	std::vector<std::array<float, 3>> v;
@@ -109,50 +107,6 @@ bool Mesh::LoadModel(std::string name)
 			vertices[j] = Vertex(pos, tex, nor);
 			vertexCount++;
 		}
-
-		XMFLOAT3 v0 = { vertices[0].pos[0], vertices[0].pos[1], vertices[0].pos[2] };
-		XMFLOAT3 v1 = { vertices[1].pos[0], vertices[1].pos[1], vertices[1].pos[2] };
-		XMFLOAT3 v2 = { vertices[2].pos[0], vertices[2].pos[1], vertices[2].pos[2] };
-
-		XMFLOAT2 t0 = { vertices[0].tex[0], vertices[0].tex[1] };
-		XMFLOAT2 t1 = { vertices[1].tex[0], vertices[1].tex[1] };
-		XMFLOAT2 t2 = { vertices[2].tex[0], vertices[2].tex[1] };
-
-		//using namespace DX;
-
-		//POS
-		XMFLOAT3 deltaPos1;
-		XMStoreFloat3(&deltaPos1, XMLoadFloat3(&v1) - XMLoadFloat3(&v0));
-
-		XMFLOAT3 deltaPos2;
-		XMStoreFloat3(&deltaPos2, XMLoadFloat3(&v2) - XMLoadFloat3(&v0));
-
-		//TEX
-		XMFLOAT2 deltaTex1;
-		XMStoreFloat2(&deltaTex1, XMLoadFloat2(&t1) - XMLoadFloat2(&t0));
-
-		XMFLOAT2 deltaTex2;
-		XMStoreFloat2(&deltaTex2, XMLoadFloat2(&t2) - XMLoadFloat2(&t0));
-
-		float r = 1.0f / (deltaTex1.x * deltaTex2.y - deltaTex2.x * deltaTex1.y);
-
-		XMFLOAT3 t;
-		XMStoreFloat3(&t, (XMLoadFloat3(&deltaPos1) * deltaTex2.y - XMLoadFloat3(&deltaPos2) * deltaTex1.y) * r);
-
-		XMFLOAT3 bt;
-		XMStoreFloat3(&bt, (XMLoadFloat3(&deltaPos2) * deltaTex1.x - XMLoadFloat3(&deltaPos1) * deltaTex2.x) * r);
-
-		float tangent[3] = { t.x, t.y, t.z };
-		float bitangent[3] = { bt.x, bt.y, bt.z };
-
-		vertices[0].setTangent(tangent);
-		vertices[0].setBiTangent(bitangent);
-
-		vertices[1].setTangent(tangent);
-		vertices[1].setBiTangent(bitangent);
-
-		vertices[2].setTangent(tangent);
-		vertices[2].setBiTangent(bitangent);
 
 		Face face = Face(vertices[0], vertices[1], vertices[2]);
 		faces.push_back(face);

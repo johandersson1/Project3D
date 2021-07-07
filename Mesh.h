@@ -4,6 +4,8 @@
 #include "Material.h"
 #include <vector>
 
+using namespace DirectX;
+
 struct Mesh
 {
 private:

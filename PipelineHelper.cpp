@@ -185,9 +185,9 @@ bool CreateInputLayout(ID3D11Device* device, ID3D11InputLayout*& inputLayout, co
 bool CreateVertexBuffer(ID3D11Device* device, ID3D11Buffer*& vertexBuffer)
 {
 	//TheQuads vertices  
-	Vertex TheQuad[] =
+	Vertex2 TheQuad[] =
 	{
-	 { {1.0f, 0.5f, 0.0f}, {1.0f, 0.0f}, {0,0,-1 }},
+	 { {0.5f, 0.5f, 0.0f}, {1.0f, 0.0f}, {0,0,-1 }},
 	 
 	 { {0.5f, -0.5f, 0.0f}, {1.0f, 1.0f}, {0,0,-1 }},
 	 
@@ -217,7 +217,7 @@ bool CreateVertexBuffer(ID3D11Device* device, ID3D11Buffer*& vertexBuffer)
 }
 bool CreateRenderTargetMesh(ID3D11Device* device, ID3D11Buffer*& renderTargetMesh)
 {
-	Vertex rtvMeshData[] =
+	Vertex2 rtvMeshData[] =
 	{
 		//Top Right
 	   { {1.0f, 1.0f, 0.0f}, {1.0f, 0.0f}, {0, 0, -1} },
