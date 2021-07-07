@@ -1,7 +1,7 @@
-Texture2D posTexture : register(t0);
-Texture2D albedoTex : register(t1);
-Texture2D normalTex : register(t2);
-Texture2D worldPosTex : register(t3);
+Texture2D worldPosTexture : register(t0);
+Texture2D posTexture : register(t1);
+Texture2D normalTexture : register(t2);
+Texture2D diffuseAlbedoTex : register(t3);
 
 SamplerState mySampler : register(s0);
 
@@ -36,17 +36,15 @@ struct PixelInput
 
 float4 main(PixelInput input) : SV_Target
 {
-    int3 sampleIndices = int3(input.position.xy, 0);
+    //int3 sampleIndices = int3(input.position.xy, 0);
     
-    float3 diffuseAlbedo = albedoTex.Sample(mySampler, input.tex).rgb;
-    float3 posTex = posTexture.Sample(mySampler, input.tex).rgb;
-    float3 worldPos = worldPosTex.Sample(mySampler, input.tex).rgb;
-    float3 normalTexture = normalTex.Sample(mySampler, input.tex).rgb;
-    float3 normal = normalTexture.xyz;
-        
-  
-
-    return float4(worldPos, 1.0f);
+    float3 diffuseAlbedo = diffuseAlbedoTex.Sample(mySampler, input.tex).rgb;
+    float3 pos = posTexture.Sample(mySampler, input.tex).rgb;
+    float3 worldPos = worldPosTexture.Sample(mySampler, input.tex).rgb;
+    float3 normalTex = normalTexture.Sample(mySampler, input.tex);
+    float3 normal = normalTex.xyz;
+    
+    return float4(diffuseAlbedo, 1.0f);
     
     
   

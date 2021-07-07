@@ -52,15 +52,15 @@ struct Vertex
 {
     float pos[3];
     float uv[2];
-    float clr[3];
+    /*float clr[3];*/
     float norm[3];
 
-    Vertex(const std::array<float, 3>& position, const std::array<float, 2>& uvCoords, const std::array<float, 3>& colour, const std::array<float, 3>& normal)
+    Vertex(const std::array<float, 3>& position, const std::array<float, 2>& uvCoords, /*const std::array<float, 3>& colour,*/ const std::array<float, 3>& normal)
     {
         for (int i = 0; i < 3; ++i)
         {
             pos[i] = position[i];
-            clr[i] = colour[i];
+            /*clr[i] = colour[i];*/
         }
 
         uv[0] = uvCoords[0];

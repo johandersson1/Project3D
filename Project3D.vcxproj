@@ -21,8 +21,12 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="D3D11Helper.h" />
+    <ClInclude Include="Geometry.h" />
     <ClInclude Include="Lights.h" />
+    <ClInclude Include="Material.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="PipelineHelper.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="WindowHelper.h" />
   </ItemGroup>
   <ItemGroup>
@@ -78,7 +82,9 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="D3D11Helper.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="PipelineHelper.cpp" />
+    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="WindowHelper.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

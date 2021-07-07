@@ -1,5 +1,4 @@
 Texture2D diffuseTex : register(t0);
-//Texture2D normalTex : register(t1);
 
 SamplerState mySampler : register(s0);
 

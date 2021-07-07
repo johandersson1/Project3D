@@ -1,4 +1,4 @@
-#define STB_IMAGE_IMPLEMENTATION
+//#define STB_IMAGE_IMPLEMENTATION
 #include "Image.h"
 #include <DirectXMath.h>
 #include "PipelineHelper.h"
@@ -187,13 +187,13 @@ bool CreateVertexBuffer(ID3D11Device* device, ID3D11Buffer*& vertexBuffer)
 	//TheQuads vertices  
 	Vertex TheQuad[] =
 	{
-	 { {0.5f, 0.5f, 0.0f}, {1.0f, 0.0f}, {0, 0, 0}, {0,0,-1 }},
+	 { {1.0f, 0.5f, 0.0f}, {1.0f, 0.0f}, {0,0,-1 }},
 	 
-	 { {0.5f, -0.5f, 0.0f}, {1.0f, 1.0f}, {0, 0, 0}, {0,0,-1 }},
+	 { {0.5f, -0.5f, 0.0f}, {1.0f, 1.0f}, {0,0,-1 }},
 	 
-	 { {-0.5f, 0.5f, 0.0f}, {0.0f, 0.0f}, {0, 0, 0}, {0,0,-1 }},
+	 { {-0.5f, 0.5f, 0.0f}, {0.0f, 0.0f}, {0,0,-1 }},
 	
-	 { {-0.5f, -0.5f, 0.0f}, {0.0f, 1.0f}, {0, 0, 0}, {0,0,-1 }}
+	 { {-0.5f, -0.5f, 0.0f}, {0.0f, 1.0f}, {0,0,-1 }}
 	 //(x,y,z), uvs, colour, normals
 	};
 
@@ -220,13 +220,13 @@ bool CreateRenderTargetMesh(ID3D11Device* device, ID3D11Buffer*& renderTargetMes
 	Vertex rtvMeshData[] =
 	{
 		//Top Right
-	   { {1.0f, 1.0f, 0.0f}, {1.0f, 0.0f}, {1, 1, 1}, {0, 0, -1} },
+	   { {1.0f, 1.0f, 0.0f}, {1.0f, 0.0f}, {0, 0, -1} },
 	   //Bottom Right
-	   { {1.0f, -1.0f, 0.0f}, {1.0f, 1.0f}, {0, 1, 0}, {0, 0, -1}  },
+	   { {1.0f, -1.0f, 0.0f}, {1.0f, 1.0f}, {0, 0, -1}  },
 	   //Top Left
-	   { {-1.0f, 1.0f, 0.0f}, {0.0f, 0.0f}, {1, 0, 0}, {0, 0, -1}  },
+	   { {-1.0f, 1.0f, 0.0f}, {0.0f, 0.0f}, {0, 0, -1}  },
 	   //Bottom Left
-	   { {-1.0f, -1.0f, 0.0f}, {0.0f, 1.0f}, {1, 1, 1}, {0, 0, -1}  }
+	   { {-1.0f, -1.0f, 0.0f}, {0.0f, 1.0f}, {0, 0, -1}  }
 	   //(X, Y, Z), UVs, Colour, Normals
 	};
 
