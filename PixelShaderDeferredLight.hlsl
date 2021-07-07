@@ -37,49 +37,20 @@ PixelOutput main(PixelInput input) : SV_Target
 {
     PixelOutput output;
     
-    float4 normal = normalTex.Sample(mySampler, input.tex);
-    float4 albedo = albedoTex.Sample(mySampler, input.tex);
-    float4 worldPos = worldPosTex.Sample(mySampler, input.tex);
-    //float4 shadowPosH = shadowMapTexture.Sample(testSampler, input.uv);
+    int3 sampleIndices = int3(input.position.xy, 0);
     
-    normal = normalize(normal);
-    float4 finalOutput = float4(1, 1, 1, 1);
-    float3 lightVector = normalize(float4(lightPos.xyz, 1) - worldPos);
-    lightVector = normalize(-1 * lightDirection.xyz);
-    float lightDistance = length(lightVector);
-    
-    ////Material properties
-    //float4 ambientMaterial = ambientMatlTexture.Sample(testSampler, input.uv);
-    //float4 diffuseMaterial = diffuseMtlTexture.Sample(testSampler, input.uv);
-    //float4 specularMaterial = specularMtlTexture.Sample(testSampler, input.uv);
-    
-    //float4 ambientComponent = lightAmbient * ambientMaterial;
-    //float diffuseFactor = dot(float4(lightVector, 0), normal);
-    //float4 diffuseComponent = float4(0, 0, 0, 1);
-    
-    //float ShinynessFactor = 64;
-    //float specularFactor = 0;
-    //float att = 0;
-    //float4 specularComponent = float4(0, 0, 0, 1);
-    
-    //if (diffuseFactor > 0)
-    //{
-    //    float3 v = reflect(float4(-lightVector, 0), normal);
-    //    float3 toEye = normalize(float4(camPos.xyz, 1) - worldPos);
-    //    specularFactor = pow(max(dot(toEye, v), 0), ShinynessFactor);
-    //    att = lightStrength / (att0 + att1 * lightDistance + att2 * pow(lightDistance, 2));
-    //    specularComponent = (lightSpecular /** specularMaterial*/) * specularFactor * att;
-    //    diffuseComponent = lightDiffuse /** diffuseMaterial*/ * diffuseFactor * att;
-    //}
-    //ambientComponent *= shadowMapTexture.Sample(testSampler, input.uv).x;
-    //diffuseComponent *= shadowMapTexture.Sample(testSampler, input.uv).x;
-    //specularComponent *= shadowMapTexture.Sample(testSampler, input.uv).x;
-    
-    //Output
-    finalOutput = albedo;
-    output.lightOutput = finalOutput;
-    return output;
+    float3 diffuseAlbedo = albedoTex.Sample(mySampler, input.tex).rgb;
+    float3 worldPos = worldPosTex.Sample(mySampler, input.tex).rgb;
+    float3 normaltex = normalTex.Sample(mySampler, input.tex).rgb;
+ 
+        
+    //float4 lighting = LightTexture.Load(sampleIndices);
+
+    //float3 diffuse = lighting.xyz * diffuseAlbedo;
+    //float3 specular = lighting.w * gPointLight.SpecularAlbedo;
+
+    return float4(diffuseAlbedo + worldPos + normalTex, 1.0f);
     
     
-    
+  
 }
