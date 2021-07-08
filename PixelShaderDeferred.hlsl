@@ -18,7 +18,6 @@ struct PixelOutput
     float4 diffuse : SV_TARGET3;
 };
 
-
 PixelOutput main(PixelInput input)
 {
     PixelOutput output;

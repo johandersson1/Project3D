@@ -140,11 +140,11 @@ public:
 		context->DSSetShader(domainShader, NULL, 0);
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
 
-		XMStoreFloat4x4(&matrices.worldSpace, model->GetWorldMatrix());
-		XMMATRIX viewPerspective = XMMatrixTranspose(ShaderData::viewMatrix*ShaderData::perspectiveMatrix);
+		XMStoreFloat4x4(&matrices.worldSpace, XMMatrixTranspose(model->GetWorldMatrix()));
+		XMMATRIX viewPerspective = XMMatrixTranspose(ShaderData::viewMatrix *ShaderData::perspectiveMatrix);
 		XMStoreFloat4x4(&matrices.viewPerspective, viewPerspective);
 		UpdateBuffer(context, matricesBuffer, matrices);
-		context->VSSetConstantBuffers(0, 1, &matricesBuffer);
+		context->DSSetConstantBuffers(0, 1, &matricesBuffer);
 
 		context->PSSetShaderResources(0, 1, model->GetTexture());
 		context->DSSetShaderResources(0, 1, model->GetDisplacementTexture());

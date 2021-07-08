@@ -220,7 +220,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	models.push_back(bike);
 	Model* sword = new Model(device, "sword", { 1.0f, -3.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.75f, 0.75f, 0.75f });
 	models.push_back(sword);
-	Model* terrain = new Model(device, "terrain", { 0.0f, -3.0f, 0.0f });
+	/*Model* cigg = new Model(device, "Cigg", { 0.0f, -3.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.75f, 0.75f, 0.75f });
+	models.push_back(cigg);*/
+
+	Model* terrain = new Model(device, "terrain", { 0.0f, -4.0f, 0.0f });
 	terrain->SetDisplacementTexture(device, "Models/terrain/displacement.png");
 	ParticleSystem* particlesystem = new ParticleSystem(device, 300, 20, 10, { 20,40,20 }, { 0,20,0 });
 	ParticleRenderer* pRenderer = new ParticleRenderer(device);
