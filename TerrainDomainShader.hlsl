@@ -1,14 +1,28 @@
+Texture2D displacementTexture : register(t0);
+
+SamplerState mySampler : register(s0);
+
 struct DS_OUTPUT
 {
-	float4 vPosition  : SV_POSITION;
-	// TODO: change/add other stuff
+    float4 position : SV_POSITION;
+    float2 tex : TEXCOORD;
+    float3 normal : NORMAL;
+    float3 worldPos : WORLDPOS;
 };
 
 // Output control point
-struct HS_CONTROL_POINT_OUTPUT
+struct DS_INPUT
 {
-	float3 vPosition : WORLDPOS; 
+    float4 position : SV_POSITION;
+    float2 tex : TEXCOORD;
+    float3 normal : NORMAL;
 };
+
+cbuffer matrices : register(b0)
+{
+    float4x4 viewPerspective;
+    float4x4 worldSpace;
+}
 
 // Output patch constant data.
 struct HS_CONSTANT_DATA_OUTPUT
@@ -24,12 +38,24 @@ struct HS_CONSTANT_DATA_OUTPUT
 DS_OUTPUT main(
 	HS_CONSTANT_DATA_OUTPUT input,
 	float3 domain : SV_DomainLocation,
-	const OutputPatch<HS_CONTROL_POINT_OUTPUT, NUM_CONTROL_POINTS> patch)
+	const OutputPatch<DS_INPUT, NUM_CONTROL_POINTS> patch)
 {
-	DS_OUTPUT Output;
-
-	Output.vPosition = float4(
-		patch[0].vPosition*domain.x+patch[1].vPosition*domain.y+patch[2].vPosition*domain.z,1);
-
-	return Output;
+    
+    DS_OUTPUT output;
+	output.position = patch[0].position * domain.x + patch[1].position * domain.y + patch[2].position * domain.z;
+    output.tex = patch[0].tex * domain.x + patch[1].tex * domain.y + patch[2].tex * domain.z;
+    output.normal = patch[0].normal * domain.x + patch[1].normal * domain.y + patch[2].normal * domain.z;
+    
+    output.normal = mul(float4(output.normal, 0), worldSpace);
+    output.normal = normalize(output.normal);
+    output.worldPos = mul(output.position, worldSpace);
+    
+    //Displacement
+    const float disfactor = 1.0f;
+    float h = displacementTexture.SampleLevel(mySampler, output.tex, 0).r;
+    output.worldPos.xyz += h * disfactor * output.normal;
+   
+    output.position = mul(float4(output.worldPos, 1), viewPerspective);
+   
+    return output;
 }
