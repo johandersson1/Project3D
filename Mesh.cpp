@@ -179,20 +179,20 @@ bool Mesh::LoadMaterial(ID3D11Device* device, std::string name)
 			material.diffuseTexture = Texture(device, "Models/" + name + "/" + diffuse);
 		}
 
-		if (text == "bump")
-		{
-			std::string normal;
-			reader >> normal;
+		//if (text == "bump")
+		//{
+		//	std::string normal;
+		//	reader >> normal;
 
-			if (normal == "-bm")
-			{
-				reader >> material.bumpMultiplier;
-				reader >> normal;
+		//	if (normal == "-bm")
+		//	{
+		//		//reader >> material.bumpMultiplier;
+		//		reader >> normal;
 
-			}
+		//	}
 
-			material.normalTexture = Texture(device, "Models/" + name + "/" + normal);
-		}
+			//material.normalTexture = Texture(device, "Models/" + name + "/" + normal);
+		/*}*/
 	}
 
 	return true;

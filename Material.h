@@ -7,7 +7,7 @@ using namespace DirectX;
 struct Material
 {
 private:
-    std::string defaultTexture = "Models/Default/Missing_Texture.jpg";
+    //std::string defaultTexture = "Models/Default/Missing_Texture.jpg";
 public:
     struct Data
     {
@@ -20,11 +20,6 @@ public:
 
     bool hasDiffuseTexture = false;
     Texture diffuseTexture; // = Texture(defaultTexture);
-
-    float bumpMultiplier = 0;
-
-    bool hasNormalTexture = false;
-    Texture normalTexture; // = Texture(defaultTexture);
 
     bool hasDisplacementTexture = false;
     Texture displacementTexture; // = Texture(defaultTexture);

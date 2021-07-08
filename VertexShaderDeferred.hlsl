@@ -28,13 +28,12 @@ PixelInput main(VertexInput input)
     PixelInput output;
     
     output.position = float4(input.position, 1);
-    output.position = mul(output.position, worldSpace);
-    //output.position = mul(output.position, WV);
+    output.worldPos = mul(output.position, worldSpace);
     output.position = mul(output.position, WVP);
     output.tex = input.tex;
     output.normal = mul(float4(input.normal, 0), worldSpace);
     output.normal = normalize(output.normal);
-    output.worldPos = mul(float4(input.position, 1), worldSpace);
+
 
     return output;
 }

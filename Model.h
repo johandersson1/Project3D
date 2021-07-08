@@ -27,13 +27,13 @@ public:
 
 	Model() = default;
 	Model(ID3D11Device* device, std::string name, XMVECTOR position = { 0.0f,0.0f,0.0f }, 
-		  XMVECTOR rotation = { 0.0f,0.0f,0.0f }, XMVECTOR scale = { 0.0f,0.0f,0.0f });
-
+		  XMVECTOR rotation = { 0.0f,0.0f,0.0f }, XMVECTOR scale = { 1.0f, 1.0f, 1.0f });
+	~Model();
 	void Update();
 	int GetVertexCount() { return this->mesh.vertexCount; }
 	XMMATRIX GetWorldMatrix() { return this->worldMatrix; }
 	ID3D11Buffer** GetBuffer() { return &this->vertexBuffer; }
-	Material::Data GetMaterial() {return this->mesh.material.data;}
+	const Material::Data& GetMaterial() {return this->mesh.material.data;}
 	ID3D11ShaderResourceView** GetTexture() { return this->mesh.material.diffuseTexture.Get(); }
 	void SetTranslation(XMVECTOR translation) {this->transform.translation = translation; }
 	void SetRotation(XMVECTOR rotation) { this->transform.rotation = rotation; }
