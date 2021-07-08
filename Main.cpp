@@ -5,8 +5,8 @@
 #include "WindowHelper.h"
 #include "D3D11Helper.h"
 #include "PipelineHelper.h"
-#include "Model.h"
-#include "PartcileSystemRenderer.h"
+#include "ParticleSystemRenderer.h"
+#include "ModelRenderer.h"
 
 //Console Setup
 #include<io.h>
@@ -81,22 +81,25 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	ID3D11PixelShader* pShaderDeferredRender, ID3D11VertexShader* vShaderDeferred,
 	ID3D11InputLayout* inputLayout, ID3D11SamplerState* sampler, GeometryBuffer gBuffer,
 	ID3D11ShaderResourceView* textureSRV, ID3D11Buffer* vertexBuffer, Model* biker, 
-	ParticleSystem* particlesystem, ParticleRenderer* pRenderer)
+	ParticleSystem* particlesystem, ParticleRenderer* pRenderer, ModelRenderer* mRender, Model* sword)
 {
 	clearView(immediateContext, rtv, dsView, gBuffer);
 
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
-	immediateContext->IASetVertexBuffers(0, 1, biker->GetBuffer(), &stride, &offset);
+	/*immediateContext->IASetVertexBuffers(0, 1, biker->GetBuffer(), &stride, &offset);
 	immediateContext->IASetInputLayout(inputLayout);
 	immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	immediateContext->VSSetShader(vShaderDeferred, nullptr, 0);
+	immediateContext->VSSetShader(vShaderDeferred, nullptr, 0);*/
+
 	immediateContext->RSSetViewports(1, &viewport);
-	immediateContext->PSSetShader(pShaderDeferredRender, nullptr, 0);
-	immediateContext->PSSetShaderResources(0, 1, biker->GetTexture());
 	immediateContext->PSSetSamplers(0, 1, &sampler);
 	immediateContext->OMSetRenderTargets(gBuffer.NROFBUFFERS, gBuffer.gBuffergBufferRtv, dsView);
-	immediateContext->Draw(biker->GetVertexCount(), 0);
+	/*immediateContext->PSSetShader(pShaderDeferredRender, nullptr, 0);
+	immediateContext->PSSetShaderResources(0, 1, biker->GetTexture());*/
+	mRender->Render(immediateContext, biker);
+	mRender->Render(immediateContext, sword);
+	/*immediateContext->Draw(biker->GetVertexCount(), 0);*/
 
 	pRenderer->Render(immediateContext, particlesystem);
 
@@ -210,9 +213,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	}
 
 	Model* bike = new Model(device, "biker", { 0.0f, -3.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.75f, 0.75f, 0.75f });
+	Model* sword = new Model(device, "sword", { 1.0f, -3.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.75f, 0.75f, 0.75f });
 	ParticleSystem* particlesystem = new ParticleSystem(device, 300, 20, 10, { 20,40,20 }, { 0,20,0 });
 	ParticleRenderer* pRenderer = new ParticleRenderer(device);
-
+	ModelRenderer* mRenderer = new ModelRenderer(device);
 	ShaderData::Initialize(device);
 
 	MSG msg = {};
@@ -228,10 +232,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		}
 		
 		RenderGBufferPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout,
-			sampler, gBuffer, textureSRV, vertexBuffer, bike, particlesystem, pRenderer);
+			sampler, gBuffer, textureSRV, vertexBuffer, bike, particlesystem, pRenderer, mRenderer, sword);
 
 					//Kallar på vår renderfunktion
-		update(immediateContext, dt, camera, constantBuffers,	lighting, wvp, bike, particlesystem);
+		update(immediateContext, dt, camera, constantBuffers,lighting, wvp, bike, particlesystem);
 
 		ShaderData::Update(camera);
 

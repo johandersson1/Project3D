@@ -63,14 +63,17 @@
     <ClInclude Include="ShaderData.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="PartcileSystemRenderer.h">
-      <Filter>Header Files\Particles</Filter>
-    </ClInclude>
     <ClInclude Include="D3D11Help.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
     <ClInclude Include="Timer.h">
       <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleSystemRenderer.h">
+      <Filter>Header Files\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelRenderer.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

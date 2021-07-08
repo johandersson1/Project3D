@@ -27,7 +27,8 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
-    <ClInclude Include="PartcileSystemRenderer.h" />
+    <ClInclude Include="ModelRenderer.h" />
+    <ClInclude Include="ParticleSystemRenderer.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PipelineHelper.h" />
     <ClInclude Include="Random.h" />

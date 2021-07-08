@@ -10,6 +10,7 @@ using namespace DirectX;
 class ShaderData
 {
 	friend class ParticleRenderer;
+	friend class ModelRenderer;
 private:
 	static std::string positionOnly_vs_path;
 	static ID3D11VertexShader* positionOnly_vs;
