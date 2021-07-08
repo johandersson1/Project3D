@@ -4,7 +4,18 @@ struct GSOutput
 	
 };
 
-float4 main(GSOutput input) : SV_TARGET
+struct PixelOutput
 {
-	return float4(0.0f, 0.5f, 0.0f, 1.0f);
+    float4 position : SV_TARGET0;
+    float4 diffuse : SV_TARGET3;
+};
+
+PixelOutput main(GSOutput input) 
+{
+    PixelOutput output;
+    
+    output.position = input.pos;
+    output.diffuse = float4(0.0f, 0.0f, 1.0f, 1);
+    
+	return output;
 }

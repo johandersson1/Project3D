@@ -61,7 +61,7 @@
 
 void ShaderData::Update(Camera camera)
 {
-	cameraPosition = camera.getCameraPos();
-	viewMatrix = camera.viewMatrix;
-	perspectiveMatrix = camera.cameraPerspective;
+	cameraPosition = camera.GetPosition();
+	viewMatrix = camera.GetViewMatrix();
+	perspectiveMatrix = camera.GetPerspectiveMatrix();
 }

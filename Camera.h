@@ -4,42 +4,52 @@
 #include <Windows.h>
 #include <iostream>
 #include "stb_image.h"
-
+#include <algorithm>
 using namespace DirectX;
+
+
 
 class Camera
 {
 private:
+	XMMATRIX perspectiveMatrix;
+	XMMATRIX viewMatrix;
+	XMVECTOR forward;
+	XMVECTOR right;
+	XMVECTOR up;
 	XMFLOAT3 position;
-	XMFLOAT3 direction;
-	XMFLOAT3 lookAt;
-	XMFLOAT3 upVector;
-	XMFLOAT3 previousFrameCamPos;
-	float xRotdir;
-	float yRotdir;
-	float zRotdir;
-	XMMATRIX camRotationMatrix;
-	XMVECTOR lookAtVector;
-	XMVECTOR defaultForward;
-	XMVECTOR defaultRight;
-	XMVECTOR camRight;
-	XMVECTOR camForward; 
-	float moveBackForward;
-	float moveLeftRight;
+
+	float pitch;
+	float yaw;
+	float rotationSpeed;
 	float speed;
-	float camPitch;
-	float camYaw;
+	float viewDistance;
+
+	float FOV;
+	float aspectRatio;
+	float nearZ;
+	float farZ;
+
+	float pickingDistance;
+	XMVECTOR direction;
+
+
 public:
 	Camera();
-	Camera(XMFLOAT3 position, XMFLOAT3 direction, float speed);
-	~Camera();
-	void setupCam();
-	void detectInput(float movementSpeed, float lookSpeed); 
-	void moveCamera(DirectX::XMFLOAT3 translationPos, float scalar);
-	void rotateCamera(float xRot, float yRot, float zRot, float scalar);
-	void clean();
-	XMMATRIX viewMatrix;
-	XMMATRIX cameraPerspective;
-	XMFLOAT3 getCameraPos() {return this->position; };
-	XMFLOAT3 getCameraDir() {return this->direction; };
+	Camera(float FOV, float aspectRatio, float nearZ, float farZ, float rotationSpeed, float speed, XMFLOAT3 position);
+
+	float GetNearZ() const { return this->nearZ; };
+	float GetFarZ() const { return this->farZ; };
+	float GetRatio() const { return this->aspectRatio; };
+	float GetFov() const { return this->FOV; };
+	XMVECTOR GetUpVector() const { return this->up; };
+	XMFLOAT3 GetPosition() const { return this->position; }
+	XMMATRIX GetViewMatrix() const { return this->viewMatrix; };
+	XMMATRIX GetPerspectiveMatrix() const { return this->perspectiveMatrix; };
+
+	void MoveRight(float dt);
+	void MoveForward(float dt);
+	void Rotate(float dx, float dy);
+
+	void Update(float dt);
 };

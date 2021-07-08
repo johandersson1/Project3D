@@ -33,6 +33,11 @@ Model::Model(ID3D11Device* device, std::string name, XMVECTOR position, XMVECTOR
 	}
 }
 
+Model::~Model()
+{
+	vertexBuffer->Release();
+}
+
 void Model::Update()
 {
 	XMMATRIX translation = XMMatrixTranslationFromVector(transform.translation);

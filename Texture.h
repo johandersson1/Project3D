@@ -12,4 +12,5 @@ public:
 
     Texture() = default;
     Texture(ID3D11Device* device, std::string path);
+ /*   ~Texture() { if(texture)texture->Release(); }*/
 };
