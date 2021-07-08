@@ -22,6 +22,12 @@
     <Filter Include="Header Files\Utility">
       <UniqueIdentifier>{3c874359-014c-4c53-b950-f3aca69f1138}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Terrain">
+      <UniqueIdentifier>{815fe0c3-a0e6-48b6-a2d0-c389cf7e47af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Deferred">
+      <UniqueIdentifier>{dc09260f-4cd9-4aa6-8a03-007b3f8d580f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="D3D11Helper.h">
@@ -75,20 +81,11 @@
     <ClInclude Include="ModelRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TerrainRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="PixelShaderDeferredLight.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="VertexShaderDeferredLight.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="VertexShaderDeferred.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="PixelShaderDeferred.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
     <FxCompile Include="ParticleVertexShader.hlsl">
       <Filter>Resource Files\Particles</Filter>
     </FxCompile>
@@ -97,6 +94,27 @@
     </FxCompile>
     <FxCompile Include="ParticleGeometryShader.hlsl">
       <Filter>Resource Files\Particles</Filter>
+    </FxCompile>
+    <FxCompile Include="TerrainDomainShader.hlsl">
+      <Filter>Resource Files\Terrain</Filter>
+    </FxCompile>
+    <FxCompile Include="TerrainHullShader.hlsl">
+      <Filter>Resource Files\Terrain</Filter>
+    </FxCompile>
+    <FxCompile Include="TerrainVertexShader.hlsl">
+      <Filter>Resource Files\Terrain</Filter>
+    </FxCompile>
+    <FxCompile Include="PixelShaderDeferred.hlsl">
+      <Filter>Resource Files\Deferred</Filter>
+    </FxCompile>
+    <FxCompile Include="PixelShaderDeferredLight.hlsl">
+      <Filter>Resource Files\Deferred</Filter>
+    </FxCompile>
+    <FxCompile Include="VertexShaderDeferred.hlsl">
+      <Filter>Resource Files\Deferred</Filter>
+    </FxCompile>
+    <FxCompile Include="VertexShaderDeferredLight.hlsl">
+      <Filter>Resource Files\Deferred</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

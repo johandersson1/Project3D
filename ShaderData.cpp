@@ -9,7 +9,7 @@
 	XMMATRIX ShaderData::perspectiveMatrix;
 	
 	ID3D11InputLayout* ShaderData::positionOnly_layout;
-
+	ID3D11InputLayout* ShaderData::model_layout;
 
 	void ShaderData::Shutdown()
 	{
@@ -17,7 +17,7 @@
 		positionOnly_layout->Release();
 	}
 
-	void ShaderData::Initialize(ID3D11Device* device)
+	void ShaderData::Initialize(ID3D11Device* device, std::string modelVSByteCode)
 {
 	std::string byteCode;
 	std::string shaderData;
@@ -56,6 +56,23 @@
 	if (FAILED(hr))
 	{
 		std::cout << "FAILED TO CREATE POSITION INPUT LAYOUT" << std::endl;
+	}
+
+	//array av element med en beskrivning
+	D3D11_INPUT_ELEMENT_DESC inputDesc[] =
+	{
+		//name, index, format, slot, byteOffset, inputSlotClass, stepRate
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}, //Input data is per-vertex data.
+		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
+	};
+	//Viktigt!! Allt behöver vara i rätt ordning för om det laddas in i fel ordning så funkar det ej
+	hr = device->CreateInputLayout(inputDesc, ARRAYSIZE(inputDesc), modelVSByteCode.c_str(), modelVSByteCode.length(), &model_layout);
+
+	if FAILED(hr)
+	{
+		std::cerr << "ERROR INPUTLAYOUT" << std::endl;
+		return;
 	}
 }
 

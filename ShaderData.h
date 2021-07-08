@@ -11,6 +11,7 @@ class ShaderData
 {
 	friend class ParticleRenderer;
 	friend class ModelRenderer;
+	friend class TerrainRenderer;
 private:
 	static std::string positionOnly_vs_path;
 	static ID3D11VertexShader* positionOnly_vs;
@@ -18,12 +19,13 @@ private:
 	static XMFLOAT3 cameraPosition;
 	static XMMATRIX viewMatrix;
 	static XMMATRIX perspectiveMatrix;
-
+	
 	static ID3D11InputLayout* positionOnly_layout;
 
+	static ID3D11InputLayout* model_layout;
 
 public:
 	static void Shutdown();
-	static void Initialize(ID3D11Device* device);
+	static void Initialize(ID3D11Device* device, std::string modelVSByteCode );
 	static void Update( Camera camera);
 };

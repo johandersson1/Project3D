@@ -2,6 +2,11 @@ Texture2D displacementTexture : register(t0);
 
 SamplerState mySampler : register(s0);
 
+cbuffer matrices : register(b0)
+{
+    float4x4 viewPerspective;
+    float4x4 worldSpace;
+}
 struct DS_OUTPUT
 {
     float4 position : SV_POSITION;
@@ -17,12 +22,6 @@ struct DS_INPUT
     float2 tex : TEXCOORD;
     float3 normal : NORMAL;
 };
-
-cbuffer matrices : register(b0)
-{
-    float4x4 viewPerspective;
-    float4x4 worldSpace;
-}
 
 // Output patch constant data.
 struct HS_CONSTANT_DATA_OUTPUT

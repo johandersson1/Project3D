@@ -1,14 +1,17 @@
 // Input control point
-struct VS_CONTROL_POINT_OUTPUT
+struct HS_INPUT
 {
-	float3 vPosition : WORLDPOS;
-	// TODO: change/add other stuff
+    float4 position : SV_POSITION;
+    float2 tex : TEXCOORD;
+    float3 normal : NORMAL;
 };
 
 // Output control point
-struct HS_CONTROL_POINT_OUTPUT
+struct HS_OUTPUT
 {
-	float3 vPosition : WORLDPOS; 
+    float4 position : SV_POSITION;
+    float2 tex : TEXCOORD;
+    float3 normal : NORMAL;
 };
 
 // Output patch constant data.
@@ -23,7 +26,7 @@ struct HS_CONSTANT_DATA_OUTPUT
 
 // Patch Constant Function
 HS_CONSTANT_DATA_OUTPUT CalcHSPatchConstants(
-	InputPatch<VS_CONTROL_POINT_OUTPUT, NUM_CONTROL_POINTS> ip,
+	InputPatch<HS_INPUT, NUM_CONTROL_POINTS> ip,
 	uint PatchID : SV_PrimitiveID)
 {
 	HS_CONSTANT_DATA_OUTPUT Output;
@@ -32,7 +35,7 @@ HS_CONSTANT_DATA_OUTPUT CalcHSPatchConstants(
 	Output.EdgeTessFactor[0] = 
 		Output.EdgeTessFactor[1] = 
 		Output.EdgeTessFactor[2] = 
-		Output.InsideTessFactor = 15; // e.g. could calculate dynamic tessellation factors instead
+		Output.InsideTessFactor = 5; // e.g. could calculate dynamic tessellation factors instead
 
 	return Output;
 }
@@ -42,15 +45,16 @@ HS_CONSTANT_DATA_OUTPUT CalcHSPatchConstants(
 [outputtopology("triangle_cw")]
 [outputcontrolpoints(3)]
 [patchconstantfunc("CalcHSPatchConstants")]
-HS_CONTROL_POINT_OUTPUT main( 
-	InputPatch<VS_CONTROL_POINT_OUTPUT, NUM_CONTROL_POINTS> ip, 
+HS_OUTPUT main( 
+	InputPatch<HS_INPUT, NUM_CONTROL_POINTS> ip,
 	uint i : SV_OutputControlPointID,
 	uint PatchID : SV_PrimitiveID )
 {
-	HS_CONTROL_POINT_OUTPUT Output;
-
-	// Insert code to compute Output here
-	Output.vPosition = ip[i].vPosition;
-
-	return Output;
+    HS_OUTPUT output;
+	
+    output.position = ip[i].position;
+    output.tex = ip[i].tex;
+    output.normal = ip[i].normal;
+    
+	return output;
 }

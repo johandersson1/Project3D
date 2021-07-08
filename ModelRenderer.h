@@ -10,18 +10,18 @@ class ModelRenderer
 private:
 	const unsigned int stride = sizeof(Vertex);
 	const unsigned int offset = 0;
+	std::string byteCode;
 	//Deferred
 	const std::string ps_path = "x64/Debug/PixelShaderDeferred.cso";
 	ID3D11PixelShader* pixelShader;
 	const std::string vs_path = "x64/Debug/VertexShaderDeferred.cso";
 	ID3D11VertexShader* vertexShader;
 
-	ID3D11InputLayout* inputLayout;
 	ID3D11Buffer* matricesBuffer;
 	struct Matrices { XMFLOAT4X4 WVP; XMFLOAT4X4 worldSpace; }matrices;
 public: 
 	
-	ModelRenderer(ID3D11Device* device):matrices(), pixelShader(nullptr), vertexShader(nullptr), inputLayout(nullptr)
+	ModelRenderer(ID3D11Device* device):matrices(), pixelShader(nullptr), vertexShader(nullptr)
 	{
 		CreateBuffer(device, matricesBuffer, sizeof(Matrices));	
 
@@ -72,33 +72,16 @@ public:
 			return;
 		}
 
-		shaderByteCode = shaderData;
+		byteCode = shaderData;
 
 		shaderData.clear();
 		reader.close();
-
-		//array av element med en beskrivning
-		D3D11_INPUT_ELEMENT_DESC inputDesc[] =
-		{
-			//name, index, format, slot, byteOffset, inputSlotClass, stepRate
-			{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}, //Input data is per-vertex data.
-			{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
-		};
-		//Viktigt!! Allt behöver vara i rätt ordning för om det laddas in i fel ordning så funkar det ej
-		hr = device->CreateInputLayout(inputDesc, ARRAYSIZE(inputDesc), shaderByteCode.c_str(), shaderByteCode.length(), &inputLayout);
-
-		if FAILED(hr)
-		{
-			std::cerr << "ERROR INPUTLAYOUT" << std::endl;
-			return;
-		}
 	
 	}
 
 	void Render(ID3D11DeviceContext* context, Model* model)
 	{
-		context->IASetInputLayout(inputLayout);
+		context->IASetInputLayout(ShaderData::model_layout);
 		context->VSSetShader(vertexShader, NULL, 0);
 		context->PSSetShader(pixelShader, NULL, 0);
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -115,4 +98,5 @@ public:
 		context->Draw(model->GetVertexCount(), 0);
 		
 	}
+	std::string GetByteCode() const { return this->byteCode; }
 };
