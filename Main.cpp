@@ -80,8 +80,8 @@ void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera,
 void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsView, D3D11_VIEWPORT& viewport,
 	ID3D11PixelShader* pShaderDeferredRender, ID3D11VertexShader* vShaderDeferred,
 	ID3D11InputLayout* inputLayout, ID3D11SamplerState* sampler, GeometryBuffer gBuffer,
-	ID3D11ShaderResourceView* textureSRV, ID3D11Buffer* vertexBuffer, Model* biker, 
-	ParticleSystem* particlesystem, ParticleRenderer* pRenderer, ModelRenderer* mRender, Model* sword)
+	ID3D11ShaderResourceView* textureSRV, ID3D11Buffer* vertexBuffer,ParticleSystem* particlesystem, 
+	ParticleRenderer* pRenderer, ModelRenderer* mRenderer, const std::vector <Model*>&models)
 {
 	clearView(immediateContext, rtv, dsView, gBuffer);
 
@@ -97,8 +97,10 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	immediateContext->OMSetRenderTargets(gBuffer.NROFBUFFERS, gBuffer.gBuffergBufferRtv, dsView);
 	/*immediateContext->PSSetShader(pShaderDeferredRender, nullptr, 0);
 	immediateContext->PSSetShaderResources(0, 1, biker->GetTexture());*/
-	mRender->Render(immediateContext, biker);
-	mRender->Render(immediateContext, sword);
+	for (auto model : models)
+		mRenderer->Render(immediateContext, model);
+	/*mRender->Render(immediateContext, biker);
+	mRender->Render(immediateContext, sword);*/
 	/*immediateContext->Draw(biker->GetVertexCount(), 0);*/
 
 	pRenderer->Render(immediateContext, particlesystem);
@@ -211,9 +213,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		std::cerr << "Failed to setup pipeline!" << std::endl;
 		return -3;
 	}
-
+	std::vector <Model*>models;
 	Model* bike = new Model(device, "biker", { 0.0f, -3.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.75f, 0.75f, 0.75f });
+	models.push_back(bike);
 	Model* sword = new Model(device, "sword", { 1.0f, -3.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.75f, 0.75f, 0.75f });
+	models.push_back(sword);
 	ParticleSystem* particlesystem = new ParticleSystem(device, 300, 20, 10, { 20,40,20 }, { 0,20,0 });
 	ParticleRenderer* pRenderer = new ParticleRenderer(device);
 	ModelRenderer* mRenderer = new ModelRenderer(device);
@@ -232,7 +236,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		}
 		
 		RenderGBufferPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout,
-			sampler, gBuffer, textureSRV, vertexBuffer, bike, particlesystem, pRenderer, mRenderer, sword);
+			sampler, gBuffer, textureSRV, vertexBuffer, particlesystem, pRenderer, mRenderer,models);
 
 					//Kallar på vår renderfunktion
 		update(immediateContext, dt, camera, constantBuffers,lighting, wvp, bike, particlesystem);
