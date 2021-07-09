@@ -46,7 +46,7 @@ void RedirectIOToConsole()
 
 void clearView(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsView, const GeometryBuffer& gBuffer)
 {
-	float clearcolor[4] = { 0.0f,0.0f,0.0f,0 };
+	float clearcolor[4] = { 0.2f,0.2f,0.2f,0 };
 	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[0], clearcolor);
 	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[1], clearcolor);
 	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[2], clearcolor);
@@ -216,15 +216,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		return -3;
 	}
 	std::vector <Model*>models;
-	Model* bike = new Model(device, "biker", { 5.0f, -3.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.75f, 0.75f, 0.75f });
+	Model* bike = new Model(device, "biker", { 10.0f, -3.3f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.5f, 0.5f, 0.5f });
 	models.push_back(bike);
-	Model* sword = new Model(device, "sword", { 10.0f, -3.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.4f, 0.4f, 0.4f });
+	Model* sword = new Model(device, "sword", { 15.0f, -4.2f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.4f, 0.4f, 0.4f });
 	models.push_back(sword);
-	Model* cigg = new Model(device, "cigg", { 0.0f, -3.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.05f, 0.05f, 0.05f });
+	Model* cigg = new Model(device, "cigg", { 11.0f, -4.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.05f, 0.05f, 0.05f });
 	models.push_back(cigg);
 	Model* cube = new Model(device, "cube", { -10.0f, -3.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.5f, 0.5f, 0.5f });
 	models.push_back(cube);
-	Model* buildings = new Model(device, "buildings", { 0.0f, -3.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 2.0f, 2.0f, 2.0f });
+	Model* buildings = new Model(device, "buildings", { 0.0f, -4.7f, 0.0f }, { 0.0f,0.0f,0.0f }, { 1.7f, 1.7f, 1.7f });
 	models.push_back(buildings);
 
 	Model* terrain = new Model(device, "terrain", { 0.0f, -4.0f, 0.0f }, { 0.0f, XM_PIDIV4, 0.0f }, { 2.0f, 2.0f, 2.0f });
