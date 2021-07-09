@@ -46,7 +46,7 @@ void RedirectIOToConsole()
 
 void clearView(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsView, const GeometryBuffer& gBuffer)
 {
-	float clearcolor[4] = { 0.75f,0.75f,0.3f,0 };
+	float clearcolor[4] = { 0.0f,0.0f,0.0f,0 };
 	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[0], clearcolor);
 	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[1], clearcolor);
 	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[2], clearcolor);
