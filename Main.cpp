@@ -8,6 +8,7 @@
 #include "ParticleSystemRenderer.h"
 #include "ModelRenderer.h"
 #include "TerrainRenderer.h"
+#include "ShadowMap.h""
 
 //Console Setup
 #include<io.h>
@@ -143,6 +144,7 @@ void RenderLightPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetVi
 	}
 	immediateContext->PSSetShaderResources(0, gBuffer.NROFBUFFERS, nullArr);
 }
+
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPWSTR lpCmdLine, _In_ int nCmdShow)

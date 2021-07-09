@@ -28,6 +28,12 @@
     <Filter Include="Resource Files\Deferred">
       <UniqueIdentifier>{dc09260f-4cd9-4aa6-8a03-007b3f8d580f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Shadow">
+      <UniqueIdentifier>{2f720094-8c89-4960-9132-a160658d55e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Renderers">
+      <UniqueIdentifier>{b6d73409-28a9-415f-adb1-19441fa755b0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="D3D11Helper.h">
@@ -83,6 +89,12 @@
     </ClInclude>
     <ClInclude Include="TerrainRenderer.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowMap.h">
+      <Filter>Header Files\Shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowRenderer.h">
+      <Filter>Header Files\Renderers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

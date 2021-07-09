@@ -33,6 +33,8 @@
     <ClInclude Include="PipelineHelper.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="ShaderData.h" />
+    <ClInclude Include="ShadowMap.h" />
+    <ClInclude Include="ShadowRenderer.h" />
     <ClInclude Include="TerrainRenderer.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Timer.h" />
