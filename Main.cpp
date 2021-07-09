@@ -5,8 +5,9 @@
 #include "WindowHelper.h"
 #include "D3D11Helper.h"
 #include "PipelineHelper.h"
-#include "Model.h"
-#include "PartcileSystemRenderer.h"
+#include "ParticleSystemRenderer.h"
+#include "ModelRenderer.h"
+#include "TerrainRenderer.h"
 
 //Console Setup
 #include<io.h>
@@ -45,7 +46,7 @@ void RedirectIOToConsole()
 
 void clearView(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsView, const GeometryBuffer& gBuffer)
 {
-	float clearcolor[4] = { 0.75f,0.75f,0.3f,0 };
+	float clearcolor[4] = { 0.2f,0.2f,0.2f,0 };
 	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[0], clearcolor);
 	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[1], clearcolor);
 	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[2], clearcolor);
@@ -80,24 +81,30 @@ void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera,
 void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsView, D3D11_VIEWPORT& viewport,
 	ID3D11PixelShader* pShaderDeferredRender, ID3D11VertexShader* vShaderDeferred,
 	ID3D11InputLayout* inputLayout, ID3D11SamplerState* sampler, GeometryBuffer gBuffer,
-	ID3D11ShaderResourceView* textureSRV, ID3D11Buffer* vertexBuffer, Model* biker, 
-	ParticleSystem* particlesystem, ParticleRenderer* pRenderer)
+	ID3D11ShaderResourceView* textureSRV, ID3D11Buffer* vertexBuffer,ParticleSystem* particlesystem, 
+	ParticleRenderer* pRenderer, ModelRenderer* mRenderer, const std::vector <Model*>&models, TerrainRenderer* tRenderer, Model* terrain)
 {
 	clearView(immediateContext, rtv, dsView, gBuffer);
 
-	UINT stride = sizeof(Vertex);
-	UINT offset = 0;
-	immediateContext->IASetVertexBuffers(0, 1, biker->GetBuffer(), &stride, &offset);
+	//UINT stride = sizeof(Vertex);
+	//UINT offset = 0;
+	/*immediateContext->IASetVertexBuffers(0, 1, biker->GetBuffer(), &stride, &offset);
 	immediateContext->IASetInputLayout(inputLayout);
 	immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	immediateContext->VSSetShader(vShaderDeferred, nullptr, 0);
-	immediateContext->RSSetViewports(1, &viewport);
-	immediateContext->PSSetShader(pShaderDeferredRender, nullptr, 0);
-	immediateContext->PSSetShaderResources(0, 1, biker->GetTexture());
-	immediateContext->PSSetSamplers(0, 1, &sampler);
-	immediateContext->OMSetRenderTargets(gBuffer.NROFBUFFERS, gBuffer.gBuffergBufferRtv, dsView);
-	immediateContext->Draw(biker->GetVertexCount(), 0);
+	immediateContext->VSSetShader(vShaderDeferred, nullptr, 0);*/
 
+	immediateContext->RSSetViewports(1, &viewport);
+	immediateContext->PSSetSamplers(0, 1, &sampler);
+	immediateContext->DSSetSamplers(0, 1, &sampler);
+	immediateContext->OMSetRenderTargets(gBuffer.NROFBUFFERS, gBuffer.gBuffergBufferRtv, dsView);
+	/*immediateContext->PSSetShader(pShaderDeferredRender, nullptr, 0);
+	immediateContext->PSSetShaderResources(0, 1, biker->GetTexture());*/
+	for (auto model : models)
+		mRenderer->Render(immediateContext, model);
+	/*mRender->Render(immediateContext, biker);
+	mRender->Render(immediateContext, sword);*/
+	/*immediateContext->Draw(biker->GetVertexCount(), 0);*/
+	tRenderer->Render(immediateContext, terrain);
 	pRenderer->Render(immediateContext, particlesystem);
 
 	//Clean up
@@ -148,7 +155,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	Light lighting;
 	WVP wvp;
 
-	Camera camera(XM_PIDIV4, (float)WIDTH / (float)HEIGHT, 0.1, 100, 2.5, 2.5f, { 0.0f,0.0f,-5.0f });
+	Camera camera(XM_PIDIV4, (float)WIDTH / (float)HEIGHT, 0.1, 100, 2.5, 5.0f, { 12.0f,0.0f,10.0f });
 	Timer timer;
 	float dt = 0.0f;
 
@@ -208,12 +215,25 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		std::cerr << "Failed to setup pipeline!" << std::endl;
 		return -3;
 	}
+	std::vector <Model*>models;
+	Model* bike = new Model(device, "biker", { 10.0f, -3.3f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.5f, 0.5f, 0.5f });
+	models.push_back(bike);
+	Model* sword = new Model(device, "sword", { 15.0f, -4.2f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.4f, 0.4f, 0.4f });
+	models.push_back(sword);
+	Model* cigg = new Model(device, "cigg", { 11.0f, -3.1f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.05f, 0.05f, 0.05f });
+	models.push_back(cigg);
+	Model* cube = new Model(device, "cube", { -10.0f, -3.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.5f, 0.5f, 0.5f });
+	models.push_back(cube);
+	Model* buildings = new Model(device, "buildings", { 0.0f, -4.7f, 0.0f }, { 0.0f,0.0f,0.0f }, { 1.7f, 1.7f, 1.7f });
+	models.push_back(buildings);
 
-	Model* bike = new Model(device, "biker", { 0.0f, -3.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.75f, 0.75f, 0.75f });
-	ParticleSystem* particlesystem = new ParticleSystem(device, 300, 20, 10, { 20,40,20 }, { 0,20,0 });
+	Model* terrain = new Model(device, "terrain", { 0.0f, -4.0f, 0.0f }, { 0.0f, XM_PIDIV4, 0.0f }, { 2.0f, 2.0f, 2.0f });
+	terrain->SetDisplacementTexture(device, "Models/terrain/displacement.png");
+	ParticleSystem* particlesystem = new ParticleSystem(device, 300, 30, 15, { 30,40,30 }, { 0,20,0 });
 	ParticleRenderer* pRenderer = new ParticleRenderer(device);
-
-	ShaderData::Initialize(device);
+	ModelRenderer* mRenderer = new ModelRenderer(device);
+	TerrainRenderer* tRenderer = new TerrainRenderer(device);
+	ShaderData::Initialize(device, mRenderer->GetByteCode());
 
 	MSG msg = {};
 
@@ -228,10 +248,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		}
 		
 		RenderGBufferPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout,
-			sampler, gBuffer, textureSRV, vertexBuffer, bike, particlesystem, pRenderer);
+			sampler, gBuffer, textureSRV, vertexBuffer, particlesystem, pRenderer, mRenderer,models, tRenderer, terrain);
 
 					//Kallar på vår renderfunktion
-		update(immediateContext, dt, camera, constantBuffers,	lighting, wvp, bike, particlesystem);
+		update(immediateContext, dt, camera, constantBuffers,lighting, wvp, bike, particlesystem);
 
 		ShaderData::Update(camera);
 

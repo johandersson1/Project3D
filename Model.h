@@ -35,7 +35,11 @@ public:
 	ID3D11Buffer** GetBuffer() { return &this->vertexBuffer; }
 	const Material::Data& GetMaterial() {return this->mesh.material.data;}
 	ID3D11ShaderResourceView** GetTexture() { return this->mesh.material.diffuseTexture.Get(); }
+	ID3D11ShaderResourceView** GetDisplacementTexture() { return this->mesh.material.displacementTexture.Get(); }
+	void SetDisplacementTexture(ID3D11Device* device, std::string path) { this->mesh.material.displacementTexture = Texture(device, path); }
 	void SetTranslation(XMVECTOR translation) {this->transform.translation = translation; }
 	void SetRotation(XMVECTOR rotation) { this->transform.rotation = rotation; }
 	void SetScale(XMVECTOR scale) {this->transform.scale = scale; }
+	
+
 };
