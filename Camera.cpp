@@ -169,7 +169,7 @@ Camera::Camera()
 }
 
 Camera::Camera(float FOV, float aspectRatio, float nearZ, float farZ, float rotationSpeed, float speed, XMFLOAT3 position)
-	:position(position), pitch(0), yaw(0), rotationSpeed(rotationSpeed), speed(speed)
+	:position(position), pitch(0), yaw(-XM_PIDIV2), rotationSpeed(rotationSpeed), speed(speed)
 {
 
 	this->up = { 0,1,0 };

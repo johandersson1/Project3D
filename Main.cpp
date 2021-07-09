@@ -155,7 +155,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	Light lighting;
 	WVP wvp;
 
-	Camera camera(XM_PIDIV4, (float)WIDTH / (float)HEIGHT, 0.1, 100, 2.5, 2.5f, { 0.0f,0.0f,-5.0f });
+	Camera camera(XM_PIDIV4, (float)WIDTH / (float)HEIGHT, 0.1, 100, 2.5, 5.0f, { 12.0f,0.0f,10.0f });
 	Timer timer;
 	float dt = 0.0f;
 
