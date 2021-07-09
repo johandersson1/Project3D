@@ -224,8 +224,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	models.push_back(cigg);
 	Model* cube = new Model(device, "cube", { -10.0f, -3.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.5f, 0.5f, 0.5f });
 	models.push_back(cube);
-	/*Model* buildings = new Model(device, "buildings", { 0.0f, -3.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 2.0f, 2.0f, 2.0f });
-	models.push_back(buildings);*/
+	Model* buildings = new Model(device, "buildings", { 0.0f, -3.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 2.0f, 2.0f, 2.0f });
+	models.push_back(buildings);
 
 	Model* terrain = new Model(device, "terrain", { 0.0f, -4.0f, 0.0f }, { 0.0f, XM_PIDIV4, 0.0f }, { 2.0f, 2.0f, 2.0f });
 	terrain->SetDisplacementTexture(device, "Models/terrain/displacement.png");
