@@ -3,6 +3,7 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include "Camera.h"
+#include "ShadowMap.h"
 //#include "Lights.h"
 using namespace DirectX;
 
@@ -25,6 +26,7 @@ private:
 
 	static ID3D11InputLayout* model_layout;
 
+	static ShadowMap* shadowmap;
 public:
 	static void Shutdown();
 	static void Initialize(ID3D11Device* device, std::string modelVSByteCode );

@@ -11,6 +11,8 @@ private:
 	Mesh mesh;
 	XMMATRIX worldMatrix;
 	ID3D11Buffer* vertexBuffer;
+	ID3D11Buffer* positionsBuffer;
+
 	std::string name;
 
 	struct Transform
@@ -31,8 +33,10 @@ public:
 	~Model();
 	void Update();
 	int GetVertexCount() { return this->mesh.vertexCount; }
+
 	XMMATRIX GetWorldMatrix() { return this->worldMatrix; }
 	ID3D11Buffer** GetBuffer() { return &this->vertexBuffer; }
+	ID3D11Buffer** GetPositionsBuffer() { return &this->positionsBuffer; }
 	const Material::Data& GetMaterial() {return this->mesh.material.data;}
 	ID3D11ShaderResourceView** GetTexture() { return this->mesh.material.diffuseTexture.Get(); }
 	ID3D11ShaderResourceView** GetDisplacementTexture() { return this->mesh.material.displacementTexture.Get(); }

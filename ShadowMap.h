@@ -10,7 +10,7 @@ private:
 	D3D11_VIEWPORT viewPort;
 public:
 	ShadowMap() = default;
-	ShadowMap(ID3D11Device* device, UINT size)
+	ShadowMap(ID3D11Device* device, UINT size):depthMapSRV(nullptr), depthMapDSV(nullptr)
 	{
 		// VIEWPORT
 		viewPort.TopLeftX = 0.0f;
@@ -44,6 +44,7 @@ public:
 		if ((FAILED(hr)))
 		{
 			std::cout << "FAILED TO CREATE TEXTURE2D (SHADOW)" << std::endl;
+			return;
 		}
 
 		D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
@@ -55,6 +56,7 @@ public:
 		if ((FAILED(hr)))
 		{
 			std::cout << "FAILED TO CREATE DSV (SHADOW)" << std::endl;
+			return;
 		}
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 		srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
@@ -65,6 +67,7 @@ public:
 		if ((FAILED(hr)))
 		{
 			std::cout << "FAILED TO CREATE SRV (SHADOW)" << std::endl;
+			return;
 		}
 
 		//View saves as a referemce to the texture so we can release our reference
@@ -76,6 +79,8 @@ public:
 
 	void Bind(ID3D11DeviceContext* context)
 	{
+		ID3D11ShaderResourceView* null = nullptr;
+		context->PSSetShaderResources(2, 1, &null);
 		context->RSSetViewports(1, &viewPort);
 		// Set null render target because we are only going to draw
 		// to depth buffer. Setting a null render target will disable

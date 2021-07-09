@@ -84,16 +84,16 @@
     <ClInclude Include="ParticleSystemRenderer.h">
       <Filter>Header Files\Particles</Filter>
     </ClInclude>
-    <ClInclude Include="ModelRenderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TerrainRenderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ShadowMap.h">
       <Filter>Header Files\Shadow</Filter>
     </ClInclude>
     <ClInclude Include="ShadowRenderer.h">
+      <Filter>Header Files\Renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelRenderer.h">
+      <Filter>Header Files\Renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="TerrainRenderer.h">
       <Filter>Header Files\Renderers</Filter>
     </ClInclude>
   </ItemGroup>

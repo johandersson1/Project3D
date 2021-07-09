@@ -104,6 +104,7 @@ bool Mesh::LoadModel(std::string name)
 			nor[1] = vn[index][1];
 			nor[2] = vn[index][2];
 
+			positions.push_back({ pos[0],pos[1],pos[2] });
 			vertices[j] = Vertex(pos, tex, nor);
 			vertexCount++;
 		}

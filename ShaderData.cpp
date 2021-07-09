@@ -11,6 +11,7 @@
 	ID3D11InputLayout* ShaderData::positionOnly_layout;
 	ID3D11InputLayout* ShaderData::model_layout;
 
+	ShadowMap* ShaderData::shadowmap;
 	void ShaderData::Shutdown()
 	{
 		positionOnly_vs->Release();
@@ -19,6 +20,7 @@
 
 	void ShaderData::Initialize(ID3D11Device* device, std::string modelVSByteCode)
 {
+	shadowmap = new ShadowMap(device, 1024);
 	std::string byteCode;
 	std::string shaderData;
 	std::ifstream reader;

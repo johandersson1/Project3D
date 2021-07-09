@@ -23,4 +23,5 @@ public:
 
 	int vertexCount = 0;
 	std::vector<Face> faces;
+	std::vector<XMFLOAT3> positions;
 };

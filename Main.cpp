@@ -8,7 +8,7 @@
 #include "ParticleSystemRenderer.h"
 #include "ModelRenderer.h"
 #include "TerrainRenderer.h"
-#include "ShadowMap.h""
+#include "ShadowRenderer.h"
 
 //Console Setup
 #include<io.h>
@@ -83,8 +83,12 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	ID3D11PixelShader* pShaderDeferredRender, ID3D11VertexShader* vShaderDeferred,
 	ID3D11InputLayout* inputLayout, ID3D11SamplerState* sampler, GeometryBuffer gBuffer,
 	ID3D11ShaderResourceView* textureSRV, ID3D11Buffer* vertexBuffer,ParticleSystem* particlesystem, 
-	ParticleRenderer* pRenderer, ModelRenderer* mRenderer, const std::vector <Model*>&models, TerrainRenderer* tRenderer, Model* terrain)
+	ParticleRenderer* pRenderer, ModelRenderer* mRenderer, const std::vector <Model*>&models, TerrainRenderer* tRenderer, Model* terrain,
+	ShadowRenderer* sRenderer)
 {
+	for (auto model : models)
+		sRenderer->Render(immediateContext, model);
+	
 	clearView(immediateContext, rtv, dsView, gBuffer);
 
 	//UINT stride = sizeof(Vertex);
@@ -235,6 +239,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	ParticleRenderer* pRenderer = new ParticleRenderer(device);
 	ModelRenderer* mRenderer = new ModelRenderer(device);
 	TerrainRenderer* tRenderer = new TerrainRenderer(device);
+	ShadowRenderer* sRenderer = new ShadowRenderer(device);
 	ShaderData::Initialize(device, mRenderer->GetByteCode());
 
 	MSG msg = {};
@@ -250,7 +255,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		}
 		
 		RenderGBufferPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout,
-			sampler, gBuffer, textureSRV, vertexBuffer, particlesystem, pRenderer, mRenderer,models, tRenderer, terrain);
+			sampler, gBuffer, textureSRV, vertexBuffer, particlesystem, pRenderer, mRenderer,models, tRenderer, terrain, sRenderer);
 
 					//Kallar på vår renderfunktion
 		update(immediateContext, dt, camera, constantBuffers,lighting, wvp, bike, particlesystem);
