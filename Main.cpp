@@ -216,14 +216,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		return -3;
 	}
 	std::vector <Model*>models;
-	Model* bike = new Model(device, "biker", { 0.0f, -3.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.75f, 0.75f, 0.75f });
+	Model* bike = new Model(device, "biker", { 5.0f, -3.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.75f, 0.75f, 0.75f });
 	models.push_back(bike);
-	Model* sword = new Model(device, "sword", { 1.0f, -3.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.75f, 0.75f, 0.75f });
+	Model* sword = new Model(device, "sword", { 10.0f, -3.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.4f, 0.4f, 0.4f });
 	models.push_back(sword);
-	/*Model* cigg = new Model(device, "Cigg", { 0.0f, -3.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.75f, 0.75f, 0.75f });
-	models.push_back(cigg);*/
+	Model* cigg = new Model(device, "cigg", { 0.0f, -3.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.05f, 0.05f, 0.05f });
+	models.push_back(cigg);
+	/*Model* buildings = new Model(device, "buildings", { 0.0f, -3.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 2.0f, 2.0f, 2.0f });
+	models.push_back(buildings);*/
 
-	Model* terrain = new Model(device, "terrain", { 0.0f, -4.0f, 0.0f });
+	Model* terrain = new Model(device, "terrain", { 0.0f, -4.0f, 0.0f }, { 0.0f, XM_PIDIV4, 0.0f }, { 2.0f, 2.0f, 2.0f });
 	terrain->SetDisplacementTexture(device, "Models/terrain/displacement.png");
 	ParticleSystem* particlesystem = new ParticleSystem(device, 300, 20, 10, { 20,40,20 }, { 0,20,0 });
 	ParticleRenderer* pRenderer = new ParticleRenderer(device);
