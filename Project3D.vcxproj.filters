@@ -116,6 +116,9 @@
     <FxCompile Include="VertexShaderDeferredLight.hlsl">
       <Filter>Resource Files\Deferred</Filter>
     </FxCompile>
+    <FxCompile Include="ShadowMapVertex.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="D3D11Helper.cpp">
