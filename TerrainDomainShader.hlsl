@@ -50,7 +50,7 @@ DS_OUTPUT main(
     output.worldPos = mul(output.position, worldSpace);
     
     //Displacement
-    const float disfactor = 0.5f;
+    const float disfactor = 0.6f;
     float h = displacementTexture.SampleLevel(mySampler, output.tex, 0).r;
     output.worldPos.xyz += h * disfactor * output.normal;
    
