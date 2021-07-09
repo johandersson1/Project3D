@@ -26,8 +26,9 @@ private:
 
 	static ID3D11InputLayout* model_layout;
 
-	static ShadowMap* shadowmap;
 public:
+
+	static ShadowMap* shadowmap;
 	static void Shutdown();
 	static void Initialize(ID3D11Device* device, std::string modelVSByteCode );
 	static void Update( Camera camera);

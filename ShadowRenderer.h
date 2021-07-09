@@ -49,7 +49,6 @@ public:
 	}
 	void Render(ID3D11DeviceContext* context, Model* model)
 	{
-		ShaderData::shadowmap->Bind(context);
 		context->IASetInputLayout(ShaderData::positionOnly_layout);
 		context->VSSetShader(vertexShader, NULL, 0);
 		context->PSSetShader(NULL, NULL, 0);

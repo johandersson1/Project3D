@@ -86,6 +86,8 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	ParticleRenderer* pRenderer, ModelRenderer* mRenderer, const std::vector <Model*>&models, TerrainRenderer* tRenderer, Model* terrain,
 	ShadowRenderer* sRenderer)
 {
+	ShaderData::shadowmap->Bind(immediateContext);
+
 	for (auto model : models)
 		sRenderer->Render(immediateContext, model);
 	
