@@ -34,17 +34,14 @@
     <Filter Include="Header Files\Renderers">
       <UniqueIdentifier>{b6d73409-28a9-415f-adb1-19441fa755b0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\HelperFiles">
+      <UniqueIdentifier>{2ec4b408-5821-4fa5-95d5-28078a512d26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shadow">
+      <UniqueIdentifier>{d563b5dd-05ea-4a23-aec4-fd00f024b069}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="D3D11Helper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PipelineHelper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WindowHelper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -96,6 +93,15 @@
     <ClInclude Include="TerrainRenderer.h">
       <Filter>Header Files\Renderers</Filter>
     </ClInclude>
+    <ClInclude Include="D3D11Helper.h">
+      <Filter>Header Files\HelperFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="PipelineHelper.h">
+      <Filter>Header Files\HelperFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowHelper.h">
+      <Filter>Header Files\HelperFiles</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ParticleVertexShader.hlsl">
@@ -129,7 +135,7 @@
       <Filter>Resource Files\Deferred</Filter>
     </FxCompile>
     <FxCompile Include="ShadowMapVertex.hlsl">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Shadow</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
