@@ -13,7 +13,7 @@
 //Console Setup
 #include<io.h>
 #include<fcntl.h>
-
+// Console Function -- found online
 void RedirectIOToConsole()
 {
 	AllocConsole();
@@ -45,6 +45,7 @@ void RedirectIOToConsole()
 //	device->CreateBuffer(&cbLight, nullptr, &lightConstantBuffer);
 //}
 
+// Function to clear the window
 void clearView(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsView, const GeometryBuffer& gBuffer)
 {
 	float clearcolor[4] = { 0.2f,0.2f,0.2f,0 };
@@ -55,6 +56,7 @@ void clearView(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rt
 	immediateContext->ClearDepthStencilView(dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 }
 
+// Update function to update the camera, the particles and the CB containing worldSpace and WVP matricies
 void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera, 
 			ID3D11Buffer* constantBuffers, Light& lighting, WVP& wvp, Model* biker, ParticleSystem* particlesystem)
 {
@@ -79,6 +81,7 @@ void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera,
 	}
 }
 
+// Geometry Pass for deferred rendering (and shadows)
 void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsView, D3D11_VIEWPORT& viewport,
 	ID3D11PixelShader* pShaderDeferredRender, ID3D11VertexShader* vShaderDeferred,
 	ID3D11InputLayout* inputLayout, ID3D11SamplerState* sampler, GeometryBuffer gBuffer,
@@ -86,12 +89,15 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	ParticleRenderer* pRenderer, ModelRenderer* mRenderer, const std::vector <Model*>&models, TerrainRenderer* tRenderer, Model* terrain,
 	ShadowRenderer* sRenderer)
 {
-	ShaderData::shadowmap->Bind(immediateContext);
+	
+	ShaderData::shadowmap->Bind(immediateContext); // Binds the shadowmap (sets resources)
 
+	// Loops through the models-vector and renders shadows
 	for (auto model : models)
 		sRenderer->Render(immediateContext, model);
 	
-	clearView(immediateContext, rtv, dsView, gBuffer);
+
+	clearView(immediateContext, rtv, dsView, gBuffer); 	// Clear the window for next render pass
 
 	//UINT stride = sizeof(Vertex);
 	//UINT offset = 0;
@@ -167,27 +173,27 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	Timer timer;
 	float dt = 0.0f;
 
-	ID3D11Device* device; // används för att skapa resurser.
-	ID3D11DeviceContext* immediateContext; // genererar renderings kommandon.
-	IDXGISwapChain* swapChain;// denna funktion byter back buffern(rtv) och display skärmen.
-	ID3D11RenderTargetView* rtv; // denna variabel är en pekare till ett objekt som innehåller all information om renderings objektet.  
-	ID3D11DepthStencilView* dsView; // the Depth/Stencil Buffer lagrar depth information för de pixlar som ska renderas.
-	D3D11_VIEWPORT viewport; // definierar dimensionerna för en viewport.
-	ID3D11Texture2D* dsTexture; // en ID3D11Texture2D är ett objekt som lagrar en platt bild. 
-	ID3D11Texture2D* texture;
+	ID3D11Device* device; // Used to create resources.
+	ID3D11DeviceContext* immediateContext; // Generates rendering commands.
+	IDXGISwapChain* swapChain;// This function changes the back buffer (rtv) and the display screen.
+	ID3D11RenderTargetView* rtv; // This variable is a pointer to an object that contains all the information about the rendering object. 
+	ID3D11DepthStencilView* dsView; // The Depth / Stencil Buffer stores depth information for the pixels to be rendered.
+	D3D11_VIEWPORT viewport; // Defines the dimensions of a viewport.
+	ID3D11Texture2D* dsTexture; // An ID3D11Texture2D is an object that stores a flat image.
 	
-	ID3D11InputLayout* inputLayout; // information som lagras med varje vertex för att förbättra renderingshastigheten
-	ID3D11Buffer* vertexBuffer; // buffert resurs, som är ostrukturerat minne
+	ID3D11InputLayout* inputLayout; // Information stored with each vertex to improve the rendering speed
+	ID3D11Buffer* vertexBuffer; // Buffer resource, which is unstructured memory
 	ID3D11Buffer* constantBuffer;
-	ID3D11ShaderResourceView* textureSRV; // anger de (sub resources) en shader kan komma åt under rendering
-	ID3D11SamplerState* sampler; // sampler-state som du kan bindar till valfritt shader stage i pipelinen.
+	ID3D11ShaderResourceView* textureSRV; // Indicates the (sub resources) a shader can access during rendering
+	ID3D11SamplerState* sampler; // Sampler-state that you can bind to any shader stage in the pipeline.
 
 	//Deferred
-	ID3D11PixelShader* lightPShaderDeferred;
+	ID3D11PixelShader* lightPShaderDeferred; // A pixelshader interface manages an executable program(a pixel shader) that controls the pixel - shader stage.
 	ID3D11VertexShader* lightVShaderDeferred;
 	ID3D11PixelShader* pShaderDeferred;
 	ID3D11VertexShader* vShaderDeferred;
-	ID3D11InputLayout* renderTargetMeshInputLayout;
+	ID3D11InputLayout* renderTargetMeshInputLayout; //An input-layout interface holds a definition of how to feed vertex data 
+													//that is laid out in memory into the input-assembler stage of the graphics pipeline.
 	ID3D11Buffer* screenQuadMesh;
 
 	//Gbuffer
@@ -223,7 +229,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		std::cerr << "Failed to setup pipeline!" << std::endl;
 		return -3;
 	}
+	// Creating a vector that stores the models
 	std::vector <Model*>models;
+	// Creating a new model for each mesh in the scene
 	Model* bike = new Model(device, "biker", { 10.0f, -3.3f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.5f, 0.5f, 0.5f });
 	models.push_back(bike);
 	Model* sword = new Model(device, "sword", { 15.0f, -4.2f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.4f, 0.4f, 0.4f });
@@ -258,8 +266,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		
 		RenderGBufferPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout,
 			sampler, gBuffer, textureSRV, vertexBuffer, particlesystem, pRenderer, mRenderer,models, tRenderer, terrain, sRenderer);
-
-					//Kallar på vår renderfunktion
+		
 		update(immediateContext, dt, camera, constantBuffers,lighting, wvp, bike, particlesystem);
 
 		ShaderData::Update(camera);

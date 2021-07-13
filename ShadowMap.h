@@ -70,8 +70,8 @@ public:
 			return;
 		}
 
-		//View saves as a referemce to the texture so we can release our reference
-		depthmap->Release();
+		depthmap->Release(); // View saves as a referemce to the texture so we can release our reference
+
 	}
 	~ShadowMap() { this->depthMapSRV->Release(); this->depthMapDSV->Release(); }
 	
@@ -82,9 +82,8 @@ public:
 		ID3D11ShaderResourceView* null = nullptr;
 		context->PSSetShaderResources(2, 1, &null);
 		context->RSSetViewports(1, &viewPort);
-		// Set null render target because we are only going to draw
-		// to depth buffer. Setting a null render target will disable
-		// color writes.
+		// Set null render target because we are only going to draw to depth buffer. 
+		//Setting a null render target will disable color writes.
 		ID3D11RenderTargetView* renderTargets[1] = { 0 };
 		context->OMSetRenderTargets(1, renderTargets, depthMapDSV);
 		context->ClearDepthStencilView(depthMapDSV, D3D11_CLEAR_DEPTH, 1.0f, 0);

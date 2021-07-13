@@ -40,12 +40,12 @@
     <Filter Include="Resource Files\Shadow">
       <UniqueIdentifier>{d563b5dd-05ea-4a23-aec4-fd00f024b069}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\HelperFiles">
+      <UniqueIdentifier>{36bea581-aa64-40ff-98a2-b765d1af2996}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Lights.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Geometry.h">
@@ -102,6 +102,9 @@
     <ClInclude Include="WindowHelper.h">
       <Filter>Header Files\HelperFiles</Filter>
     </ClInclude>
+    <ClInclude Include="Lights.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ParticleVertexShader.hlsl">
@@ -139,16 +142,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="D3D11Helper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PipelineHelper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WindowHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
@@ -168,6 +162,15 @@
     </ClCompile>
     <ClCompile Include="ShaderData.cpp">
       <Filter>Header Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11Helper.cpp">
+      <Filter>Source Files\HelperFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="PipelineHelper.cpp">
+      <Filter>Source Files\HelperFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowHelper.cpp">
+      <Filter>Source Files\HelperFiles</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

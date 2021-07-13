@@ -5,7 +5,7 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 
-//struct för cbVertex, med två matriser för worldViewProj och worldspace
+// Två matriser för worldViewProj och worldspace
 struct WVP
 {
     DirectX::XMFLOAT4X4 worldViewProj;
