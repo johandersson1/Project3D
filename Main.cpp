@@ -267,13 +267,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 
 	
-
+		ShaderData::Update(immediateContext, camera);
 		RenderGBufferPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout,
 			sampler, gBuffer, textureSRV, vertexBuffer, particlesystem, pRenderer, mRenderer,models, tRenderer, terrain, sRenderer, 
 			rasterizerStateWireFrame, rasterizerStateSolid);
 		
 		update(immediateContext, dt, camera, constantBuffers,lighting, wvp, bike, particlesystem);
-		ShaderData::Update(immediateContext, camera);
+
 		
 		RenderLightPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout, vertexBuffer,
 			textureSRV, sampler, gBuffer, lightPShaderDeferred,	lightVShaderDeferred, renderTargetMeshInputLayout, screenQuadMesh);
