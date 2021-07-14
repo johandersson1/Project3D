@@ -48,7 +48,7 @@ void RedirectIOToConsole()
 // Function to clear the window
 void clearView(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsView, const GeometryBuffer& gBuffer)
 {
-	float clearcolor[4] = { 0.2f,0.2f,0.2f,0 };
+	float clearcolor[4] = { 0.75f, 0.75f, 0.75f,0 };
 	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[0], clearcolor);
 	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[1], clearcolor);
 	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[2], clearcolor);
@@ -79,6 +79,8 @@ void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera,
 	{
 		std::cerr << "Failed to update ConstantBuffer (update function)" << std::endl;
 	}
+	//std::cout << " render...... X: " << camera.GetPosition().x << " Y: " << camera.GetPosition().y << " Z: " << camera.GetPosition().z << std::endl;
+
 }
 
 // Geometry Pass for deferred rendering (and shadows)
@@ -87,8 +89,7 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	ID3D11InputLayout* inputLayout, ID3D11SamplerState* sampler, GeometryBuffer gBuffer,
 	ID3D11ShaderResourceView* textureSRV, ID3D11Buffer* vertexBuffer,ParticleSystem* particlesystem, 
 	ParticleRenderer* pRenderer, ModelRenderer* mRenderer, const std::vector <Model*>&models, TerrainRenderer* tRenderer, Model* terrain,
-	ShadowRenderer* sRenderer, ID3D11RasterizerState*& rasterizerStateWireFrame, ID3D11RasterizerState*& rasterizerStateSolid
-)
+	ShadowRenderer* sRenderer, ID3D11RasterizerState*& rasterizerStateWireFrame, ID3D11RasterizerState*& rasterizerStateSolid)
 {
 	ShaderData::shadowmap->Bind(immediateContext); // Binds the shadowmap (sets resources)
 
@@ -101,7 +102,7 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	immediateContext->RSSetViewports(1, &viewport);
 	immediateContext->PSSetSamplers(0, 1, &sampler);
 	immediateContext->DSSetSamplers(0, 1, &sampler);
-	immediateContext->RSSetState(rasterizerStateWireFrame);
+	immediateContext->RSSetState(rasterizerStateSolid);
 	immediateContext->GSSetShader(ShaderData::geometryShader, nullptr, 0);
 	immediateContext->OMSetRenderTargets(gBuffer.NROFBUFFERS, gBuffer.gBuffergBufferRtv, dsView);
 	for (auto model : models)
@@ -120,6 +121,8 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 		nullArr[i] = nullptr;
 	}
 	immediateContext->OMSetRenderTargets(gBuffer.NROFBUFFERS, nullArr, dsView);
+
+
 }
 
 
@@ -246,7 +249,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	Model* terrain = new Model(device, "terrain", { 0.0f, -4.0f, 0.0f }, { 0.0f, XM_PIDIV4, 0.0f }, { 2.0f, 2.0f, 2.0f });
 	terrain->SetDisplacementTexture(device, "Models/terrain/displacement.png");
 
-	ParticleSystem* particlesystem = new ParticleSystem(device, 300, 30, 15, { 30,40,30 }, { 0,20,0 });
+	ParticleSystem* particlesystem = new ParticleSystem(device, 600, 30, 15, { 30,40,30 }, { 0,20,0 });
 	ParticleRenderer* pRenderer = new ParticleRenderer(device);
 	ModelRenderer* mRenderer = new ModelRenderer(device);
 	TerrainRenderer* tRenderer = new TerrainRenderer(device);
@@ -264,10 +267,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-
-
 	
 		ShaderData::Update(immediateContext, camera);
+
 		RenderGBufferPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout,
 			sampler, gBuffer, textureSRV, vertexBuffer, particlesystem, pRenderer, mRenderer,models, tRenderer, terrain, sRenderer, 
 			rasterizerStateWireFrame, rasterizerStateSolid);
