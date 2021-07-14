@@ -77,5 +77,6 @@ bool SetupPipeline(ID3D11Device* device, ID3D11Buffer*& vertexBuffer,
                    ID3D11InputLayout*& inputLayout, ID3D11Buffer*& constantBuffer,
                    ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& textureSRV, 
                    ID3D11SamplerState*& sampler, ID3D11PixelShader*& pShaderDeferred, ID3D11VertexShader*& vShaderDeferred, ID3D11PixelShader*& lightPShaderDeferred,
-                   ID3D11VertexShader*& lightVShaderDeferred, ID3D11InputLayout*& renderTargetMesh, ID3D11Buffer*& screenQuadMesh);
+                   ID3D11VertexShader*& lightVShaderDeferred, ID3D11InputLayout*& renderTargetMesh, ID3D11Buffer*& screenQuadMesh, ID3D11RasterizerState*& rasterizerState
+);
 

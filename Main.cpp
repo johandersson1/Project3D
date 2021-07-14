@@ -87,7 +87,8 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	ID3D11InputLayout* inputLayout, ID3D11SamplerState* sampler, GeometryBuffer gBuffer,
 	ID3D11ShaderResourceView* textureSRV, ID3D11Buffer* vertexBuffer,ParticleSystem* particlesystem, 
 	ParticleRenderer* pRenderer, ModelRenderer* mRenderer, const std::vector <Model*>&models, TerrainRenderer* tRenderer, Model* terrain,
-	ShadowRenderer* sRenderer)
+	ShadowRenderer* sRenderer, ID3D11RasterizerState*& rasterizerState
+)
 {
 	ShaderData::shadowmap->Bind(immediateContext); // Binds the shadowmap (sets resources)
 
@@ -100,6 +101,8 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	immediateContext->RSSetViewports(1, &viewport);
 	immediateContext->PSSetSamplers(0, 1, &sampler);
 	immediateContext->DSSetSamplers(0, 1, &sampler);
+	immediateContext->RSSetState(rasterizerState);
+
 	immediateContext->OMSetRenderTargets(gBuffer.NROFBUFFERS, gBuffer.gBuffergBufferRtv, dsView);
 	for (auto model : models)
 		mRenderer->Render(immediateContext, model);
@@ -171,7 +174,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	ID3D11DepthStencilView* dsView; // The Depth / Stencil Buffer stores depth information for the pixels to be rendered.
 	D3D11_VIEWPORT viewport; // Defines the dimensions of a viewport.
 	ID3D11Texture2D* dsTexture; // An ID3D11Texture2D is an object that stores a flat image.
-	
+	ID3D11RasterizerState* rasterizerState;
+
 	ID3D11Texture2D* texture;
 
 	ID3D11InputLayout* inputLayout; // Information stored with each vertex to improve the rendering speed
@@ -217,7 +221,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 	if (!SetupPipeline(device, vertexBuffer, inputLayout, 
 		constantBuffers, texture, textureSRV, sampler, pShaderDeferred, vShaderDeferred, lightPShaderDeferred, lightVShaderDeferred,
-		renderTargetMeshInputLayout, screenQuadMesh))
+		renderTargetMeshInputLayout, screenQuadMesh, rasterizerState))
 	{
 		std::cerr << "Failed to setup pipeline!" << std::endl;
 		return -3;
@@ -260,7 +264,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		}
 		
 		RenderGBufferPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout,
-			sampler, gBuffer, textureSRV, vertexBuffer, particlesystem, pRenderer, mRenderer,models, tRenderer, terrain, sRenderer);
+			sampler, gBuffer, textureSRV, vertexBuffer, particlesystem, pRenderer, mRenderer,models, tRenderer, terrain, sRenderer, rasterizerState);
 		
 		update(immediateContext, dt, camera, constantBuffers,lighting, wvp, bike, particlesystem);
 

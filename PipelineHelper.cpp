@@ -317,27 +317,32 @@ bool CreateTexture(ID3D11Device* device, ID3D11Texture2D*& texture, ID3D11Shader
 
 	//delete[] theImageData; //delete 
 }
-//Används ej, kan kopplas in för att visa baksidan av texturen, och även visa wireframe
-//bool SetUpRasterizer(ID3D11Device*& device, ID3D11RasterizerState*& rasterizerState)
-//{
-//	D3D11_RASTERIZER_DESC desc = {};
-//	desc.FillMode = D3D11_FILL_SOLID;
-//	desc.CullMode = D3D11_CULL_NONE;
-//	desc.AntialiasedLineEnable = TRUE; //Set to TRUE to use the quadrilateral line anti-aliasing algorithm 
-//									   //and to FALSE to use the alpha line anti-aliasing algorithm
-//
-//	desc.MultisampleEnable = FALSE;    //Specifies whether to enable line antialiasing; only applies 
-//	                                   //if doing line drawing and MultisampleEnable is FALSE.
-//
-//	HRESULT hr = device->CreateRasterizerState(&desc, &rasterizerState);
-//	return !FAILED(hr);
-//}
 
-//Kallar på de olika funktionerna
+bool SetUpRasterizer(ID3D11Device*& device, ID3D11RasterizerState*& rasterizerState)
+{
+	D3D11_RASTERIZER_DESC desc;
+	ZeroMemory(&desc, sizeof(desc));
+	desc.FillMode = D3D11_FILL_MODE::D3D11_FILL_WIREFRAME;
+	desc.CullMode = D3D11_CULL_NONE;
+	desc.FrontCounterClockwise = false;
+	desc.DepthBias = 0;
+	desc.DepthBiasClamp = 0;
+	desc.SlopeScaledDepthBias = 0;
+	desc.DepthClipEnable = true;
+	desc.ScissorEnable = false;
+	desc.MultisampleEnable = false;
+	desc.AntialiasedLineEnable = false;
+
+	HRESULT hr = device->CreateRasterizerState(&desc, &rasterizerState);
+	return !FAILED(hr);
+}
+
+// Calls the various functions
 bool SetupPipeline(ID3D11Device* device, ID3D11Buffer*& vertexBuffer, ID3D11InputLayout*& inputLayout, ID3D11Buffer*& constantBuffers,
 	ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& textureSRV, ID3D11SamplerState*& sampler, 
 	ID3D11PixelShader*& pShaderDeferred, ID3D11VertexShader*& vShaderDeferred, ID3D11PixelShader*& lightPShaderDeferred,
-	ID3D11VertexShader*& lightVShaderDeferred, ID3D11InputLayout*& renderTargetMesh, ID3D11Buffer*& screenQuadMesh)
+	ID3D11VertexShader*& lightVShaderDeferred, ID3D11InputLayout*& renderTargetMesh, ID3D11Buffer*& screenQuadMesh, 
+	ID3D11RasterizerState*& rasterizerState)
 {
 	std::string vShaderByteCode;
 	std::string defVShaderByteCode;
@@ -400,6 +405,11 @@ bool SetupPipeline(ID3D11Device* device, ID3D11Buffer*& vertexBuffer, ID3D11Inpu
 	if (!CreateSamplerState(device, sampler))
 	{
 		std::cerr << "Error creating sampler state! " << std::endl;
+		return false;
+	}
+	if(!SetUpRasterizer(device, rasterizerState))
+	{
+		std::cerr << "Error creating rasterizer state! " << std::endl;
 		return false;
 	}
 }
