@@ -25,7 +25,7 @@ private:
 	int particleCount;
 	int maxParticles;
 
-	float timeBetwerenParticles;
+	float timeBetweenParticles;
 	float timeSinceLastParticle;
 
 	std::vector<Particle> particles;

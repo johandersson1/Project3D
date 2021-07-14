@@ -21,7 +21,8 @@ private:
 	struct Matrices { XMFLOAT4X4 WVP; XMFLOAT4X4 worldSpace; }matrices;
 public: 
 	
-	ModelRenderer(ID3D11Device* device):matrices(), pixelShader(nullptr), vertexShader(nullptr)
+	ModelRenderer(ID3D11Device* device)
+				  :matrices(), pixelShader(nullptr), vertexShader(nullptr)
 	{
 		CreateBuffer(device, matricesBuffer, sizeof(Matrices));	
 

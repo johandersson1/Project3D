@@ -27,7 +27,6 @@ PixelOutput main(PixelInput input)
     output.worldPos = input.worldPos;
     output.diffuse = diffuseTex.Sample(mySampler, input.tex);
     
-    return output;
-    
+    return output; 
 }
 

@@ -181,6 +181,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	D3D11_VIEWPORT viewport; // Defines the dimensions of a viewport.
 	ID3D11Texture2D* dsTexture; // An ID3D11Texture2D is an object that stores a flat image.
 	
+	ID3D11Texture2D* texture;
+
 	ID3D11InputLayout* inputLayout; // Information stored with each vertex to improve the rendering speed
 	ID3D11Buffer* vertexBuffer; // Buffer resource, which is unstructured memory
 	ID3D11Buffer* constantBuffer;

@@ -2,7 +2,7 @@
 
 ParticleSystem::ParticleSystem(ID3D11Device* device, int maxParticles, float maxVelocity, float minVelocity, XMFLOAT3 bounds, XMFLOAT3 position)
 	:maxParticles(maxParticles), maxVelocity(maxVelocity), minVelocity(minVelocity), bounds(bounds), position(position),
-	 particleCount(0), timeBetwerenParticles(0.02f), timeSinceLastParticle(0.0f)
+	 particleCount(0), timeBetweenParticles(0.02f), timeSinceLastParticle(0.0f)
 {
     D3D11_BUFFER_DESC bufferDesc = {};
     bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -37,7 +37,7 @@ void ParticleSystem::Update(ID3D11DeviceContext* context, float dt)
     {
         timeSinceLastParticle += dt;
 
-        if (timeSinceLastParticle >= timeBetwerenParticles)
+        if (timeSinceLastParticle >= timeBetweenParticles)
         {
             timeSinceLastParticle = 0;
 
