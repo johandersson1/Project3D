@@ -89,29 +89,18 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	ParticleRenderer* pRenderer, ModelRenderer* mRenderer, const std::vector <Model*>&models, TerrainRenderer* tRenderer, Model* terrain,
 	ShadowRenderer* sRenderer)
 {
-	
 	ShaderData::shadowmap->Bind(immediateContext); // Binds the shadowmap (sets resources)
 
 	// Loops through the models-vector and renders shadows
 	for (auto model : models)
 		sRenderer->Render(immediateContext, model);
-	
 
 	clearView(immediateContext, rtv, dsView, gBuffer); 	// Clear the window for next render pass
-
-	//UINT stride = sizeof(Vertex);
-	//UINT offset = 0;
-	/*immediateContext->IASetVertexBuffers(0, 1, biker->GetBuffer(), &stride, &offset);
-	immediateContext->IASetInputLayout(inputLayout);
-	immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	immediateContext->VSSetShader(vShaderDeferred, nullptr, 0);*/
 
 	immediateContext->RSSetViewports(1, &viewport);
 	immediateContext->PSSetSamplers(0, 1, &sampler);
 	immediateContext->DSSetSamplers(0, 1, &sampler);
 	immediateContext->OMSetRenderTargets(gBuffer.NROFBUFFERS, gBuffer.gBuffergBufferRtv, dsView);
-	/*immediateContext->PSSetShader(pShaderDeferredRender, nullptr, 0);
-	immediateContext->PSSetShaderResources(0, 1, biker->GetTexture());*/
 	for (auto model : models)
 		mRenderer->Render(immediateContext, model);
 	/*mRender->Render(immediateContext, biker);
@@ -129,6 +118,8 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	immediateContext->OMSetRenderTargets(gBuffer.NROFBUFFERS, nullArr, dsView);
 }
 
+
+// Light pass -- renders the geometry and lighting on the final screen quad
 void RenderLightPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsView, D3D11_VIEWPORT& viewport,
 	ID3D11PixelShader* pShaderDeferredRender,ID3D11VertexShader* vShaderDeferred, ID3D11InputLayout* inputLayout, ID3D11Buffer* vertexBuffer,
 	ID3D11ShaderResourceView* textureSRV, ID3D11SamplerState* sampler, GeometryBuffer gBuffer, ID3D11PixelShader* lightPShaderDeferred, 
@@ -148,7 +139,7 @@ void RenderLightPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetVi
 	immediateContext->OMSetRenderTargets(1, &rtv, dsView);
 	immediateContext->Draw(4, 0);
 
-	//Clean up
+	//Clean up the PixelShaders
 	ID3D11ShaderResourceView* nullArr[gBuffer.NROFBUFFERS];
 	for (int i = 0; i < gBuffer.NROFBUFFERS; i++)
 	{
@@ -231,6 +222,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		std::cerr << "Failed to setup pipeline!" << std::endl;
 		return -3;
 	}
+
 	// Creating a vector that stores the models
 	std::vector <Model*>models;
 	// Creating a new model for each mesh in the scene
