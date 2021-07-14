@@ -87,7 +87,7 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	ID3D11InputLayout* inputLayout, ID3D11SamplerState* sampler, GeometryBuffer gBuffer,
 	ID3D11ShaderResourceView* textureSRV, ID3D11Buffer* vertexBuffer,ParticleSystem* particlesystem, 
 	ParticleRenderer* pRenderer, ModelRenderer* mRenderer, const std::vector <Model*>&models, TerrainRenderer* tRenderer, Model* terrain,
-	ShadowRenderer* sRenderer, ID3D11RasterizerState*& rasterizerState
+	ShadowRenderer* sRenderer, ID3D11RasterizerState*& rasterizerStateWireFrame, ID3D11RasterizerState*& rasterizerStateSolid
 )
 {
 	ShaderData::shadowmap->Bind(immediateContext); // Binds the shadowmap (sets resources)
@@ -101,8 +101,8 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	immediateContext->RSSetViewports(1, &viewport);
 	immediateContext->PSSetSamplers(0, 1, &sampler);
 	immediateContext->DSSetSamplers(0, 1, &sampler);
-	immediateContext->RSSetState(rasterizerState);
-
+	immediateContext->RSSetState(rasterizerStateWireFrame);
+	immediateContext->GSSetShader(ShaderData::geometryShader, nullptr, 0);
 	immediateContext->OMSetRenderTargets(gBuffer.NROFBUFFERS, gBuffer.gBuffergBufferRtv, dsView);
 	for (auto model : models)
 		mRenderer->Render(immediateContext, model);
@@ -110,6 +110,7 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	mRender->Render(immediateContext, sword);*/
 	/*immediateContext->Draw(biker->GetVertexCount(), 0);*/
 	tRenderer->Render(immediateContext, terrain);
+
 	pRenderer->Render(immediateContext, particlesystem);
 
 	//Clean up
@@ -174,7 +175,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	ID3D11DepthStencilView* dsView; // The Depth / Stencil Buffer stores depth information for the pixels to be rendered.
 	D3D11_VIEWPORT viewport; // Defines the dimensions of a viewport.
 	ID3D11Texture2D* dsTexture; // An ID3D11Texture2D is an object that stores a flat image.
-	ID3D11RasterizerState* rasterizerState;
+	ID3D11RasterizerState* rasterizerStateWireFrame;
+	ID3D11RasterizerState* rasterizerStateSolid;
 
 	ID3D11Texture2D* texture;
 
@@ -221,7 +223,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 	if (!SetupPipeline(device, vertexBuffer, inputLayout, 
 		constantBuffers, texture, textureSRV, sampler, pShaderDeferred, vShaderDeferred, lightPShaderDeferred, lightVShaderDeferred,
-		renderTargetMeshInputLayout, screenQuadMesh, rasterizerState))
+		renderTargetMeshInputLayout, screenQuadMesh, rasterizerStateWireFrame, rasterizerStateSolid))
 	{
 		std::cerr << "Failed to setup pipeline!" << std::endl;
 		return -3;
@@ -262,17 +264,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-		
+
+
+	
+
 		RenderGBufferPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout,
-			sampler, gBuffer, textureSRV, vertexBuffer, particlesystem, pRenderer, mRenderer,models, tRenderer, terrain, sRenderer, rasterizerState);
+			sampler, gBuffer, textureSRV, vertexBuffer, particlesystem, pRenderer, mRenderer,models, tRenderer, terrain, sRenderer, 
+			rasterizerStateWireFrame, rasterizerStateSolid);
 		
 		update(immediateContext, dt, camera, constantBuffers,lighting, wvp, bike, particlesystem);
-
-		ShaderData::Update(camera);
-
+		ShaderData::Update(immediateContext, camera);
+		
 		RenderLightPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout, vertexBuffer,
-			textureSRV, sampler, gBuffer, lightPShaderDeferred,
-			lightVShaderDeferred, renderTargetMeshInputLayout, screenQuadMesh);
+			textureSRV, sampler, gBuffer, lightPShaderDeferred,	lightVShaderDeferred, renderTargetMeshInputLayout, screenQuadMesh);
 
 		swapChain->Present(0, 0); // Presents a rendered image to the user.
 		

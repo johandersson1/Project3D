@@ -1,9 +1,9 @@
-cbuffer CAMERA : register(b0)
+cbuffer CAMERA : register(b1)
 {
     float3 cameraPosition;
 }
 
-cbuffer MATRIX : register(b1)
+cbuffer MATRIX : register(b2)
 {
     float4x4 viewPerspecive;
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "D3D11Helper.h"
+#include "D3D11Help.h"
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include "Camera.h"
@@ -26,10 +27,15 @@ private:
 
 	static ID3D11InputLayout* model_layout;
 
-public:
+	static std::string gs_path;
+	
+	
+	static ID3D11Buffer* cameraPos;
 
+public:
+	static ID3D11GeometryShader* geometryShader;
 	static ShadowMap* shadowmap;
 	static void Shutdown();
 	static void Initialize(ID3D11Device* device, std::string modelVSByteCode );
-	static void Update( Camera camera);
+	static void Update(ID3D11DeviceContext*& context, Camera camera);
 };

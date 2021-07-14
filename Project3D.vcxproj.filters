@@ -43,6 +43,9 @@
     <Filter Include="Source Files\HelperFiles">
       <UniqueIdentifier>{36bea581-aa64-40ff-98a2-b765d1af2996}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Backfaced Culling">
+      <UniqueIdentifier>{68857607-8ade-431f-89bf-47e53623f760}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -139,6 +142,9 @@
     </FxCompile>
     <FxCompile Include="ShadowMapVertex.hlsl">
       <Filter>Resource Files\Shadow</Filter>
+    </FxCompile>
+    <FxCompile Include="CullingGeometryShader.hlsl">
+      <Filter>Resource Files\Backfaced Culling</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

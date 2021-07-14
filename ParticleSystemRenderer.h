@@ -104,8 +104,8 @@ public:
 		context->VSSetShader(ShaderData::positionOnly_vs, NULL, 0);
 		context->PSSetShader(pixelShader, NULL, 0);
 		context->GSSetShader(geometryShader, NULL, 0);
-		context->GSSetConstantBuffers(0, 1, &cameraBuffer);
-		context->GSSetConstantBuffers(1, 1, &viewPersPectiveBuffer);
+		context->GSSetConstantBuffers(1, 1, &cameraBuffer);
+		context->GSSetConstantBuffers(2, 1, &viewPersPectiveBuffer);
 		context->IASetVertexBuffers(0, 1, &particlesystem->vertexBuffer, &stride, &offset);
 		context->Draw(particlesystem->particleCount, 0);
 

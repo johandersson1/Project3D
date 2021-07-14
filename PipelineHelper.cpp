@@ -318,7 +318,7 @@ bool CreateTexture(ID3D11Device* device, ID3D11Texture2D*& texture, ID3D11Shader
 	//delete[] theImageData; //delete 
 }
 
-bool SetUpRasterizer(ID3D11Device*& device, ID3D11RasterizerState*& rasterizerState)
+bool SetUpRasterizer(ID3D11Device*& device, ID3D11RasterizerState*& rasterizerStateWireFrame, ID3D11RasterizerState*& rasterizerStateSolid)
 {
 	D3D11_RASTERIZER_DESC desc;
 	ZeroMemory(&desc, sizeof(desc));
@@ -332,8 +332,19 @@ bool SetUpRasterizer(ID3D11Device*& device, ID3D11RasterizerState*& rasterizerSt
 	desc.ScissorEnable = false;
 	desc.MultisampleEnable = false;
 	desc.AntialiasedLineEnable = false;
+	HRESULT hr = device->CreateRasterizerState(&desc, &rasterizerStateWireFrame);
+	if (FAILED(hr))
+	{
+		std::cout << "Failed to create wireframe" << std::endl;	
+	}
+	desc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
+	hr = device->CreateRasterizerState(&desc, &rasterizerStateSolid);
+	if (FAILED(hr))
+	{
+		std::cout << "Failed to create fill solid" << std::endl;
+	}
 
-	HRESULT hr = device->CreateRasterizerState(&desc, &rasterizerState);
+
 	return !FAILED(hr);
 }
 
@@ -342,7 +353,7 @@ bool SetupPipeline(ID3D11Device* device, ID3D11Buffer*& vertexBuffer, ID3D11Inpu
 	ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& textureSRV, ID3D11SamplerState*& sampler, 
 	ID3D11PixelShader*& pShaderDeferred, ID3D11VertexShader*& vShaderDeferred, ID3D11PixelShader*& lightPShaderDeferred,
 	ID3D11VertexShader*& lightVShaderDeferred, ID3D11InputLayout*& renderTargetMesh, ID3D11Buffer*& screenQuadMesh, 
-	ID3D11RasterizerState*& rasterizerState)
+	ID3D11RasterizerState*& rasterizerStateWireFrame, ID3D11RasterizerState*& rasterizerStateSolid)
 {
 	std::string vShaderByteCode;
 	std::string defVShaderByteCode;
@@ -407,7 +418,7 @@ bool SetupPipeline(ID3D11Device* device, ID3D11Buffer*& vertexBuffer, ID3D11Inpu
 		std::cerr << "Error creating sampler state! " << std::endl;
 		return false;
 	}
-	if(!SetUpRasterizer(device, rasterizerState))
+	if(!SetUpRasterizer(device, rasterizerStateWireFrame, rasterizerStateSolid))
 	{
 		std::cerr << "Error creating rasterizer state! " << std::endl;
 		return false;

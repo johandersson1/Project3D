@@ -11,6 +11,11 @@
 	ID3D11InputLayout* ShaderData::positionOnly_layout;
 	ID3D11InputLayout* ShaderData::model_layout;
 
+	std::string ShaderData::gs_path = "x64/Debug/CullingGeometryShader.cso";
+	ID3D11GeometryShader* ShaderData::geometryShader;
+
+	ID3D11Buffer* ShaderData::cameraPos;
+
 	ShadowMap* ShaderData::shadowmap;
 	void ShaderData::Shutdown()
 	{
@@ -76,11 +81,39 @@
 		std::cerr << "ERROR INPUTLAYOUT" << std::endl;
 		return;
 	}
+
+	reader.open(gs_path, std::ios::binary | std::ios::ate);
+	if (!reader.is_open())
+	{
+		std::cout << "Could not open GS file!" << std::endl;
+		return;
+	}
+	reader.seekg(0, std::ios::end);
+	shaderData.reserve(static_cast<unsigned int>(reader.tellg()));
+	reader.seekg(0, std::ios::beg);
+	shaderData.assign((std::istreambuf_iterator<char>(reader)), std::istreambuf_iterator<char>());
+	hr = device->CreateGeometryShader(shaderData.c_str(), shaderData.length(), nullptr, &geometryShader);
+
+	if (FAILED(hr))
+	{
+		std::cout << "Failed to create position VERTEX shader!" << std::endl;
+		return;
+	}
+
+	shaderData.clear();
+	reader.close();
+
+
+	CreateBuffer(device, cameraPos, sizeof(XMFLOAT4));
+	
 }
 
-void ShaderData::Update(Camera camera)
+void ShaderData::Update(ID3D11DeviceContext*& context, Camera camera)
 {
 	cameraPosition = camera.GetPosition();
 	viewMatrix = camera.GetViewMatrix();
 	perspectiveMatrix = camera.GetPerspectiveMatrix();
+
+	UpdateBuffer(context, cameraPos, camera.GetPosition());
+	context->GSSetConstantBuffers(0, 1, &cameraPos);
 }
