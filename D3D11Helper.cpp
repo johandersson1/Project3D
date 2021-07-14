@@ -2,25 +2,25 @@
 
 bool CreateInterfaces(UINT width, UINT height, HWND window, ID3D11Device*& device, ID3D11DeviceContext*& immediateContext, IDXGISwapChain*& swapChain)
 {
-    DXGI_SWAP_CHAIN_DESC swapChainDesc = {}; //Beskriver en swapchain
+    DXGI_SWAP_CHAIN_DESC swapChainDesc = {}; // Describes a swapchain
 
-    swapChainDesc.BufferDesc.Width = width; //bredd
-    swapChainDesc.BufferDesc.Height = height; //höjd
-    swapChainDesc.BufferDesc.RefreshRate.Numerator = 0; //RefreshRate 60 hertz (0 från början) vsync och fullscreen behövs för att det ska synas
+    swapChainDesc.BufferDesc.Width = width; // Width
+    swapChainDesc.BufferDesc.Height = height; // Height
+    swapChainDesc.BufferDesc.RefreshRate.Numerator = 0; // RefreshRate 60 hertz (0 from the beginning) vsync and fullscreen are needed for it to be visible
     swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
-    swapChainDesc.BufferDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM; //32 bits, 8 per channel
-    swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED; //Scanline-order är ospecificerad.
-    swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED; //Ospecificerad skalning.
+    swapChainDesc.BufferDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM; // 32 bits, 8 per channel
+    swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED; // Scanline order is unspecified
+    swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED; // Unspecified scaling
 
     // Default
     swapChainDesc.SampleDesc.Count = 1;
     swapChainDesc.SampleDesc.Quality = 0;
 
-    swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; //Använd ytan eller resursen som ett resultat för renderingen.
-    swapChainDesc.BufferCount = 1; //double buffer 
+    swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; // Use the surface or resource as a result of the rendering
+    swapChainDesc.BufferCount = 1; // Double buffer
     swapChainDesc.OutputWindow = window;
     swapChainDesc.Windowed = true;
-    swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD; //tar bort innerhållet av backbuffern när den kallas på
+    swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD; // Removes the contents of the backup buffer when it is called on
     swapChainDesc.Flags = 0;
 
     UINT flags = 0;
@@ -31,17 +31,17 @@ bool CreateInterfaces(UINT width, UINT height, HWND window, ID3D11Device*& devic
 
     HRESULT hr = D3D11CreateDeviceAndSwapChain(
         nullptr, //IDXGI Adapter
-        D3D_DRIVER_TYPE_HARDWARE, //låter programmet välja, för att vi har nullptr på första parametern.
-        nullptr, //vilken typ av drivrutin för mjukvaran
-        flags, //the runtime layers to enable 
-        featureLevels, //pekare till en array som bestämmer vilken ordning av future levels som skapas = D3D_FEATURE_LEVEL_11_0
-        1, //vi kallar på element D3D_FEATURE_LEVEL_11_0 
-        D3D11_SDK_VERSION, //standard versionen som används (sdk_version)
-        &swapChainDesc, //swapchain description, pekare
-        &swapChain, //Hämtar adressen för swapcahin
-        &device, //Hämtar adressen för device
-        nullptr, //ingen definition behövs till detta
-        &immediateContext//Hämtar adressen för immediateContext  
+        D3D_DRIVER_TYPE_HARDWARE, // Lets the program select, because we have nullptr on the first parameter.
+        nullptr, // The type of driver for the software
+        flags, // The runtime layers to enable
+        featureLevels, // Pointer to an array that determines the order of future levels created = D3D_FEATURE_LEVEL_11_0
+        1, // We call element D3D_FEATURE_LEVEL_11_0
+        D3D11_SDK_VERSION, // Standard version used (sdk_version)
+        &swapChainDesc, // Swapchain description, pointers
+        &swapChain, // Retrieves the swapchain address
+        &device, // Retrieves the address of the device
+        nullptr, // No definition is needed for this
+        &immediateContext// Retrieves the address for immediateContext
     );
 
     return !(FAILED(hr));
@@ -66,17 +66,17 @@ bool CreateRenderTargetView(ID3D11Device* device, IDXGISwapChain* swapChain, ID3
 bool CreateDepthStencil(ID3D11Device* device, UINT width, UINT height, ID3D11Texture2D*& dsTexture, ID3D11DepthStencilView*& dsView)
 {
     D3D11_TEXTURE2D_DESC textureDesc;
-    textureDesc.Width = width; //bredd
-    textureDesc.Height = height; //höjd
-    textureDesc.MipLevels = 1; //gör att renderingen blir snabbare, behövs endast en för multisampled texture
-    textureDesc.ArraySize = 1;//endast en bild
-    textureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; //A 32-bit z-buffer format that supports 24 bits for depth and 8 bits for stencil.
-    textureDesc.SampleDesc.Count = 1; //antalet multisamples per pixel
-    textureDesc.SampleDesc.Quality = 0;//ingen ökat kvalité, onödigt 
-    textureDesc.Usage = D3D11_USAGE_DEFAULT; //	en resurs som kräver read and write tillgång av GPU
-    textureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL; //Binder en textur som en depth-stencil target
-    textureDesc.CPUAccessFlags = 0; //ingen CPU åtkomst
-    textureDesc.MiscFlags = 0; //behövs inga mer flaggor
+    textureDesc.Width = width; // Width
+    textureDesc.Height = height; // Height
+    textureDesc.MipLevels = 1; // Makes the rendering faster, only one is needed for multisampled texture
+    textureDesc.ArraySize = 1; // Only one picture
+    textureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; // A 32-bit z-buffer format that supports 24 bits for depth and 8 bits for stencil.
+    textureDesc.SampleDesc.Count = 1; // The number of multisamples per pixel
+    textureDesc.SampleDesc.Quality = 0; // No increased quality, unnecessary
+    textureDesc.Usage = D3D11_USAGE_DEFAULT; //	A resource that requires read and write access of the GPU
+    textureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL; // Binds a texture as a depth-stencil target
+    textureDesc.CPUAccessFlags = 0; // No CPU access
+    textureDesc.MiscFlags = 0; // No more flags are needed
 
     if (FAILED(device->CreateTexture2D(&textureDesc, nullptr, &dsTexture)))
     {
@@ -163,7 +163,7 @@ bool CreateGbuffer(ID3D11Device* device, GeometryBuffer& gBuffer)
 
 }
 
-//Kallar på funktionerna
+// Calls the various functions
 bool SetupD3D11(UINT width, UINT height, HWND window, ID3D11Device*& device, ID3D11DeviceContext*& immidateContext, 
                 IDXGISwapChain*& swapChain, ID3D11RenderTargetView*& rtv, ID3D11Texture2D*& dsTexture, ID3D11DepthStencilView*& dsView, D3D11_VIEWPORT& viewport, GeometryBuffer& gBuffer)
 {

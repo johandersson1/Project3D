@@ -13,7 +13,7 @@ bool LoadShadersGbuffer(ID3D11Device* device, ID3D11PixelShader*& pShaderDeferre
 
 	std::string shaderData;
 	std::ifstream reader;
-	//Clears the reader and shaderData and does the same thing for the PixelShader
+	// Clears the reader and shaderData and does the same thing for the PixelShader
 
 	reader.open(L"x64/Debug/VertexShaderDeferred.cso", std::ios::binary | std::ios::ate);
 	if (!reader.is_open())
@@ -65,7 +65,7 @@ bool LoadShadersLight(ID3D11Device* device, ID3D11PixelShader*& lightPShaderDefe
 
 	std::string shaderData;
 	std::ifstream reader;
-	//Clears the reader and shaderData and does the same thing for the PixelShader
+	// Clears the reader and shaderData and does the same thing for the PixelShader
 
 	reader.open(L"x64/Debug/VertexShaderDeferredLight.cso", std::ios::binary | std::ios::ate);
 	if (!reader.is_open())
@@ -115,24 +115,23 @@ bool LoadShadersLight(ID3D11Device* device, ID3D11PixelShader*& lightPShaderDefe
 //Funktion för att beskriva input-buffer data
 bool CreateInputLayout(ID3D11Device* device, ID3D11InputLayout*& inputLayout, const std::string& defVShaderByteCode)
 {
-	//array av element med en beskrivning
+	// Array of elements with a description
 	D3D11_INPUT_ELEMENT_DESC inputDesc[] =
     {   
-		//name, index, format, slot, byteOffset, inputSlotClass, stepRate
-        {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}, //Input data is per-vertex data.
+		// name, index, format, slot, byteOffset, inputSlotClass, stepRate
+        {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}, // Input data is per-vertex data.
         {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
         {"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 	    {"WORLDPOS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0 }
     };
-	//Viktigt!! Allt behöver vara i rätt ordning för om det laddas in i fel ordning så funkar det ej
+	// Important! Everything needs to be in the right order because if it is loaded in the wrong order, it will not work
     HRESULT hr = device->CreateInputLayout(inputDesc, ARRAYSIZE(inputDesc), defVShaderByteCode.c_str(), defVShaderByteCode.length(), &inputLayout);
 
     return !FAILED(hr);
 }
-//vertexbuffern
+// VertexBuffer
 bool CreateVertexBuffer(ID3D11Device* device, ID3D11Buffer*& vertexBuffer)
 {
-	//TheQuads vertices  
 	Vertex2 TheQuad[] =
 	{
 	 { {0.5f, 0.5f, 0.0f}, {1.0f, 0.0f}, {0,0,-1 }},
@@ -142,22 +141,22 @@ bool CreateVertexBuffer(ID3D11Device* device, ID3D11Buffer*& vertexBuffer)
 	 { {-0.5f, 0.5f, 0.0f}, {0.0f, 0.0f}, {0,0,-1 }},
 	
 	 { {-0.5f, -0.5f, 0.0f}, {0.0f, 1.0f}, {0,0,-1 }}
-	 //(x,y,z), uvs, colour, normals
+	 // (X, Y, Z), UVs, Colour, Normals
 	};
 
-	//beskrivning av buffern som skapas
+	// Description of the buffer being created
 	D3D11_BUFFER_DESC bufferDesc;
-	bufferDesc.ByteWidth = sizeof(TheQuad); //Bytesize 
-	bufferDesc.Usage = D3D11_USAGE_IMMUTABLE; //Endast GPU kan läsa, kan ej skriva, CPU kommer inte åt alls ,ändras inte efter den har blivit påbörjad
-	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER; //binder buffern som en Vertex-buffer
-	bufferDesc.CPUAccessFlags = 0; //sätts till 0 för vi använder immutable, behövs inte mer info
-	bufferDesc.MiscFlags = 0; //inga mer flaggor behövs
-	bufferDesc.StructureByteStride = 0; //definerar storleken för varje element i buffern, behövs ej
+	bufferDesc.ByteWidth = sizeof(TheQuad); // Bytesize 
+	bufferDesc.Usage = D3D11_USAGE_IMMUTABLE; // Only GPU can read, can not write, CPU does not access at all, does not change after it has been started
+	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER; // Binds the buffer as a Vertex buffer
+	bufferDesc.CPUAccessFlags = 0; // Is set to 0 because we use immutable, no more info is needed
+	bufferDesc.MiscFlags = 0; // No need for additional flags
+	bufferDesc.StructureByteStride = 0; // Defines the size of each element in buffer, not needed
 
-	D3D11_SUBRESOURCE_DATA data; //specificera datan för initialisering av en subresource
-	data.pSysMem = TheQuad; //pekare till TheQuad, initialization data.
-	data.SysMemPitch = 0; //distansen mellan början av en rad i en texture till nästa rad, i bytes
-	data.SysMemSlicePitch = 0; // Avståndet(i byte) från början av en djupnivå till nästa.
+	D3D11_SUBRESOURCE_DATA data; // Specify the data for initializing a subresource
+	data.pSysMem = TheQuad; // Pointer to TheQuad, initialization data
+	data.SysMemPitch = 0; // The distance between the beginning of a line in a texture to the next line, in bytes
+	data.SysMemSlicePitch = 0; // The distance (in bytes) from the beginning of one depth level to the next
 
 
 	HRESULT hr = device->CreateBuffer(&bufferDesc, &data, &vertexBuffer);
@@ -167,30 +166,30 @@ bool CreateRenderTargetMesh(ID3D11Device* device, ID3D11Buffer*& renderTargetMes
 {
 	Vertex2 rtvMeshData[] =
 	{
-		//Top Right
+		// Top Right
 	   { {1.0f, 1.0f, 0.0f}, {1.0f, 0.0f}, {0, 0, -1} },
-	   //Bottom Right
+	   // Bottom Right
 	   { {1.0f, -1.0f, 0.0f}, {1.0f, 1.0f}, {0, 0, -1}  },
-	   //Top Left
+	   // Top Left
 	   { {-1.0f, 1.0f, 0.0f}, {0.0f, 0.0f}, {0, 0, -1}  },
-	   //Bottom Left
+	   // Bottom Left
 	   { {-1.0f, -1.0f, 0.0f}, {0.0f, 1.0f}, {0, 0, -1}  }
-	   //(X, Y, Z), UVs, Colour, Normals
+	   // (X, Y, Z), UVs, Colour, Normals
 	};
 
 	D3D11_BUFFER_DESC rtvMeshDesc;
-    rtvMeshDesc.ByteWidth = sizeof(rtvMeshData); //Bytesize of the vertices
-    rtvMeshDesc.Usage = D3D11_USAGE_IMMUTABLE; //Usage_Immutable -- Only read by the GPU, not accessable by the CPU. Not changeable after creation
-    rtvMeshDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER; //Binds the buffer as a Vertex Buffer. 
-    rtvMeshDesc.CPUAccessFlags = 0; //Set to 0 since the usage is Immutable. NO need to write or read since we have no access.
-    rtvMeshDesc.MiscFlags = 0; //No need for additional flags
-    rtvMeshDesc.StructureByteStride = 0; //Defines the size of each element in the buffer structure. No need for this buffer
+    rtvMeshDesc.ByteWidth = sizeof(rtvMeshData); // Bytesize of the vertices
+    rtvMeshDesc.Usage = D3D11_USAGE_IMMUTABLE; // Usage_Immutable -- Only read by the GPU, not accessable by the CPU. Not changeable after creation
+    rtvMeshDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER; // Binds the buffer as a Vertex Buffer. 
+    rtvMeshDesc.CPUAccessFlags = 0; // Set to 0 since the usage is Immutable. NO need to write or read since we have no access.
+    rtvMeshDesc.MiscFlags = 0; // No need for additional flags
+    rtvMeshDesc.StructureByteStride = 0; // Defines the size of each element in the buffer structure. No need for this buffer
 
-    //Specifies data for initializing a subresource
+    // Specifies data for initializing a subresource
     D3D11_SUBRESOURCE_DATA data;
-    data.pSysMem = &rtvMeshData; //Pointer to the initialization data
-    data.SysMemPitch = 0; //The distance (in bytes) from the beginning of one line of a texture to the next line.
-    data.SysMemSlicePitch = 0; //The distance (in bytes) from the beginning of one depth level to the next. (Used only for 3D-textures)
+    data.pSysMem = &rtvMeshData; // Pointer to the initialization data
+    data.SysMemPitch = 0; // The distance (in bytes) from the beginning of one line of a texture to the next line
+    data.SysMemSlicePitch = 0; // The distance (in bytes) from the beginning of one depth level to the next. (Used only for 3D-textures)
 
     HRESULT hr = device->CreateBuffer(&rtvMeshDesc, &data, &renderTargetMesh);
 
@@ -201,34 +200,34 @@ bool RenderMeshInputLayout(ID3D11Device* device, ID3D11InputLayout*& renderTarge
 {
     D3D11_INPUT_ELEMENT_DESC inputDesc[] =
     {
-        //Name, Index, Format, Slot, ByteOffset, InputSlotClass, StepRate
+        // Name, Index, Format, Slot, ByteOffset, InputSlotClass, StepRate
         {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
         {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 
-        //These need to be in the right order for the data to be placed at the right location
+        // These need to be in the right order for the data to be placed at the right location
     };
 
     HRESULT hr = device->CreateInputLayout(inputDesc, ARRAYSIZE(inputDesc), lightVShaderByteCode.c_str(), lightVShaderByteCode.length(), &renderTargetMeshInputLayout);
 
     return !FAILED(hr);
 }
-//funktion för att skapa constantbuffer som används för att uppdatera fyrkanten(TheQuad)
+// Function to create constant buffer used to update the square ("TheQuad")
 bool CreateConstantBuffer(ID3D11Device* device, ID3D11Buffer*& constantBuffers)
 {
 	WVP Rotation;
 
 	D3D11_BUFFER_DESC constantBufferDesc;
-	constantBufferDesc.ByteWidth = sizeof(WVP); //Bytesize 
-	constantBufferDesc.Usage = D3D11_USAGE_DYNAMIC; //blir tillgänglig för både GPU(read only) och CPU(write only) använd Map.
-	constantBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER; //Binder en buffert som en constantbuffert till ett shader stage
-	constantBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; //resursen ska vara mappable så att CPU kan ändra innehållet
-	constantBufferDesc.MiscFlags = 0; //inga mer flaggor behövs
-	constantBufferDesc.StructureByteStride = 0; //definerar storleken för varje element i buffern, behövs ej
-
+	constantBufferDesc.ByteWidth = sizeof(WVP); // Bytesize 
+	constantBufferDesc.Usage = D3D11_USAGE_DYNAMIC; // Becomes available for both GPU (read only) and CPU (write only) use Map
+	constantBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER; // Binds a buffer as a constant buffer to a shader stage
+	constantBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; // The resource must be mappable so that the CPU can change the contents
+	constantBufferDesc.MiscFlags = 0; // No need for additional flags
+	constantBufferDesc.StructureByteStride = 0; // Defines the size of each element in buffer, not needed
+	 
 	D3D11_SUBRESOURCE_DATA TheData;
-	TheData.pSysMem = &Rotation; //pekare till initialisering datan
-	TheData.SysMemPitch = 0; //distansen mellan början av en rad i en texture till nästa rad, i bytes
-	TheData.SysMemSlicePitch = 0; // Avståndet(i byte) från början av en djupnivå till nästa.
+	TheData.pSysMem = &Rotation; // Pointer to the initialization data
+	TheData.SysMemPitch = 0; // The distance between the beginning of a line in a texture to the next line, in bytes
+	TheData.SysMemSlicePitch = 0; // The distance (in bytes) from the beginning of one depth level to the next
 
 	HRESULT hr = device->CreateBuffer(&constantBufferDesc, &TheData, &constantBuffers);
 
@@ -249,19 +248,19 @@ bool CreateConstantBuffer(ID3D11Device* device, ID3D11Buffer*& constantBuffers)
 bool CreateSamplerState(ID3D11Device* device, ID3D11SamplerState*& sampler)
 {
 	D3D11_SAMPLER_DESC desc;
-	desc.Filter = D3D11_FILTER_ANISOTROPIC; //förbättra bildkvaliteten
-	//lägger till texturen för varje u,v för varje korsning med heltal
-	//om u värdet är 3, så upprepas texturen tre gånger. 
+	desc.Filter = D3D11_FILTER_ANISOTROPIC; // Improve image quality
+	// adds the texture for each u, v for each intersection with integers
+	// if the u value is 3, the texture is repeated three times
 	desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;  										
 	desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	desc.MipLODBias = 0; //ingen offset från mipmapen 
-	desc.MaxAnisotropy = 16;//antalet samples som kan tas för att förbättra kvaliten
-	desc.BorderColor[0] = desc.BorderColor[1] = desc.BorderColor[2] = desc.BorderColor[3] = 0; //sätter en färg för kanten
-	desc.MinLOD = 0; //Lower end of the mipmap range to clamp access to, where 0 is the largest and most detailed mipmap level 
+	desc.MipLODBias = 0; // No offset from the mipmap
+	desc.MaxAnisotropy = 16;// The number of samples that can be taken to improve the quality
+	desc.BorderColor[0] = desc.BorderColor[1] = desc.BorderColor[2] = desc.BorderColor[3] = 0; // Puts a color for the edge
+	desc.MinLOD = 0; // Lower end of the mipmap range to clamp access to, where 0 is the largest and most detailed mipmap level 
 	desc.MaxLOD = D3D11_FLOAT32_MAX; 
-	//Upper end of the mipmap range to clamp access to, 
-	//where 0 is the largest and most detailed mipmap level and any level higher than that is less detailed
+	// Upper end of the mipmap range to clamp access to, 
+	// where 0 is the largest and most detailed mipmap level and any level higher than that is less detailed
 
 	HRESULT hr = device->CreateSamplerState(&desc, &sampler);
 	return !FAILED(hr);
@@ -269,15 +268,15 @@ bool CreateSamplerState(ID3D11Device* device, ID3D11SamplerState*& sampler)
 // CreateTexture funktionen
 bool CreateTexture(ID3D11Device* device, ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& textureSRV)
 {
-	//bredd, höjd, och rgb
+	// Width, height, and rgb
 	int textureWidth = 512;
 	int textureHeight = 512;
 	int channels = 3;
-	//laddar in bilden från Debug folder
+
 	unsigned char* theImageData = stbi_load("wiz.jpg", &textureWidth, &textureHeight, &channels, 4);
 	std::vector<unsigned char> textureData;
 	textureData.resize(textureWidth * textureHeight * 4);
-	//går igenom för varje pixel och tilldelar färgen beroende på bilden från TheImageData
+	// Goes through for each pixel and assigns the color depending on the image from TheImageData
 	for (int h = 0; h < textureHeight; ++h)
 	{
 		for (int w = 0; w < textureWidth; ++w)
@@ -291,22 +290,22 @@ bool CreateTexture(ID3D11Device* device, ID3D11Texture2D*& texture, ID3D11Shader
 	}
 
 	D3D11_TEXTURE2D_DESC desc;
-	desc.Width = textureWidth; //bredd
-	desc.Height = textureHeight; //höjd
-	desc.MipLevels = 1; //gör att renderingen blir snabbare, behövs endast en för multisampled texture
-	desc.ArraySize = 1; //endast en bild
-	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; //RGBA
-	desc.SampleDesc.Count = 1; //Antalet multisamples per pixel
-	desc.SampleDesc.Quality = 0; //ingen ökat kvalité, onödigt 
-	desc.Usage = D3D11_USAGE_IMMUTABLE; //Endast GPU kan läsa, kan ej skriva, CPU kommer inte åt alls ,ändras inte efter den har blivit påbörjad
-	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE; //binder den som shader
-	desc.CPUAccessFlags = 0; //ingen CPU åtkomst
-	desc.MiscFlags = 0; //behövs inga mer flaggor
+	desc.Width = textureWidth; // Width
+	desc.Height = textureHeight; // Height
+	desc.MipLevels = 1; // Makes the rendering faster, only one is needed for multisampled texture
+	desc.ArraySize = 1; // Only one picture
+	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // RGBA
+	desc.SampleDesc.Count = 1; // The number of multisamples per pixel
+	desc.SampleDesc.Quality = 0; // No increased quality, unnecessary
+	desc.Usage = D3D11_USAGE_IMMUTABLE; // Only GPU can read, can not write, CPU does not access at all, does not change after it has been started
+	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE; // Binds it as a shader
+	desc.CPUAccessFlags = 0; // no CPU access
+	desc.MiscFlags = 0; // No more flags are needed
 
 	D3D11_SUBRESOURCE_DATA data;
-	data.pSysMem = &textureData[0];//pekare till initialisering datan
-	data.SysMemPitch = textureWidth * 4; //distansen mellan början av en rad i en texture till nästa rad, i bytes
-	data.SysMemSlicePitch = 0; // Avståndet(i byte) från början av en djupnivå till nästa.
+	data.pSysMem = &textureData[0];// Pointer to the initialization data
+	data.SysMemPitch = textureWidth * 4; // The distance between the beginning of a line in a texture to the next line, in bytes
+	data.SysMemSlicePitch = 0; // The distance (in bytes) from the beginning of one depth level to the next.
 
 	if (FAILED(device->CreateTexture2D(&desc, &data, &texture)))
 	{

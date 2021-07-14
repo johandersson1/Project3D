@@ -1,7 +1,7 @@
 #include "WindowHelper.h"
 #include <iostream>
 
-LRESULT CALLBACK WindowProc(HWND hWind, UINT message, WPARAM wParam, LPARAM lParam) //callback = körbar kod som skickas som ett argument till annan kod
+LRESULT CALLBACK WindowProc(HWND hWind, UINT message, WPARAM wParam, LPARAM lParam) // Callback = executable code sent as an argument to another code
 {
     switch (message)
     {

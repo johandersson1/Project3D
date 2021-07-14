@@ -194,8 +194,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	ID3D11VertexShader* lightVShaderDeferred;
 	ID3D11PixelShader* pShaderDeferred;
 	ID3D11VertexShader* vShaderDeferred;
-	ID3D11InputLayout* renderTargetMeshInputLayout; //An input-layout interface holds a definition of how to feed vertex data 
-													//that is laid out in memory into the input-assembler stage of the graphics pipeline.
+	ID3D11InputLayout* renderTargetMeshInputLayout; // An input-layout interface holds a definition of how to feed vertex data 
+													// that is laid out in memory into the input-assembler stage of the graphics pipeline.
 	ID3D11Buffer* screenQuadMesh;
 
 	//Gbuffer
@@ -234,19 +234,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	// Creating a vector that stores the models
 	std::vector <Model*>models;
 	// Creating a new model for each mesh in the scene
-	Model* bike = new Model(device, "biker", { 10.0f, -3.3f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.5f, 0.5f, 0.5f });
+	Model* bike = new Model(device, "biker", { 10.0f, -3.6f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.5f, 0.5f, 0.5f });
 	models.push_back(bike);
-	Model* sword = new Model(device, "sword", { 15.0f, -4.2f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.4f, 0.4f, 0.4f });
+	Model* sword = new Model(device, "sword", { 15.0f, -4.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.4f, 0.4f, 0.4f });
 	models.push_back(sword);
-	Model* cigg = new Model(device, "cigg", { 11.0f, -3.1f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.05f, 0.05f, 0.05f });
+	Model* cigg = new Model(device, "cigg", { 11.0f, -3.5f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.05f, 0.05f, 0.05f });
 	models.push_back(cigg);
-	Model* cube = new Model(device, "cube", { -10.0f, -3.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.5f, 0.5f, 0.5f });
+	Model* cube = new Model(device, "cube", { 20.0f, -2.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.15f, 0.15f, 0.15f });
 	models.push_back(cube);
-	Model* buildings = new Model(device, "buildings", { 0.0f, -4.7f, 0.0f }, { 0.0f,0.0f,0.0f }, { 1.7f, 1.7f, 1.7f });
+	Model* buildings = new Model(device, "buildings", { 0.0f, -4.5f, 0.0f }, { 0.0f,0.0f,0.0f }, { 1.7f, 1.7f, 1.7f });
 	models.push_back(buildings);
 
 	Model* terrain = new Model(device, "terrain", { 0.0f, -4.0f, 0.0f }, { 0.0f, XM_PIDIV4, 0.0f }, { 2.0f, 2.0f, 2.0f });
 	terrain->SetDisplacementTexture(device, "Models/terrain/displacement.png");
+
 	ParticleSystem* particlesystem = new ParticleSystem(device, 300, 30, 15, { 30,40,30 }, { 0,20,0 });
 	ParticleRenderer* pRenderer = new ParticleRenderer(device);
 	ModelRenderer* mRenderer = new ModelRenderer(device);
@@ -260,7 +261,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	{
 		timer.Start();
 		
-		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) //if kanske endast visar ett meddelande(while visar alla)
+		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) 
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
@@ -277,7 +278,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 			textureSRV, sampler, gBuffer, lightPShaderDeferred,
 			lightVShaderDeferred, renderTargetMeshInputLayout, screenQuadMesh);
 
-		swapChain->Present(0, 0); //Presents a rendered image to the user.
+		swapChain->Present(0, 0); // Presents a rendered image to the user.
 		
 		dt = timer.DeltaTime();
 	}
