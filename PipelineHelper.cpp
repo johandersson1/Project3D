@@ -141,7 +141,7 @@ bool CreateVertexBuffer(ID3D11Device* device, ID3D11Buffer*& vertexBuffer)
 	 { {-0.5f, 0.5f, 0.0f}, {0.0f, 0.0f}, {0,0,-1 }},
 	
 	 { {-0.5f, -0.5f, 0.0f}, {0.0f, 1.0f}, {0,0,-1 }}
-	 // (X, Y, Z), UVs, Colour, Normals
+	 // (X, Y, Z), UVs, Normals
 	};
 
 	// Description of the buffer being created
@@ -174,7 +174,7 @@ bool CreateRenderTargetMesh(ID3D11Device* device, ID3D11Buffer*& renderTargetMes
 	   { {-1.0f, 1.0f, 0.0f}, {0.0f, 0.0f}, {0, 0, -1}  },
 	   // Bottom Left
 	   { {-1.0f, -1.0f, 0.0f}, {0.0f, 1.0f}, {0, 0, -1}  }
-	   // (X, Y, Z), UVs, Colour, Normals
+	   // (X, Y, Z), UVs, Normals
 	};
 
 	D3D11_BUFFER_DESC rtvMeshDesc;

@@ -199,7 +199,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	ID3D11Buffer* screenQuadMesh;
 
 	//Gbuffer
-	DirectionalLight defferedPS;
+	DirectionalLight deferredPS;
 	GeometryBuffer gBuffer;
 	gBuffer.screenWidth = WIDTH;
 	gBuffer.screenHeight = HEIGHT;

@@ -10,20 +10,6 @@ struct VertexShaderOutput
     float2 tex : TEXCOORD;
 };
 
-cbuffer worldViewProjectionMatrixBuffer : register(b0)
-{
-    matrix viewProjectionMatrix;
-};
-
-cbuffer viewProjectionMatrixBuffer : register(b1)
-{
-    matrix worldMatrix;
-};
-
-cbuffer lightProjection : register(b2)
-{
-    matrix lightProjectionMatrix;
-};
 VertexShaderOutput main(VertexShaderInput input)
 {
     VertexShaderOutput output;
