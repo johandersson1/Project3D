@@ -241,7 +241,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	models.push_back(sword);
 	Model* cigg = new Model(device, "cigg", { 11.0f, -3.5f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.05f, 0.05f, 0.05f });
 	models.push_back(cigg);
-	Model* cube = new Model(device, "cube", { 20.0f, -2.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.15f, 0.15f, 0.15f });
+	Model* cube = new Model(device, "newCube", { 20.0f, -2.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.3f, 0.3f, 0.3f });
 	models.push_back(cube);
 	Model* buildings = new Model(device, "buildings", { 0.0f, -4.5f, 0.0f }, { 0.0f,0.0f,0.0f }, { 1.7f, 1.7f, 1.7f });
 	models.push_back(buildings);

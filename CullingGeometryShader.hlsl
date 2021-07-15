@@ -22,30 +22,45 @@ cbuffer CAMERAPOS : register(b0)
 [maxvertexcount(3)]
 void main(triangle GSINPUT input[3] : SV_POSITION, inout TriangleStream<GSOOUTPUT> output)
 {
-   
     float3 p0 = input[0].position.xyz;
     float3 p1 = input[1].position.xyz;
     float3 p2 = input[2].position.xyz;
 
+    //Calc normal from vertices
     float3 faceNormal = normalize(cross(p1 - p0, p2 - p0));
+
+    //Get dot value, if value >= 0.0f the triangle is frontfaced. (p0 = (0,0,0) - (p0), a vector from pov to point).
     float dotVal = dot(faceNormal, -p0);
 
     if (dotVal >= 0.0f)
-    {
         for (uint i = 0; i < 3; i++)
         {
             GSOOUTPUT vertex = input[i];
             output.Append(vertex);
         }
-    }
+    //float3 p0 = input[0].position.xyz;
+    //float3 p1 = input[1].position.xyz;
+    //float3 p2 = input[2].position.xyz;
+
+    //float3 faceNormal = normalize(cross(p1 - p0, p2 - p0));
+    //float dotVal = dot(faceNormal, -p0);
+
+    //if (dotVal >= 0.0f)
+    //{
+    //    for (uint i = 0; i < 3; i++)
+    //    {
+    //        GSOOUTPUT vertex = input[i];
+    //        output.Append(vertex);
+    //    }
+    //}
  
     //float3 camVector = cameraPos.xyz - input[2].worldPos.xyz;
    
-    //float3 v1 = input[1].worldPos - input[0].worldPos;
-    //float3 v2 = input[2].worldPos - input[0].worldPos;
-    //float3 v3 = cross(v1, v2);
+    //float3 v1 = input[0].worldPos - input[1].worldPos;
+    //float3 v2 = input[0].worldPos - input[2].worldPos;
+    //float3 v3 = cross(v2, v1);
     
-    //if (dot(camVector, v3) >= 0)
+    //if (dot(camVector, v3) <= 0.0f)
     //{
     //    GSOOUTPUT element;
     //    for (int i = 0; i < 3; i++)
