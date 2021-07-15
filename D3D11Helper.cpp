@@ -136,7 +136,7 @@ bool CreateGbuffer(ID3D11Device* device, GeometryBuffer& gBuffer)
 
     for (int i = 0; i < gBuffer.NROFBUFFERS; i++)
     {
-        hr = device->CreateRenderTargetView(gBuffer.gBufferTexture[i], nullptr, &gBuffer.gBuffergBufferRtv[i]);
+        hr = device->CreateRenderTargetView(gBuffer.gBufferTexture[i], &rtvGbufferDesc, &gBuffer.gBuffergBufferRtv[i]);
         if (FAILED(hr))
         {
             return false;
@@ -152,7 +152,7 @@ bool CreateGbuffer(ID3D11Device* device, GeometryBuffer& gBuffer)
 
     for (int i = 0; i < gBuffer.NROFBUFFERS; i++)
     {
-        hr = device->CreateShaderResourceView(gBuffer.gBufferTexture[i], nullptr, &gBuffer.gBufferSrv[i]);
+        hr = device->CreateShaderResourceView(gBuffer.gBufferTexture[i], &srvGbufferDesc, &gBuffer.gBufferSrv[i]);
         if (FAILED(hr))
         {
             return false;
