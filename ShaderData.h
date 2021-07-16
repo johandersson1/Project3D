@@ -15,6 +15,7 @@ class ShaderData
 	friend class ModelRenderer;
 	friend class TerrainRenderer;
 	friend class ShadowRenderer;
+	friend class BlendModelRenderer;
 private:
 	static std::string positionOnly_vs_path;
 	static ID3D11VertexShader* positionOnly_vs;

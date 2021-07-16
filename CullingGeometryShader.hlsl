@@ -33,11 +33,17 @@ void main(triangle GSINPUT input[3] : SV_POSITION, inout TriangleStream<GSOOUTPU
     float dotVal = dot(faceNormal, -p0);
 
     if (dotVal >= 0.0f)
+    {
         for (uint i = 0; i < 3; i++)
         {
             GSOOUTPUT vertex = input[i];
             output.Append(vertex);
         }
+    }
+      
+    
+    
+    
     //float3 p0 = input[0].position.xyz;
     //float3 p1 = input[1].position.xyz;
     //float3 p2 = input[2].position.xyz;

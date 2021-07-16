@@ -46,6 +46,9 @@
     <Filter Include="Resource Files\Backfaced Culling">
       <UniqueIdentifier>{68857607-8ade-431f-89bf-47e53623f760}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Blend Mapping">
+      <UniqueIdentifier>{d52aabf0-1629-412e-9ddd-ea37a5533715}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -108,6 +111,9 @@
     <ClInclude Include="Lights.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
+    <ClInclude Include="BlendModelRenderer.h">
+      <Filter>Header Files\Renderers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ParticleVertexShader.hlsl">
@@ -145,6 +151,12 @@
     </FxCompile>
     <FxCompile Include="CullingGeometryShader.hlsl">
       <Filter>Resource Files\Backfaced Culling</Filter>
+    </FxCompile>
+    <FxCompile Include="BlendVertexShader.hlsl">
+      <Filter>Resource Files\Blend Mapping</Filter>
+    </FxCompile>
+    <FxCompile Include="BlendPixelShader.hlsl">
+      <Filter>Resource Files\Blend Mapping</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
