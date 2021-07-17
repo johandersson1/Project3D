@@ -237,16 +237,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	// Creating a new model for each mesh in the scene
 	Model* bike = new Model(device, "biker", { 10.0f, -3.6f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.5f, 0.5f, 0.5f });
 	models.push_back(bike);
-	Model* sword = new Model(device, "sword", { 15.0f, -4.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.4f, 0.4f, 0.4f });
+	Model* sword = new Model(device, "sword", { 15.0f, -3.4f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.4f, 0.4f, 0.4f });
 	models.push_back(sword);
-	Model* cigg = new Model(device, "cigg", { 11.0f, -3.5f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.05f, 0.05f, 0.05f });
+	Model* cigg = new Model(device, "cigg", { 25.0f, -3.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.1f, 0.1f, 0.1f });
 	models.push_back(cigg);
 	Model* cube = new Model(device, "newCube", { 20.0f, -2.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.3f, 0.3f, 0.3f });
 	models.push_back(cube);
-	Model* buildings = new Model(device, "buildings", { 0.0f, -4.5f, 0.0f }, { 0.0f,0.0f,0.0f }, { 1.7f, 1.7f, 1.7f });
+	Model* buildings = new Model(device, "buildings", { 0.0f, -4.8f, 0.0f }, { 0.0f,0.0f,0.0f }, { 1.7f, 1.7f, 1.7f });
 	models.push_back(buildings);
 
-	Model* terrain = new Model(device, "terrain", { 0.0f, -4.0f, 0.0f }, { 0.0f, XM_PIDIV4, 0.0f }, { 2.0f, 2.0f, 2.0f });
+	Model* terrain = new Model(device, "terrain", { 0.0f, -4.0f, 0.0f }, { 0.0f, XM_PIDIV4, 0.0f }, { 2.2f, 2.2f, 2.2f });
 	terrain->SetDisplacementTexture(device, "Models/terrain/displacement.png");
 
 	ParticleSystem* particlesystem = new ParticleSystem(device, 600, 30, 15, { 30,40,30 }, { 0,20,0 });
