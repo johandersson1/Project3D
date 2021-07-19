@@ -249,7 +249,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 	Model* terrain = new Model(device, "terrain", { 0.0f, -4.0f, 0.0f }, { 0.0f, XM_PIDIV4, 0.0f }, { 2.2f, 2.2f, 2.2f });
 	terrain->SetDisplacementTexture(device, "Models/terrain/displacement.png");
-	terrain->AddTexture(device, "stone.jpg");
+	terrain->AddTexture(device, "painting.png");
 
 	ParticleSystem* particlesystem = new ParticleSystem(device, 200, 5, 1, { 30,40,30 }, { 0,20,0 });
 	ParticleRenderer* pRenderer = new ParticleRenderer(device);

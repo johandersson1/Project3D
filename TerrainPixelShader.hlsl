@@ -47,6 +47,12 @@ PSOutput main(PSInput input)
         texColour = lerp(lowColour, hiColour, (input.blendValue - TEX_LOW_BOUND) * (1.0f / (TEX_HIGH_BOUND - TEX_LOW_BOUND)));
     }
     
+    
+   // texColour = lowColour * hiColour * 1.5f;
+    
+    texColour = saturate(texColour);
+    
+    
     //float4 lower = textures[0].Sample(mySampler, input.tex);
     output.diffuse = texColour;
 	return output;
