@@ -3,6 +3,10 @@ Texture2D posTexture : register(t1);
 Texture2D normalTexture : register(t2);
 Texture2D diffuseAlbedoTexture : register(t3);
 
+Texture2D ambientMatTexture : register(t4);
+Texture2D diffuseMatTexture : register(t5);
+Texture2D specularMatTexture : register(t6);
+
 SamplerState mySampler : register(s0);
 
 cbuffer DirectionalLight : register(b0)
