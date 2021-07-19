@@ -1,7 +1,7 @@
 #pragma once
 #include "Texture.h"
 #include <DirectXMath.h>
-
+#include <vector>
 using namespace DirectX;
 
 struct Material
@@ -20,10 +20,24 @@ public:
 
     bool hasDiffuseTexture = false;
     Texture diffuseTexture; // = Texture(defaultTexture);
-    Texture diffuseTextures[2];
+    
+    std::vector<Texture> diffuseTexures;
 
     bool hasDisplacementTexture = false;
     Texture displacementTexture; // = Texture(defaultTexture);
+
+    ID3D11ShaderResourceView** GetDiffuseTextures(int count)
+    {
+        ID3D11ShaderResourceView** srvs = new ID3D11ShaderResourceView* [diffuseTexures.size()];
+
+        for (int i = 0; i < count; i++)
+        {
+            if (i > diffuseTexures.size())
+                break;
+            srvs[i] = *diffuseTexures[i].Get();
+        }
+        return srvs;
+    }
 
     Material() = default;
 };

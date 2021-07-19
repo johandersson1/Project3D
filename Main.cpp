@@ -9,7 +9,6 @@
 #include "ModelRenderer.h"
 #include "TerrainRenderer.h"
 #include "ShadowRenderer.h"
-#include "BlendModelRenderer.h"
 
 //Console Setup
 #include<io.h>
@@ -90,8 +89,7 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	ID3D11InputLayout* inputLayout, ID3D11SamplerState* sampler, GeometryBuffer gBuffer,
 	ID3D11ShaderResourceView* textureSRV, ID3D11Buffer* vertexBuffer,ParticleSystem* particlesystem, 
 	ParticleRenderer* pRenderer, ModelRenderer* mRenderer, const std::vector <Model*>&models, TerrainRenderer* tRenderer, Model* terrain,
-	ShadowRenderer* sRenderer, ID3D11RasterizerState*& rasterizerStateWireFrame, ID3D11RasterizerState*& rasterizerStateSolid, 
-	BlendModelRenderer* bRenderer, Model* blendCube)
+	ShadowRenderer* sRenderer, ID3D11RasterizerState*& rasterizerStateWireFrame, ID3D11RasterizerState*& rasterizerStateSolid)
 {
 	ShaderData::shadowmap->Bind(immediateContext); // Binds the shadowmap (sets resources)
 
@@ -109,7 +107,7 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	immediateContext->OMSetRenderTargets(gBuffer.NROFBUFFERS, gBuffer.gBuffergBufferRtv, dsView);
 	for (auto model : models)
 		mRenderer->Render(immediateContext, model);
-	bRenderer->Render(immediateContext, blendCube);
+	//bRenderer->Render(immediateContext, blendCube);
 	/*mRender->Render(immediateContext, biker);
 	mRender->Render(immediateContext, sword);*/
 	/*immediateContext->Draw(biker->GetVertexCount(), 0);*/
@@ -249,18 +247,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	Model* buildings = new Model(device, "buildings", { 0.0f, -4.8f, 0.0f }, { 0.0f,0.0f,0.0f }, { 1.7f, 1.7f, 1.7f });
 	models.push_back(buildings);
 
-	Model* blendCube = new Model(device, "BlendCube", { 10.0f, -2.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.3f, 0.3f, 0.3f });
-	
-
 	Model* terrain = new Model(device, "terrain", { 0.0f, -4.0f, 0.0f }, { 0.0f, XM_PIDIV4, 0.0f }, { 2.2f, 2.2f, 2.2f });
 	terrain->SetDisplacementTexture(device, "Models/terrain/displacement.png");
+	terrain->AddTexture(device, "stone.jpg");
 
 	ParticleSystem* particlesystem = new ParticleSystem(device, 200, 5, 1, { 30,40,30 }, { 0,20,0 });
 	ParticleRenderer* pRenderer = new ParticleRenderer(device);
 	ModelRenderer* mRenderer = new ModelRenderer(device);
 	TerrainRenderer* tRenderer = new TerrainRenderer(device);
 	ShadowRenderer* sRenderer = new ShadowRenderer(device);
-	BlendModelRenderer* bRenderer = new BlendModelRenderer(device);
 
 	ShaderData::Initialize(device, mRenderer->GetByteCode());
 
@@ -280,7 +275,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 		RenderGBufferPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout,
 			sampler, gBuffer, textureSRV, vertexBuffer, particlesystem, pRenderer, mRenderer,models, tRenderer, terrain, sRenderer, 
-			rasterizerStateWireFrame, rasterizerStateSolid, bRenderer, blendCube);
+			rasterizerStateWireFrame, rasterizerStateSolid);
 		
 		update(immediateContext, dt, camera, constantBuffers,lighting, wvp, bike, particlesystem);
 

@@ -13,6 +13,7 @@ struct DS_OUTPUT
     float2 tex : TEXCOORD;
     float3 normal : NORMAL;
     float3 worldPos : WORLDPOS;
+    float blendValue : BLENDVALUE;
 };
 
 // Output control point
@@ -52,6 +53,7 @@ DS_OUTPUT main(
     //Displacement
     const float disfactor = 0.6f;
     float h = displacementTexture.SampleLevel(mySampler, output.tex, 0).r;
+    output.blendValue = h;
     output.worldPos.xyz += h * disfactor * output.normal;
    
     output.position = mul(float4(output.worldPos, 1), viewPerspective);

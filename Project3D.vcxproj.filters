@@ -108,9 +108,6 @@
     <ClInclude Include="Lights.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="BlendModelRenderer.h">
-      <Filter>Header Files\Renderers</Filter>
-    </ClInclude>
     <ClInclude Include="Blend.h">
       <Filter>Header Files\Blend Mapping</Filter>
     </ClInclude>
@@ -172,6 +169,12 @@
     </FxCompile>
     <FxCompile Include="BlendPixelShader.hlsl">
       <Filter>Resource Files\Blend Mapping</Filter>
+    </FxCompile>
+    <FxCompile Include="TerrainPixelShader.hlsl">
+      <Filter>Resource Files\Terrain</Filter>
+    </FxCompile>
+    <FxCompile Include="TerrainGeometryShader.hlsl">
+      <Filter>Resource Files\Terrain</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

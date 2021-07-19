@@ -93,7 +93,7 @@ public:
 		UpdateBuffer(context, matricesBuffer, matrices);
 		context->VSSetConstantBuffers(0, 1, &matricesBuffer);
 		
-		context->PSSetShaderResources(0, 1, model->GetTexture());
+		context->PSSetShaderResources(0, 1, model->GetTextures(1));
 
 		context->IASetVertexBuffers(0, 1, model->GetBuffer(), &stride, &offset);
 		context->Draw(model->GetVertexCount(), 0);

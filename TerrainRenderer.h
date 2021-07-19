@@ -17,8 +17,12 @@ private:
 	ID3D11HullShader* hullShader;
 	const std::string ds_path = "x64/Debug/TerrainDomainShader.cso";
 	ID3D11DomainShader* domainShader;
-	const std::string ps_path = "x64/Debug/PixelShaderDeferred.cso";
+	const std::string ps_path = "x64/Debug/TerrainPixelShader.cso";
 	ID3D11PixelShader* pixelShader;
+	const std::string gs_path = "x64/Debug/TerrainGeometryShader.cso";
+	ID3D11GeometryShader* geometryShader;
+
+
 	
 	ID3D11Buffer* matricesBuffer;
 	struct Matrices { XMFLOAT4X4 viewPerspective; XMFLOAT4X4 worldSpace; }matrices;
@@ -49,7 +53,7 @@ public:
 		HRESULT hr = device->CreateHullShader(shaderData.c_str(), shaderData.length(), nullptr, &hullShader);
 		if FAILED(hr)
 		{
-			std::cout << "FAILED TO CREATE PIXEL SHADER" << std::endl;
+			std::cout << "FAILED TO CREATE HULL SHADER" << std::endl;
 			return;
 		}
 
@@ -99,7 +103,7 @@ public:
 		hr = device->CreateDomainShader(shaderData.c_str(), shaderData.length(), nullptr, &domainShader);
 		if FAILED(hr)
 		{
-			std::cout << "FAILED TO CREATE PIXEL SHADER" << std::endl;
+			std::cout << "FAILED TO CREATE DOMAIN SHADER" << std::endl;
 			return;
 		}
 		shaderData.clear();
@@ -125,10 +129,33 @@ public:
 			return;
 		}
 
+		shaderData.clear();
+		reader.close();
+
+		reader.open(gs_path, std::ios::binary | std::ios::beg);
+		if (!reader.is_open())
+		{
+			std::cerr << "Could not open GS file!" << std::endl;
+			return;
+		}
+
+		reader.seekg(0, std::ios::end);
+		shaderData.reserve(static_cast<unsigned int>(reader.tellg()));
+		reader.seekg(0, std::ios::beg);
+
+		shaderData.assign((std::istreambuf_iterator<char>(reader)), std::istreambuf_iterator<char>());
+
+		if (FAILED(device->CreateGeometryShader(shaderData.c_str(), shaderData.length(), nullptr, &geometryShader)))
+		{
+			std::cerr << "FAILED TO CREATE GEOMETRY SHADER!" << std::endl;
+			return;
+
+		}
 		shaderByteCode = shaderData;
 
 		shaderData.clear();
 		reader.close();
+
 	}
 
 	void Render(ID3D11DeviceContext* context, Model* model)
@@ -138,6 +165,7 @@ public:
 		context->PSSetShader(pixelShader, NULL, 0);
 		context->HSSetShader(hullShader, NULL, 0);
 		context->DSSetShader(domainShader, NULL, 0);
+		context->GSSetShader(geometryShader, NULL, 0);
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
 
 		XMStoreFloat4x4(&matrices.worldSpace, XMMatrixTranspose(model->GetWorldMatrix()));
@@ -146,9 +174,9 @@ public:
 		UpdateBuffer(context, matricesBuffer, matrices);
 		context->DSSetConstantBuffers(0, 1, &matricesBuffer);
 
-		context->PSSetShaderResources(0, 1, model->GetTexture());
+		context->PSSetShaderResources(0, 2, model->GetTextures(2));
 		context->DSSetShaderResources(0, 1, model->GetDisplacementTexture());
-
+		
 		context->IASetVertexBuffers(0, 1, model->GetBuffer(), &stride, &offset);
 		context->Draw(model->GetVertexCount(), 0);
 		context->HSSetShader(NULL, NULL, 0);
