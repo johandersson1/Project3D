@@ -13,7 +13,7 @@ struct GeometryBuffer
         indexNormal,
         indexCount
     };
-    static const int NROFBUFFERS = 4;
+    static const int NROFBUFFERS = 7;
     int screenWidth;
     int screenHeight;
     ID3D11Texture2D* gBufferTexture[NROFBUFFERS];
