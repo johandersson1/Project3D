@@ -3,8 +3,6 @@
 #include <DirectXMath.h>
 #include <d3d11.h>
 
-
-
 class Model
 {
 private:
@@ -39,6 +37,9 @@ public:
 	ID3D11Buffer** GetPositionsBuffer() { return &this->positionsBuffer; }
 	const Material::Data& GetMaterial() {return this->mesh.material.data;}
 	ID3D11ShaderResourceView** GetTexture() { return this->mesh.material.diffuseTexture.Get(); }
+	// Blend
+	ID3D11ShaderResourceView** GetTextures() { return this->mesh.material.diffuseTextures[2].Get(); }
+	// Terrain
 	ID3D11ShaderResourceView** GetDisplacementTexture() { return this->mesh.material.displacementTexture.Get(); }
 	void SetDisplacementTexture(ID3D11Device* device, std::string path) { this->mesh.material.displacementTexture = Texture(device, path); }
 	void SetTranslation(XMVECTOR translation) {this->transform.translation = translation; }

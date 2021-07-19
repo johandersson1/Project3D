@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Blend.h" />
     <ClInclude Include="BlendModelRenderer.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="D3D11Help.h" />

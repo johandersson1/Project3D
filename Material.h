@@ -20,6 +20,7 @@ public:
 
     bool hasDiffuseTexture = false;
     Texture diffuseTexture; // = Texture(defaultTexture);
+    Texture diffuseTextures[2];
 
     bool hasDisplacementTexture = false;
     Texture displacementTexture; // = Texture(defaultTexture);
