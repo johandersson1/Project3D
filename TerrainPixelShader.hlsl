@@ -1,4 +1,5 @@
-Texture2D textures[2];
+Texture2D textures[2] : register(t0);
+Texture2D blendTexture : register(t2);
 sampler mySampler : register(s0);
 
 struct PSInput
@@ -7,7 +8,6 @@ struct PSInput
     float2 tex : TEXCOORD;
     float3 normal : NORMAL;
     float3 worldPos : WORLDPOS;
-    float blendValue : BLENDVALUE;
 };
 
 struct PSOutput
@@ -33,27 +33,29 @@ PSOutput main(PSInput input)
     float4 lowColour = textures[0].Sample(mySampler, input.tex);
     //float4 midColour = middleTex.Sample(SWrap, pin.Tex);
     float4 hiColour = textures[1].Sample(mySampler, input.tex);
+    float blendValue = blendTexture.Sample(mySampler, input.tex).r;
     
-    if (input.blendValue < TEX_LOW_BOUND)
-    {
-        texColour = lowColour;
-    }
-    else if (input.blendValue > TEX_LOW_BOUND)
-    {
-        texColour = hiColour;
-    }
-    else
-    {
-        texColour = lerp(lowColour, hiColour, (input.blendValue - TEX_LOW_BOUND) * (1.0f / (TEX_HIGH_BOUND - TEX_LOW_BOUND)));
-    }
+    //if (input.blendValue < TEX_LOW_BOUND)
+    //{
+    //    texColour = lowColour;
+    //}
+    //else if (input.blendValue > TEX_LOW_BOUND)
+    //{
+    //    texColour = hiColour;
+    //}
+    //else
+    //{
+    //    texColour = lerp(lowColour, hiColour, (input.blendValue - TEX_LOW_BOUND) * (1.0f / (TEX_HIGH_BOUND - TEX_LOW_BOUND)));
+    //}
     
-    
+    float highAmount = blendValue;
+    float lowAmount = 1.0f - blendValue;
    // texColour = lowColour * hiColour * 1.5f;
     
     texColour = saturate(texColour);
     
     
     //float4 lower = textures[0].Sample(mySampler, input.tex);
-    output.diffuse = texColour;
+    output.diffuse = highAmount * hiColour + lowAmount * lowColour;
 	return output;
 }

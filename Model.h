@@ -46,5 +46,4 @@ public:
 	void SetTranslation(XMVECTOR translation) {this->transform.translation = translation; }
 	void SetRotation(XMVECTOR rotation) { this->transform.rotation = rotation; }
 	void SetScale(XMVECTOR scale) {this->transform.scale = scale; }
-	
 };

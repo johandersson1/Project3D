@@ -175,6 +175,7 @@ public:
 		context->DSSetConstantBuffers(0, 1, &matricesBuffer);
 
 		context->PSSetShaderResources(0, 2, model->GetTextures(2));
+		context->PSSetShaderResources(2, 1, model->GetDisplacementTexture());
 		context->DSSetShaderResources(0, 1, model->GetDisplacementTexture());
 		
 		context->IASetVertexBuffers(0, 1, model->GetBuffer(), &stride, &offset);
