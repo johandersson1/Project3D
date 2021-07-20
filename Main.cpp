@@ -209,6 +209,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		gBuffer.gBufferTexture[i] = nullptr;
 	}
 
+	DirectionalLight dirLight;
+	dirLight.ambient = DirectX::XMFLOAT4(0.4, 0.4, 0.4, 1);
+	dirLight.diffuse = DirectX::XMFLOAT4(0.7, 0.7, 0.7, 1);
+	dirLight.specular = DirectX::XMFLOAT4(1, 1, 1, 1);
+	dirLight.lightDirection = DirectX::XMFLOAT4(1, -1, 1, 1);
+	dirLight.camPos = DirectX::XMFLOAT4(0, 0, 0, 0);
+	dirLight.range = 10;
+	dirLight.strength = 2.5f;
+	dirLight.att0 = 0.f;
+	dirLight.att1 = 1.f;
+	dirLight.att2 = 0.f;
+
 	//ConstantBuffer(s)
 	ID3D11Buffer* constantBuffers;
 
