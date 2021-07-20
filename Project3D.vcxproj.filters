@@ -46,12 +46,6 @@
     <Filter Include="Resource Files\Backfaced Culling">
       <UniqueIdentifier>{68857607-8ade-431f-89bf-47e53623f760}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\Blend Mapping">
-      <UniqueIdentifier>{d52aabf0-1629-412e-9ddd-ea37a5533715}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Blend Mapping">
-      <UniqueIdentifier>{873c4ba5-3d1d-4ec5-84e2-e44098593eac}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Model">
       <UniqueIdentifier>{0dcd9d2b-c150-4977-a72c-757d4af930d9}</UniqueIdentifier>
     </Filter>
@@ -108,9 +102,6 @@
     <ClInclude Include="Lights.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="Blend.h">
-      <Filter>Header Files\Blend Mapping</Filter>
-    </ClInclude>
     <ClInclude Include="Material.h">
       <Filter>Header Files\Model</Filter>
     </ClInclude>
@@ -163,12 +154,6 @@
     </FxCompile>
     <FxCompile Include="CullingGeometryShader.hlsl">
       <Filter>Resource Files\Backfaced Culling</Filter>
-    </FxCompile>
-    <FxCompile Include="BlendVertexShader.hlsl">
-      <Filter>Resource Files\Blend Mapping</Filter>
-    </FxCompile>
-    <FxCompile Include="BlendPixelShader.hlsl">
-      <Filter>Resource Files\Blend Mapping</Filter>
     </FxCompile>
     <FxCompile Include="TerrainPixelShader.hlsl">
       <Filter>Resource Files\Terrain</Filter>

@@ -16,6 +16,10 @@ struct PixelOutput
     float3 normal : SV_TARGET1;
     float3 worldPos : SV_TARGET2;
     float4 diffuse : SV_TARGET3;
+    float4 ambientMTL : SV_TARGET4;
+    float4 diffuseMTL : SV_TARGET5;
+    float4 specularMTL : SV_TARGET6;
+    
 };
 
 PixelOutput main(PixelInput input)
@@ -26,6 +30,9 @@ PixelOutput main(PixelInput input)
     output.normal = input.normal;
     output.worldPos = input.worldPos;
     output.diffuse = diffuseTex.Sample(mySampler, input.tex);
+    //ambientMTL = 
+    //diffuseMTL = 
+    //specularMTL = 
     
     return output; 
 }

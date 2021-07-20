@@ -53,6 +53,9 @@ void clearView(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rt
 	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[1], clearcolor);
 	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[2], clearcolor);
 	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[3], clearcolor);
+	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[4], clearcolor);
+	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[5], clearcolor);
+	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[6], clearcolor);
 	immediateContext->ClearDepthStencilView(dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 }
 
@@ -261,7 +264,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 	Model* terrain = new Model(device, "terrain", { 0.0f, -4.0f, 0.0f }, { 0.0f, XM_PIDIV4, 0.0f }, { 2.2f, 2.2f, 2.2f });
 	terrain->SetDisplacementTexture(device, "Models/terrain/displacement.png");
-	terrain->AddTexture(device, "painting.png");
+	terrain->AddTexture(device, "snow.jpg");
 
 	ParticleSystem* particlesystem = new ParticleSystem(device, 200, 5, 1, { 30,40,30 }, { 0,20,0 });
 	ParticleRenderer* pRenderer = new ParticleRenderer(device);
@@ -302,6 +305,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 	delete particlesystem;
 	delete pRenderer;
+
+	for (int i = 0; i < gBuffer.NROFBUFFERS; i++)
+	{
+		gBuffer.gBuffergBufferRtv[i]->Release();
+		gBuffer.gBufferSrv[i]->Release();
+		gBuffer.gBufferTexture[i]->Release();
+	}
 
 	vShaderDeferred->Release();
 	pShaderDeferred->Release();

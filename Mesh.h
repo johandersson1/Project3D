@@ -21,6 +21,8 @@ public:
 		if (!LoadModel(name) || !LoadMaterial(device, name))
 			std::cout << "FAILED TO LOAD MESH DATA" << std::endl;
 
+
+
 	}
 	void AddDiffuseTexture(ID3D11Device* device, std::string fileName) { material.diffuseTexures.push_back(Texture(device, "Models/" + name + "/" + fileName)); }
 		

@@ -11,7 +11,6 @@ cbuffer MATRIX : register(b2)
 struct GSOutput
 {
 	float4 pos : SV_POSITION;
-	
 };
 
 [maxvertexcount(4)]
@@ -27,10 +26,10 @@ void main(
     float3 right = cross(up, lookAt);
     
     float4 corners[4];
-    corners[0] = float4(input[0].xyz + 1.0f * right + 0.1f * up, 1.0f);
-    corners[1] = float4(input[0].xyz - 1.0f * right + 0.1f * up, 1.0f);
-    corners[2] = float4(input[0].xyz + 1.0f * right - 0.1f * up, 1.0f);
-    corners[3] = float4(input[0].xyz - 1.0f * right - 0.1f * up, 1.0f);
+    corners[0] = float4(input[0].xyz + 0.5f * right + 0.1f * up, 1.0f);
+    corners[1] = float4(input[0].xyz - 0.5f * right + 0.1f * up, 1.0f);
+    corners[2] = float4(input[0].xyz + 0.5f * right - 0.1f * up, 1.0f);
+    corners[3] = float4(input[0].xyz - 0.5f * right - 0.1f * up, 1.0f);
 	
     GSOutput gOut;
     [unroll]

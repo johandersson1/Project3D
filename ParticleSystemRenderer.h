@@ -89,10 +89,6 @@ public:
 	void Render(ID3D11DeviceContext* context, ParticleSystem* particlesystem)
 	{
 
-		//immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[0], clearcolor);
-		//immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[1], clearcolor);
-		//immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[2], clearcolor);
-		//immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[3], clearcolor);
 		UpdateBuffer(context, cameraBuffer, ShaderData::cameraPosition);
 		XMMATRIX viewPerspectiveMatrix = ShaderData::viewMatrix * ShaderData::perspectiveMatrix;
 		XMFLOAT4X4 viewPersp;
