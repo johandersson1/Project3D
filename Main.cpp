@@ -116,8 +116,12 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 void RenderLightPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsView, D3D11_VIEWPORT& viewport,
 	ID3D11PixelShader* pShaderDeferredRender,ID3D11VertexShader* vShaderDeferred, ID3D11InputLayout* inputLayout, ID3D11Buffer* vertexBuffer,
 	ID3D11ShaderResourceView* textureSRV, ID3D11SamplerState* sampler, GeometryBuffer gBuffer, ID3D11PixelShader* lightPShaderDeferred, 
-	ID3D11VertexShader* lightVShaderDeferred, ID3D11InputLayout* renderTargetMeshInputLayout, ID3D11Buffer* screenQuadMesh, PointLight &pointLight, ID3D11Buffer* pointLightBuffer)
+	ID3D11VertexShader* lightVShaderDeferred, ID3D11InputLayout* renderTargetMeshInputLayout, ID3D11Buffer* screenQuadMesh, PointLight &pointLight, 
+	ID3D11Buffer* pointLightBuffer, Camera camera, ID3D11Buffer* cameraPos)
 {
+	
+	immediateContext->PSSetConstantBuffers(1, 1, &cameraPos);
+
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 	immediateContext->IASetVertexBuffers(0, 1, &screenQuadMesh, &stride, &offset);
@@ -154,6 +158,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	WVP wvp;
 
 	Camera camera(XM_PIDIV4, (float)WIDTH / (float)HEIGHT, 0.1, 100, 2.5, 5.0f, { 12.0f,0.0f,10.0f });
+	ID3D11Buffer* cameraBuffer;
 	Timer timer;
 	float dt = 0.0f;
 
@@ -196,7 +201,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	DirectionalLight dirLight;
 	ID3D11Buffer* dirLightBuffer;
 
-	PointLight pointLight;
+	PointLight pointLight(10, { 11, -2, 0 });
 	ID3D11Buffer* pointLightBuffer;
 
 	//ConstantBuffer(s)
@@ -254,6 +259,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	//SetUpLight(device, pointLightBuffer, pointLight);
 
 	CreateBuffer(device, pointLightBuffer, sizeof(PointLight));
+	UpdateBuffer(immediateContext, pointLightBuffer, pointLight);
+	CreateBuffer(device, cameraBuffer, sizeof(XMFLOAT4));
 
 	MSG msg = {};
 
@@ -268,6 +275,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		}
 	
 		ShaderData::Update(immediateContext, camera);
+		UpdateBuffer(immediateContext, cameraBuffer, camera.GetPosition());
 
 		RenderGBufferPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout,
 			sampler, gBuffer, textureSRV, vertexBuffer, particlesystem, pRenderer, mRenderer,models, tRenderer, terrain, sRenderer, 
@@ -277,7 +285,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 		
 		RenderLightPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout, vertexBuffer,
-			textureSRV, sampler, gBuffer, lightPShaderDeferred,	lightVShaderDeferred, renderTargetMeshInputLayout, screenQuadMesh, pointLight, pointLightBuffer);
+			textureSRV, sampler, gBuffer, lightPShaderDeferred,	lightVShaderDeferred, renderTargetMeshInputLayout, screenQuadMesh, 
+			pointLight, pointLightBuffer, camera, cameraBuffer);
 
 		swapChain->Present(0, 0); // Presents a rendered image to the user.
 		
@@ -287,16 +296,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	delete particlesystem;
 	delete pRenderer;
 
-
-
 	for (int i = 0; i < gBuffer.NROFBUFFERS; i++)
 	{
 		gBuffer.gBuffergBufferRtv[i]->Release();
 		gBuffer.gBufferSrv[i]->Release();
 		gBuffer.gBufferTexture[i]->Release();
 	}
-
-
+	cameraBuffer->Release();
 	pointLightBuffer->Release();
 	vShaderDeferred->Release();
 	pShaderDeferred->Release();
