@@ -99,8 +99,8 @@ float4 main(PixelInput input) : SV_Target
     //ambientComponent *= shadowMapTexture.Sample(testSampler, input.uv).x;
     
     //Output
-    //finalOutput = albedo * (ambientComponent + diffuseComponent) + specularComponent;
-    finalOutput = albedo; /** normal * worldPos;*/
+    finalOutput = albedo * (ambientComponent + diffuseComponent) + specularComponent;
+    //finalOutput = albedo; /** normal * worldPos;*/
     return finalOutput;
   
 }
