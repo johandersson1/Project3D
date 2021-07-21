@@ -31,7 +31,7 @@ public:
 		
 	void AddDisplacementTexture(ID3D11Device* device, std::string fileName) { material.displacementTexture = Texture(device, "Models/" + name + "/" + fileName); }
 
-	ID3D11Buffer** GetMTLBuffer() { return &this->mtlBuffer; }
+	ID3D11Buffer* GetMTLBuffer() { return this->mtlBuffer; }
 
 	int vertexCount = 0;
 	std::vector<Face> faces;

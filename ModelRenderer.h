@@ -95,7 +95,18 @@ public:
 		context->VSSetConstantBuffers(1, 1, &matricesBuffer);
 		
 		context->PSSetShaderResources(0, 1, model->GetTextures(1));
-		UpdateBuffer(context, mtlBuffer, model->GetMTLBuffer());
+		
+		D3D11_MAPPED_SUBRESOURCE mappedBuffer = {};
+
+		HRESULT hr = context->Map(*model->GetMTLBuffer(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedBuffer);
+		if FAILED(hr)
+		{
+			std::cout << "FAILED TO UPDATE MTL BUFFER" << std::endl;
+			return;
+		}
+		memcpy(mappedBuffer.pData, &model->GetMaterial(), sizeof(model->GetMaterial()));
+		context->Unmap(*model->GetMTLBuffer(), 0);
+
 		context->PSSetConstantBuffers(0, 1, model->GetMTLBuffer());
 
 		context->IASetVertexBuffers(0, 1, model->GetBuffer(), &stride, &offset);

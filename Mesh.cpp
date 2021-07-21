@@ -183,8 +183,20 @@ bool Mesh::LoadMaterial(ID3D11Device* device, std::string name)
 
 	}
 
+	D3D11_BUFFER_DESC bufferDesc = {};
+	bufferDesc.ByteWidth = sizeof(material.data);
+	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	bufferDesc.MiscFlags = 0;
+	bufferDesc.StructureByteStride = 0;
 
-	CreateBuffer(device, mtlBuffer, sizeof(material.data));
+
+	HRESULT hr = device->CreateBuffer(&bufferDesc, nullptr, &mtlBuffer);
+	if FAILED(hr)
+	{
+		std::cout << "FAILED TO CREATE BUFFER" << std::endl;
+	}
 
 
 
@@ -193,5 +205,5 @@ bool Mesh::LoadMaterial(ID3D11Device* device, std::string name)
 
 Mesh::~Mesh()
 {
-	mtlBuffer->Release();
+	//mtlBuffer->Release();
 }
