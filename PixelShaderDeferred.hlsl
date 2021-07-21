@@ -22,6 +22,13 @@ struct PixelOutput
     
 };
 
+cbuffer mtlData : register(b0)
+{
+    float4 kA;
+    float4 kD;
+    float4 kS;
+}
+
 PixelOutput main(PixelInput input)
 {
     PixelOutput output;
@@ -30,9 +37,9 @@ PixelOutput main(PixelInput input)
     output.normal = input.normal;
     output.worldPos = input.worldPos;
     output.diffuse = diffuseTex.Sample(mySampler, input.tex);
-    //ambientMTL = 
-    //diffuseMTL = 
-    //specularMTL = 
+    output.ambientMTL = kA;
+    output.diffuseMTL = kD;
+    output.specularMTL = kS;
     
     return output; 
 }

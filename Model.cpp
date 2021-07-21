@@ -41,11 +41,21 @@ Model::Model(ID3D11Device* device, std::string name, XMVECTOR position, XMVECTOR
 		std::cout << "FAILED TO CREATE MESH VERTEXBUFFER" << std::endl;
 	}
 
+
+	//// MTL BUFFER
+	//D3D11_BUFFER_DESC mtlDesc = {};
+	//desc.ByteWidth = sizeof(Material.)
+
+
+
+
 }
 
 Model::~Model()
 {
 	vertexBuffer->Release();
+	positionsBuffer->Release();
+	
 }
 
 void Model::Update()

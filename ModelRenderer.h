@@ -18,6 +18,7 @@ private:
 	ID3D11VertexShader* vertexShader;
 
 	ID3D11Buffer* matricesBuffer;
+	ID3D11Buffer* mtlBuffer;
 	struct Matrices { XMFLOAT4X4 WVP; XMFLOAT4X4 worldSpace; }matrices;
 public: 
 	
@@ -91,9 +92,11 @@ public:
 		XMMATRIX WVP = XMMatrixTranspose(model->GetWorldMatrix() * ShaderData::viewMatrix * ShaderData::perspectiveMatrix);
 		XMStoreFloat4x4(&matrices.WVP, WVP);
 		UpdateBuffer(context, matricesBuffer, matrices);
-		context->VSSetConstantBuffers(0, 1, &matricesBuffer);
+		context->VSSetConstantBuffers(1, 1, &matricesBuffer);
 		
 		context->PSSetShaderResources(0, 1, model->GetTextures(1));
+		UpdateBuffer(context, mtlBuffer, model->GetMTLBuffer());
+		context->PSSetConstantBuffers(0, 1, model->GetMTLBuffer());
 
 		context->IASetVertexBuffers(0, 1, model->GetBuffer(), &stride, &offset);
 		context->Draw(model->GetVertexCount(), 0);

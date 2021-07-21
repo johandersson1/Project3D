@@ -183,5 +183,15 @@ bool Mesh::LoadMaterial(ID3D11Device* device, std::string name)
 
 	}
 
+
+	CreateBuffer(device, mtlBuffer, sizeof(material.data));
+
+
+
 	return true;
+}
+
+Mesh::~Mesh()
+{
+	mtlBuffer->Release();
 }

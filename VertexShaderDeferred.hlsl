@@ -1,4 +1,4 @@
-cbuffer constantBuffer : register(b0)
+cbuffer constantBuffer : register(b1)
 {
     float4x4 WVP; //projectionMatrix
     float4x4 worldSpace; // worldMatrix
