@@ -17,7 +17,6 @@ cbuffer DirectionalLight : register(b0)
     float4 lightPos;
     float4 camPos;
     float4 lightDirection;
-    
     float lightRange;
     float lightStrength;
     float att0;
@@ -29,41 +28,15 @@ struct PixelInput
 {
     float4 position : SV_POSITION;
     float2 tex : TEXCOORD;
-    //float3 normal : NORMAL;
-    //float3 worldPosition : WORLDPOSITION;
 };
 
 float4 main(PixelInput input) : SV_Target
 {
-    //int3 sampleIndices = int3(input.position.xy, 0);
-    
-    //float3 diffuseAlbedo = diffuseAlbedoTexture.Sample(mySampler, input.tex).rgb;
-    //float3 pos = posTexture.Sample(mySampler, input.tex).rgb;
-    //float3 worldPos = worldPosTexture.Sample(mySampler, input.tex).rgb;
-    //float3 normalTex = normalTexture.Sample(mySampler, input.tex);
-    //float3 normal = normalTex.xyz;
-    
-    //return float4(diffuseAlbedo, 1.0f);
-    
-//// Sample the diffuse map 
-//    float3 diffuseAlbedo = DiffuseMap.Sample(AnisoSampler, input.TexCoord).rgb;
-//// Determine our indices for sampling the texture based on the current 
-//// screen position 
-//    int3 sampleIndices = int3(input.ScreenPos.xy, 0);
-//// Sample the light target 
-//    float4 lighting = LightTexture.Load(samplelndices);
-//// Apply the diffuse and specular albedo to the lighting value 
-//    float3 diffuse = lighting.xyz * diffuseAlbedo;
-//    float3 specular = lighting.w * SpecularAlbedo;
-//// Final output is the sum of diffuse + specular 
-//    return float4(diffuse + specular, 1.0f);
-    
-    PixelInput output;
-    
+
     float4 normal = normalTexture.Sample(mySampler, input.tex);
     float4 albedo = diffuseAlbedoTexture.Sample(mySampler, input.tex);
     float4 worldPos = worldPosTexture.Sample(mySampler, input.tex);
-    //float4 shadowPosH = shadowMapTexture.Sample(mySampler, input.tex);
+   // float4 shadowPosH = shadowMapTexture.Sample(testSampler, input.tex);
     
     
     normal = normalize(normal);
@@ -81,10 +54,15 @@ float4 main(PixelInput input) : SV_Target
     float diffuseFactor = dot(float4(lightVector, 0), normal);
     float4 diffuseComponent = float4(0, 0, 0, 1);
     
-    float ShinynessFactor = 64;
+    float ShinynessFactor = 32;
     float specularFactor = 0;
     float att = 0;
     float4 specularComponent = float4(0, 0, 0, 1);
+    
+    if (length(specularMaterial) == 0)
+    {
+        return albedo;
+    }
     
     if (diffuseFactor > 0)
     {
@@ -97,10 +75,12 @@ float4 main(PixelInput input) : SV_Target
     }
     
     //ambientComponent *= shadowMapTexture.Sample(testSampler, input.uv).x;
+    //diffuseComponent *= shadowMapTexture.Sample(testSampler, input.uv).x;
+    //specularComponent *= shadowMapTexture.Sample(testSampler, input.uv).x;
     
     //Output
-    finalOutput = albedo; /* * (ambientComponent + diffuseComponent) + specularComponent;*/
-    //finalOutput = albedo; /** normal * worldPos;*/
+    finalOutput = albedo * (ambientComponent + diffuseComponent) + specularComponent;
+    //output.lightPassOutput = finalOutput;
     return finalOutput;
-  
+    
 }

@@ -16,6 +16,9 @@ struct PSOutput
     float3 normal : SV_TARGET1;
     float3 worldPos : SV_TARGET2;
     float4 diffuse : SV_TARGET3;
+    float4 ambientMTL : SV_TARGET4;
+    float4 diffuseMTL : SV_TARGET5;
+    float4 specularMTL : SV_TARGET6;
 };
 
 PSOutput main(PSInput input)
@@ -25,37 +28,22 @@ PSOutput main(PSInput input)
     output.worldPos = input.worldPos;
     output.normal = input.normal;
     output.position = input.position;
-    
+    output.ambientMTL = float4(0.5f, 0.5f, 0.5f, 1);
+    output.diffuseMTL = float4(0.5f, 0.5f, 0.5f, 1);
+    output.specularMTL = float4(0.2f, 0.2f, 0.2f, 1);
     static const float TEX_LOW_BOUND = 0.4f;
     static const float TEX_HIGH_BOUND = 0.7f;
-    
+
     float4 texColour;
     float4 lowColour = textures[0].Sample(mySampler, input.tex);
-    //float4 midColour = middleTex.Sample(SWrap, pin.Tex);
     float4 hiColour = textures[1].Sample(mySampler, input.tex);
     float blendValue = blendTexture.Sample(mySampler, input.tex).r;
-    
-    //if (input.blendValue < TEX_LOW_BOUND)
-    //{
-    //    texColour = lowColour;
-    //}
-    //else if (input.blendValue > TEX_LOW_BOUND)
-    //{
-    //    texColour = hiColour;
-    //}
-    //else
-    //{
-    //    texColour = lerp(lowColour, hiColour, (input.blendValue - TEX_LOW_BOUND) * (1.0f / (TEX_HIGH_BOUND - TEX_LOW_BOUND)));
-    //}
-    
+        
     float highAmount = blendValue;
     float lowAmount = 1.0f - blendValue;
-   // texColour = lowColour * hiColour * 1.5f;
-    
+        
     texColour = saturate(texColour);
-    
-    
-    //float4 lower = textures[0].Sample(mySampler, input.tex);
+   
     output.diffuse = highAmount * hiColour + lowAmount * lowColour;
-	return output;
+    return output;
 }

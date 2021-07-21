@@ -11,56 +11,20 @@ struct WVP
     DirectX::XMFLOAT4X4 worldViewProj;
     DirectX::XMFLOAT4X4 worldSpace;
 };
-//struct för Light
-struct Light
-{
-    //flera paddings variabler för att det ska inte bli någon offset med variablerna
-    DirectX::XMFLOAT3 lightColour;
-    float padding1;
-    DirectX::XMFLOAT3 lightAmbient;
-    float padding2;
-    DirectX::XMFLOAT3 lightDiffuse;
-    float padding3;
-    DirectX::XMFLOAT3 lightCamPos;
-    float padding4;
-    DirectX::XMFLOAT3 lightAttenuation;
-    float padding5;
-};
-
-struct DirectionalLight
-{
-    DirectionalLight() { ZeroMemory(this, sizeof(this)); }
-    DirectX::XMFLOAT4 ambient;
-    DirectX::XMFLOAT4 diffuse;
-    DirectX::XMFLOAT4 specular;
-    DirectX::XMFLOAT4 lightPos;
-    DirectX::XMFLOAT4 camPos;
-    DirectX::XMFLOAT4 lightDirection;
-
-    float range;
-    float strength;
-    float att0;
-    float att1;
-    float att2;
-    float pad;
-    float pad1;
-    float pad2;
-};
 
 //struct för SimpleVertex
 struct Vertex2
 {
     float pos[3];
     float uv[2];
-    /*float clr[3];*/
     float norm[3];
 
-    Vertex2(const std::array<float, 3>& position, const std::array<float, 2>& uvCoords, /*const std::array<float, 3>& colour,*/ const std::array<float, 3>& normal)
+    Vertex2(const std::array<float, 3>& position, const std::array<float, 2>& uvCoords, const std::array<float, 3>& normal)
     {
         for (int i = 0; i < 3; ++i)
         {
             pos[i] = position[i];
-            /*clr[i] = colour[i];*/
+
         }
 
         uv[0] = uvCoords[0];

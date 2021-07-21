@@ -198,8 +198,6 @@ bool Mesh::LoadMaterial(ID3D11Device* device, std::string name)
 		std::cout << "FAILED TO CREATE BUFFER" << std::endl;
 	}
 
-
-
 	return true;
 }
 

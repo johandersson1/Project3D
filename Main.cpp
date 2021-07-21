@@ -9,6 +9,7 @@
 #include "ModelRenderer.h"
 #include "TerrainRenderer.h"
 #include "ShadowRenderer.h"
+#include "Lights.h"
 //Skapa en map,unmap, buffer till light, funktion för allting som ska kallas på i lightpassset 
 //Console Setup
 #include<io.h>
@@ -27,23 +28,30 @@ void RedirectIOToConsole()
 	freopen_s(&fp, "CONOUT$", "w", stdout);
 }
 
-//void SetUpLight(ID3D11Device* device, ID3D11Buffer* &lightConstantBuffer, Light &lighting)
-//{
-//	lighting.lightColour = DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f };
-//	lighting.lightAmbient = DirectX::XMFLOAT3{ 0.5f, 0.5f, 0.5f };
-//	lighting.lightDiffuse = DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f };
-//	lighting.lightCamPos = DirectX::XMFLOAT3{ 0.0f, 0.0f, -5.0f }; //ljusinställningar 
-//
-//	D3D11_BUFFER_DESC cbLight;
-//	ZeroMemory(&cbLight, sizeof(D3D11_BUFFER_DESC)); //nollställer
-//	cbLight.ByteWidth = sizeof(lighting); //Bytesize 
-//	cbLight.Usage = D3D11_USAGE_DYNAMIC; //blir tillgänglig för både GPU(read only) och CPU(write only) använd Map.
-//	cbLight.BindFlags = D3D11_BIND_CONSTANT_BUFFER; //Binder en buffert som en constantbuffert till ett shader stage
-//	cbLight.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;  //resursen ska vara mappable så att CPU kan ändra innehållet
-//	cbLight.MiscFlags = 0; //används inte
-//
-//	device->CreateBuffer(&cbLight, nullptr, &lightConstantBuffer);
-//}
+void SetUpLight(ID3D11Device* device, ID3D11Buffer* &lightConstantBuffer, PointLight &light)
+{
+	
+	//light
+
+	//D3D11_BUFFER_DESC cbLight;
+	//ZeroMemory(&cbLight, sizeof(D3D11_BUFFER_DESC)); //nollställer
+	//cbLight.ByteWidth = sizeof(light); //Bytesize 
+	//cbLight.Usage = D3D11_USAGE_DYNAMIC; //blir tillgänglig för både GPU(read only) och CPU(write only) använd Map.
+	//cbLight.BindFlags = D3D11_BIND_CONSTANT_BUFFER; //Binder en buffert som en constantbuffert till ett shader stage
+	//cbLight.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;  //resursen ska vara mappable så att CPU kan ändra innehållet
+	//cbLight.MiscFlags = 0; //används inte
+
+	//D3D11_SUBRESOURCE_DATA data = {};
+	//data.pSysMem = &light;
+
+	//HRESULT hr = device->CreateBuffer(&cbLight, &data, &lightConstantBuffer);
+	//if (FAILED(hr))
+	//{
+	//	std::cout << "FAILED TO CREATE LIGHT BUFFER" << std::endl;
+	//	return;
+	//}
+	
+}
 
 // Function to clear the window
 void clearView(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsView, const GeometryBuffer& gBuffer)
@@ -60,30 +68,10 @@ void clearView(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rt
 }
 
 // Update function to update the camera, the particles and the CB containing worldSpace and WVP matricies
-void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera, 
-			ID3D11Buffer* constantBuffers, Light& lighting, WVP& wvp, Model* biker, ParticleSystem* particlesystem)
+void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera, ID3D11Buffer* constantBuffers, WVP& wvp, ParticleSystem* particlesystem)
 {
 	camera.Update(dt);
 	particlesystem->Update(immediateContext, dt);
-	XMMATRIX worldViewProj = XMMatrixTranspose(biker->GetWorldMatrix() * camera.GetViewMatrix() * camera.GetPerspectiveMatrix());
-
-	XMStoreFloat4x4(&wvp.worldSpace, biker->GetWorldMatrix());
-	XMStoreFloat4x4(&wvp.worldViewProj, worldViewProj);
-	immediateContext->VSSetConstantBuffers(0, 1, &constantBuffers);
-
-	D3D11_MAPPED_SUBRESOURCE dataBegin;
-	HRESULT hr = immediateContext->Map(constantBuffers, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &dataBegin);
-	if (SUCCEEDED(hr))
-	{
-		memcpy(dataBegin.pData, &wvp, sizeof(WVP));
-		immediateContext->Unmap(constantBuffers, NULL);
-	}
-	else
-	{
-		std::cerr << "Failed to update ConstantBuffer (update function)" << std::endl;
-	}
-	//std::cout << " render...... X: " << camera.GetPosition().x << " Y: " << camera.GetPosition().y << " Z: " << camera.GetPosition().z << std::endl;
-
 }
 
 // Geometry Pass for deferred rendering (and shadows)
@@ -108,14 +96,11 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	immediateContext->RSSetState(rasterizerStateSolid);
 	immediateContext->GSSetShader(ShaderData::geometryShader, nullptr, 0);
 	immediateContext->OMSetRenderTargets(gBuffer.NROFBUFFERS, gBuffer.gBuffergBufferRtv, dsView);
+
 	for (auto model : models)
 		mRenderer->Render(immediateContext, model);
-	//bRenderer->Render(immediateContext, blendCube);
-	/*mRender->Render(immediateContext, biker);
-	mRender->Render(immediateContext, sword);*/
-	/*immediateContext->Draw(biker->GetVertexCount(), 0);*/
-	tRenderer->Render(immediateContext, terrain);
 
+	tRenderer->Render(immediateContext, terrain);
 	pRenderer->Render(immediateContext, particlesystem);
 
 	//Clean up
@@ -125,15 +110,13 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 		nullArr[i] = nullptr;
 	}
 	immediateContext->OMSetRenderTargets(gBuffer.NROFBUFFERS, nullArr, dsView);
-
-
 }
 
 // Light pass -- renders the geometry and lighting on the final screen quad
 void RenderLightPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsView, D3D11_VIEWPORT& viewport,
 	ID3D11PixelShader* pShaderDeferredRender,ID3D11VertexShader* vShaderDeferred, ID3D11InputLayout* inputLayout, ID3D11Buffer* vertexBuffer,
 	ID3D11ShaderResourceView* textureSRV, ID3D11SamplerState* sampler, GeometryBuffer gBuffer, ID3D11PixelShader* lightPShaderDeferred, 
-	ID3D11VertexShader* lightVShaderDeferred, ID3D11InputLayout* renderTargetMeshInputLayout, ID3D11Buffer* screenQuadMesh, DirectionalLight &dirLight)
+	ID3D11VertexShader* lightVShaderDeferred, ID3D11InputLayout* renderTargetMeshInputLayout, ID3D11Buffer* screenQuadMesh, PointLight &pointLight, ID3D11Buffer* pointLightBuffer)
 {
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
@@ -144,6 +127,7 @@ void RenderLightPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetVi
 	immediateContext->RSSetViewports(1, &viewport);
 	immediateContext->PSSetShader(lightPShaderDeferred, NULL, 0);
 	immediateContext->PSSetShaderResources(0, gBuffer.NROFBUFFERS, gBuffer.gBufferSrv);
+	immediateContext->PSSetConstantBuffers(0, 1, &pointLightBuffer);
 	immediateContext->PSSetSamplers(0, 1, &sampler);
 	immediateContext->RSSetState(nullptr);
 	immediateContext->OMSetRenderTargets(1, &rtv, dsView);
@@ -167,7 +151,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	HWND window; 
 	RedirectIOToConsole();
 
-	Light lighting;
 	WVP wvp;
 
 	Camera camera(XM_PIDIV4, (float)WIDTH / (float)HEIGHT, 0.1, 100, 2.5, 5.0f, { 12.0f,0.0f,10.0f });
@@ -202,7 +185,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	ID3D11Buffer* screenQuadMesh;
 
 	//Gbuffer
-	DirectionalLight deferredPS;
 	GeometryBuffer gBuffer;
 	gBuffer.screenWidth = WIDTH;
 	gBuffer.screenHeight = HEIGHT;
@@ -212,16 +194,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	}
 
 	DirectionalLight dirLight;
-	dirLight.ambient = DirectX::XMFLOAT4(0.4, 0.4, 0.4, 1);
-	dirLight.diffuse = DirectX::XMFLOAT4(0.7, 0.7, 0.7, 1);
-	dirLight.specular = DirectX::XMFLOAT4(1, 1, 1, 1);
-	dirLight.lightDirection = DirectX::XMFLOAT4(1, -1, 1, 1);
-	dirLight.camPos = DirectX::XMFLOAT4(0, 0, 0, 0);
-	dirLight.range = 10;
-	dirLight.strength = 2.5f;
-	dirLight.att0 = 0.f;
-	dirLight.att1 = 1.f;
-	dirLight.att2 = 0.f;
+	ID3D11Buffer* dirLightBuffer;
+
+	PointLight pointLight;
+	ID3D11Buffer* pointLightBuffer;
 
 	//ConstantBuffer(s)
 	ID3D11Buffer* constantBuffers;
@@ -250,14 +226,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	// Creating a vector that stores the models
 	std::vector <Model*>models;
 	// Creating a new model for each mesh in the scene
+
+	//Model* cube = new Model(device, "newCube", { 20.0f, -2.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.3f, 0.3f, 0.3f });
+	//models.push_back(cube);
+
 	Model* bike = new Model(device, "biker", { 10.0f, -3.6f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.5f, 0.5f, 0.5f });
 	models.push_back(bike);
 	Model* sword = new Model(device, "sword", { 15.0f, -3.4f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.4f, 0.4f, 0.4f });
 	models.push_back(sword);
 	Model* cigg = new Model(device, "cigg", { 25.0f, -3.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.1f, 0.1f, 0.1f });
 	models.push_back(cigg);
-	Model* cube = new Model(device, "newCube", { 20.0f, -2.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.3f, 0.3f, 0.3f });
-	models.push_back(cube);
+
 	Model* buildings = new Model(device, "buildings", { 0.0f, -4.8f, 0.0f }, { 0.0f,0.0f,0.0f }, { 1.7f, 1.7f, 1.7f });
 	models.push_back(buildings);
 
@@ -272,6 +251,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	ShadowRenderer* sRenderer = new ShadowRenderer(device);
 
 	ShaderData::Initialize(device, mRenderer->GetByteCode());
+	//SetUpLight(device, pointLightBuffer, pointLight);
+
+	CreateBuffer(device, pointLightBuffer, sizeof(PointLight));
 
 	MSG msg = {};
 
@@ -291,11 +273,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 			sampler, gBuffer, textureSRV, vertexBuffer, particlesystem, pRenderer, mRenderer,models, tRenderer, terrain, sRenderer, 
 			rasterizerStateWireFrame, rasterizerStateSolid);
 		
-		update(immediateContext, dt, camera, constantBuffers,lighting, wvp, bike, particlesystem);
+		update(immediateContext, dt, camera, constantBuffers, wvp, particlesystem);
 
 		
 		RenderLightPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout, vertexBuffer,
-			textureSRV, sampler, gBuffer, lightPShaderDeferred,	lightVShaderDeferred, renderTargetMeshInputLayout, screenQuadMesh, dirLight);
+			textureSRV, sampler, gBuffer, lightPShaderDeferred,	lightVShaderDeferred, renderTargetMeshInputLayout, screenQuadMesh, pointLight, pointLightBuffer);
 
 		swapChain->Present(0, 0); // Presents a rendered image to the user.
 		
@@ -305,6 +287,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	delete particlesystem;
 	delete pRenderer;
 
+
+
 	for (int i = 0; i < gBuffer.NROFBUFFERS; i++)
 	{
 		gBuffer.gBuffergBufferRtv[i]->Release();
@@ -312,6 +296,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		gBuffer.gBufferTexture[i]->Release();
 	}
 
+
+	pointLightBuffer->Release();
 	vShaderDeferred->Release();
 	pShaderDeferred->Release();
 	screenQuadMesh->Release();

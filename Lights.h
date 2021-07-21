@@ -3,29 +3,46 @@
 #include <Windows.h>
 using namespace DirectX;
 
-struct DirectionalLight
+class DirectionalLight
 {
-	DirectionalLight() { ZeroMemory(this, sizeof(this)); }
-	
-	struct Data
-	{
-		XMFLOAT4 ambient;
-		XMFLOAT4 diffuse;
-		XMFLOAT4 specular;
-		XMFLOAT4 position;
-		XMFLOAT4 direction;
-		XMFLOAT3 attenuation;
-		float range;
-	}data;
-
-	//DirectionalLight()
-	//	:ambient({ 0.5f,0.5f,0.5f,1.0f }), diffuse({ 0.7f,0.7f,0.7f,1.0f }), specular({ 1.0f,1.0f,1.0f,1.0f, }), position({ 0.0f,20,20, 1 }),
-	//	camPosition({ 0,0,0,0 }), lightDirection({ 0.0f,-0.5f, -1.0f, 1.0f }), range(10), strength(2.5f), att0(0), att1(1), att2(0) {};
-	XMMATRIX GetMatrix() { return this->matrix; }
-	void SetMatrix() 
-	{
-
-	}
 private:
-	XMMATRIX matrix;
+	XMMATRIX matrix = XMMatrixIdentity();
+public:
+	DirectionalLight() = default;
+	DirectionalLight(float range, XMVECTOR direction)
+	{
+		direction = XMVector3Normalize(direction);
+
+		XMVECTOR position = -direction * range;
+		XMVECTOR target = { 0,0,0 };
+		XMVECTOR up = { 0,1,0 };
+
+		XMMATRIX M1 = XMMatrixLookAtLH(position, target, up);
+		XMMATRIX M2 = XMMatrixOrthographicOffCenterLH(-range, range, -range, range, -range, range);
+
+		matrix = XMMatrixTranspose(M1 * M2);
+	}
+
+	XMMATRIX GetMatrix() const { return this->matrix; }
 };
+
+struct PointLight
+{
+public:
+	XMFLOAT4 color = { 1,1,1,1 };
+	XMFLOAT3 position = { 0,0,0 };
+	float range = 0;
+	XMFLOAT3 attenuation = { 0,0,0 };
+	float padding = 0;
+public:
+	PointLight() = default;
+	PointLight(float range, XMFLOAT3 position,  XMFLOAT3 color = { 1.0f, 1.0f, 1.0f }, XMFLOAT3 attenuation = { 1.0f, 1.0f, 1.0f })
+	{
+		this->color = XMFLOAT4(color.x, color.y, color.z, 1.0f);
+		this->position = position;
+		this->attenuation = attenuation;
+		this->range = range;
+	}
+};
+
+
