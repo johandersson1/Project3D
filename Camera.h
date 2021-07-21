@@ -7,8 +7,6 @@
 #include <algorithm>
 using namespace DirectX;
 
-
-
 class Camera
 {
 private:
@@ -17,6 +15,7 @@ private:
 	XMVECTOR forward;
 	XMVECTOR right;
 	XMVECTOR up;
+	XMVECTOR moveUp;
 	XMFLOAT3 position;
 
 	float pitch;
@@ -49,6 +48,7 @@ public:
 
 	void MoveRight(float dt);
 	void MoveForward(float dt);
+	void MoveUpDown(float dt);
 	void Rotate(float dx, float dy);
 
 	void Update(float dt);

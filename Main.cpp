@@ -201,7 +201,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	DirectionalLight dirLight;
 	ID3D11Buffer* dirLightBuffer;
 
-	PointLight pointLight(10, { 11, -2, 0 });
+	PointLight pointLight(50, { 6, 3, -1 });
 	ID3D11Buffer* pointLightBuffer;
 
 	//ConstantBuffer(s)
@@ -249,7 +249,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	terrain->SetDisplacementTexture(device, "Models/terrain/displacement.png");
 	terrain->AddTexture(device, "snow.jpg");
 
-	ParticleSystem* particlesystem = new ParticleSystem(device, 200, 5, 1, { 30,40,30 }, { 0,20,0 });
+	ParticleSystem* particlesystem = new ParticleSystem(device, 200, 5, 1, { 60,25,60 }, { 0,20,0 });
 	ParticleRenderer* pRenderer = new ParticleRenderer(device);
 	ModelRenderer* mRenderer = new ModelRenderer(device);
 	TerrainRenderer* tRenderer = new TerrainRenderer(device);
