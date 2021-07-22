@@ -63,7 +63,7 @@ void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera, ID3
 
 	if (max == true)
 	{
-		pointlight.position.z = 0.0f;
+		pointlight.position.z = -1.0f;
 		max = false;
 	}
 
