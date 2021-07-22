@@ -43,6 +43,10 @@ public:
 		this->attenuation = attenuation;
 		this->range = range;
 	}
+	void UpdatePosition(XMFLOAT3 position)
+	{
+		this->position = position;
+	};
 };
 
 

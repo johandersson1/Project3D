@@ -100,7 +100,7 @@ float4 main(PixelInput input) : SV_Target
     }
     
     LightResult lResult = LightCalculation(worldPos, normal, diffuseMaterial, specularMaterial);
-    float4 globalAmbient = { 0.3f, 0.3f, 0.3f, 1.0f };
+    float4 globalAmbient = { 0.1f, 0.1f, 0.1f, 1.0f };
     float4 A = ambientMaterial * globalAmbient;
     
     float4 finalColor = albedo * (lResult.diffuse + lResult.specular + A);

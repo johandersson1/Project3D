@@ -10,7 +10,6 @@
 #include "TerrainRenderer.h"
 #include "ShadowRenderer.h"
 #include "Lights.h"
-//Skapa en map,unmap, buffer till light, funktion för allting som ska kallas på i lightpassset 
 //Console Setup
 #include<io.h>
 #include<fcntl.h>
@@ -28,31 +27,6 @@ void RedirectIOToConsole()
 	freopen_s(&fp, "CONOUT$", "w", stdout);
 }
 
-void SetUpLight(ID3D11Device* device, ID3D11Buffer* &lightConstantBuffer, PointLight &light)
-{
-	
-	//light
-
-	//D3D11_BUFFER_DESC cbLight;
-	//ZeroMemory(&cbLight, sizeof(D3D11_BUFFER_DESC)); //nollställer
-	//cbLight.ByteWidth = sizeof(light); //Bytesize 
-	//cbLight.Usage = D3D11_USAGE_DYNAMIC; //blir tillgänglig för både GPU(read only) och CPU(write only) använd Map.
-	//cbLight.BindFlags = D3D11_BIND_CONSTANT_BUFFER; //Binder en buffert som en constantbuffert till ett shader stage
-	//cbLight.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;  //resursen ska vara mappable så att CPU kan ändra innehållet
-	//cbLight.MiscFlags = 0; //används inte
-
-	//D3D11_SUBRESOURCE_DATA data = {};
-	//data.pSysMem = &light;
-
-	//HRESULT hr = device->CreateBuffer(&cbLight, &data, &lightConstantBuffer);
-	//if (FAILED(hr))
-	//{
-	//	std::cout << "FAILED TO CREATE LIGHT BUFFER" << std::endl;
-	//	return;
-	//}
-	
-}
-
 // Function to clear the window
 void clearView(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsView, const GeometryBuffer& gBuffer)
 {
@@ -68,10 +42,45 @@ void clearView(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rt
 }
 
 // Update function to update the camera, the particles and the CB containing worldSpace and WVP matricies
-void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera, ID3D11Buffer* constantBuffers, WVP& wvp, ParticleSystem* particlesystem)
+void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera, ID3D11Buffer* constantBuffers, WVP& wvp, 
+			ParticleSystem* particlesystem, PointLight &pointlight, ID3D11Buffer* pointLightBuffer)
 {
 	camera.Update(dt);
 	particlesystem->Update(immediateContext, dt);
+	//std::cout << dt << std::endl;
+	float pos = pointlight.position.z;
+	bool max = false;
+	
+	if (max == false)
+	{
+		pointlight.position.z += 2.0f * dt;
+		
+	}
+	if (pos >= 8.0f)
+	{
+		max = true;
+	}
+
+	if (max == true)
+	{
+		pointlight.position.z = 0.0f;
+		max = false;
+	}
+
+	//if (max == true)
+	//{
+	//	pointlight.position.z -= 0.7f * dt;
+	//}
+	//if (pos == 0.0f)
+	//{
+	//	max = false;
+	//}
+
+	pointlight.UpdatePosition(pointlight.position);
+	std::cout << " lightPos: " << pointlight.position.x << " Y: " << pointlight.position.y << " Z: " << pointlight.position.z << std::endl;
+
+	UpdateBuffer(immediateContext, pointLightBuffer, pointlight);
+
 }
 
 // Geometry Pass for deferred rendering (and shadows)
@@ -150,8 +159,8 @@ void RenderLightPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetVi
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
-	const UINT WIDTH = 1280;
-	const UINT HEIGHT = 720;
+	const UINT WIDTH = 1600;
+	const UINT HEIGHT = 900;
 	HWND window; 
 	RedirectIOToConsole();
 
@@ -201,7 +210,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	DirectionalLight dirLight;
 	ID3D11Buffer* dirLightBuffer;
 
-	PointLight pointLight(50, { 6, 3, -1 });
+	PointLight pointLight(10, { 6, 3, -1 });
 	ID3D11Buffer* pointLightBuffer;
 
 	//ConstantBuffer(s)
@@ -281,7 +290,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 			sampler, gBuffer, textureSRV, vertexBuffer, particlesystem, pRenderer, mRenderer,models, tRenderer, terrain, sRenderer, 
 			rasterizerStateWireFrame, rasterizerStateSolid);
 		
-		update(immediateContext, dt, camera, constantBuffers, wvp, particlesystem);
+		update(immediateContext, dt, camera, constantBuffers, wvp, particlesystem, pointLight, pointLightBuffer);
 
 		
 		RenderLightPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout, vertexBuffer,
