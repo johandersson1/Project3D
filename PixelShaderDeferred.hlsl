@@ -29,9 +29,20 @@ cbuffer mtlData : register(b0)
     float4 kS;
 }
 
+cbuffer uvMovementCalc : register(b1)
+{
+    float uCord;
+    float vCord;
+    float pad1;
+    float pad2;
+};
+
 PixelOutput main(PixelInput input)
 {
     PixelOutput output;
+    
+    //input.tex.x += uCord;
+    //input.tex.y += vCord;
     
     output.position = input.position;
     output.normal = input.normal;
