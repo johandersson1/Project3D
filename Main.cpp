@@ -91,7 +91,7 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	ID3D11InputLayout* inputLayout, ID3D11SamplerState* sampler, GeometryBuffer gBuffer,
 	ID3D11ShaderResourceView* textureSRV, ID3D11Buffer* vertexBuffer,ParticleSystem* particlesystem, 
 	ParticleRenderer* pRenderer, ModelRenderer* mRenderer, const std::vector <Model*>&models, TerrainRenderer* tRenderer, Model* terrain,
-	ShadowRenderer* sRenderer, ID3D11RasterizerState*& rasterizerStateWireFrame, ID3D11RasterizerState*& rasterizerStateSolid, WaterRenderer* wRenderer)
+	ShadowRenderer* sRenderer, WaterRenderer* wRenderer,ID3D11RasterizerState*& rasterizerStateWireFrame, ID3D11RasterizerState*& rasterizerStateSolid)
 {
 	ShaderData::shadowmap->Bind(immediateContext); // Binds the shadowmap (sets resources)
 
@@ -113,8 +113,8 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 
 	tRenderer->Render(immediateContext, terrain);
 	pRenderer->Render(immediateContext, particlesystem);
-	for (auto model : models)
-		wRenderer->Render(immediateContext, model);
+
+	//wRenderer->Render(immediateContext, wRenderer);
 
 	//Clean up
 	ID3D11RenderTargetView* nullArr[gBuffer.NROFBUFFERS];
@@ -258,7 +258,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	models.push_back(buildings);
 
 	Model* water = new Model(device, "water", { 32.0f, -5.0f, -10.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 1.2f, 1.2f, 1.2f });
-	models.push_back(water);
+	/*models.push_back(water);*/
 
 	//water->WaterSettings(true, DirectX::XMFLOAT2(0.1f, 0.0f), DirectX::XMFLOAT2(0.0f, 0.0f), 1.0f);
 
@@ -297,7 +297,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 		RenderGBufferPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout,
 			sampler, gBuffer, textureSRV, vertexBuffer, particlesystem, pRenderer, mRenderer,models, tRenderer, terrain, sRenderer, 
-			rasterizerStateWireFrame, rasterizerStateSolid, wRenderer);
+			wRenderer, rasterizerStateWireFrame, rasterizerStateSolid);
 		
 		update(immediateContext, dt, camera, constantBuffers, wvp, particlesystem, pointLight, pointLightBuffer);
 
