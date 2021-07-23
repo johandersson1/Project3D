@@ -10,7 +10,7 @@ private:
 	XMMATRIX worldMatrix;
 	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* positionsBuffer;
-
+	ID3D11Buffer* waterBuffer;
 	//Water-effect
 	bool moveUv;
 	XMFLOAT2 movementSpeedUv;
@@ -42,6 +42,7 @@ public:
 	XMMATRIX GetWorldMatrix() { return this->worldMatrix; }
 	ID3D11Buffer** GetBuffer() { return &this->vertexBuffer; }
 	ID3D11Buffer** GetMTLBuffer() { return &this->mesh.mtlBuffer; }
+	ID3D11Buffer** GetWaterBuffer() { return &this->waterBuffer; }
 	ID3D11Buffer** GetPositionsBuffer() { return &this->positionsBuffer; }
 	const Material::Data& GetMaterial() {return this->mesh.material.data;}
 	ID3D11ShaderResourceView** GetTexture() { return this->mesh.material.diffuseTexture.Get(); }

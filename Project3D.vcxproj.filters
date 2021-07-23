@@ -55,6 +55,9 @@
     <Filter Include="Header Files\Model">
       <UniqueIdentifier>{251bc3ef-b2d3-4823-abba-96a7bfc6f560}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Water">
+      <UniqueIdentifier>{0abadc49-41a7-4915-b609-13b72e9511b7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -160,6 +163,9 @@
     </FxCompile>
     <FxCompile Include="TerrainGeometryShader.hlsl">
       <Filter>Resource Files\Terrain</Filter>
+    </FxCompile>
+    <FxCompile Include="PixelShaderWater.hlsl">
+      <Filter>Resource Files\Water</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
