@@ -11,6 +11,12 @@ private:
 	const unsigned int stride = sizeof(Vertex);
 	const unsigned int offset = 0;
 	std::string byteCode;
+
+	//Water-effect
+	bool moveUv;
+	XMFLOAT2 movementSpeedUv;
+	XMFLOAT2 OffsetUv;
+
 	//Deferred
 	const std::string ps_path = "x64/Debug/PixelShaderDeferred.cso";
 	ID3D11PixelShader* pixelShader;
@@ -79,6 +85,20 @@ public:
 		shaderData.clear();
 		reader.close();
 	
+	}
+
+	void WaterSettings(bool moveUv,XMFLOAT2 movementSpeedUv, XMFLOAT2 OffsetUv, float deltatime)
+	{
+		if (this->moveUv == true)
+		{
+			OffsetUv.x += movementSpeedUv.x * deltatime;
+			OffsetUv.y += movementSpeedUv.y * deltatime;
+		}
+		else
+		{
+			OffsetUv.x = 0;
+			OffsetUv.y = 0;
+		}
 	}
 
 	void Render(ID3D11DeviceContext* context, Model* model)
