@@ -11,6 +11,11 @@ private:
 	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* positionsBuffer;
 
+	//Water-effect
+	bool moveUv;
+	XMFLOAT2 movementSpeedUv;
+	XMFLOAT2 OffsetUv;
+
 	std::string name;
 
 	struct Transform
@@ -49,4 +54,6 @@ public:
 	void SetTranslation(XMVECTOR translation) {this->transform.translation = translation; }
 	void SetRotation(XMVECTOR rotation) { this->transform.rotation = rotation; }
 	void SetScale(XMVECTOR scale) {this->transform.scale = scale; }
+	// Water
+	void WaterSettings(bool moveUv, XMFLOAT2 movementSpeedUv, XMFLOAT2 OffsetUv, float deltatime);
 };

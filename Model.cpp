@@ -66,3 +66,17 @@ void Model::Update()
 	worldMatrix = scale * rotation * translation;
 
 }
+
+void Model::WaterSettings(bool moveUv, XMFLOAT2 movementSpeedUv, XMFLOAT2 OffsetUv, float deltatime)
+{
+	if (this->moveUv == true)
+	{
+		OffsetUv.x += movementSpeedUv.x * deltatime;
+		OffsetUv.y += movementSpeedUv.y * deltatime;
+	}
+	else
+	{
+		OffsetUv.x = 0;
+		OffsetUv.y = 0;
+	}
+}

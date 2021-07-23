@@ -255,7 +255,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 	Model* water = new Model(device, "water", { 32.0f, -5.0f, -10.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 1.2f, 1.2f, 1.2f });
 	models.push_back(water);
-
+	water->WaterSettings(false, DirectX::XMFLOAT2(0, 0), DirectX::XMFLOAT2(0, 0), 1);
 	Model* terrain = new Model(device, "terrain", { 0.0f, -4.0f, 0.0f }, { 0.0f, XM_PIDIV4, 0.0f }, { 2.2f, 2.2f, 2.2f });
 	terrain->SetDisplacementTexture(device, "Models/terrain/displacement.png");
 	terrain->AddTexture(device, "snow.jpg");
