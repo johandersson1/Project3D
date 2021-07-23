@@ -16,6 +16,7 @@ class ShaderData
 	friend class TerrainRenderer;
 	friend class ShadowRenderer;
 	friend class BlendModelRenderer;
+	friend class WaterRenderer;
 private:
 	static std::string positionOnly_vs_path;
 	static ID3D11VertexShader* positionOnly_vs;
@@ -24,6 +25,8 @@ private:
 	static XMMATRIX viewMatrix;
 	static XMMATRIX perspectiveMatrix;
 	
+	static ID3D11InputLayout* texOnly_layout;
+
 	static ID3D11InputLayout* positionOnly_layout;
 
 	static ID3D11InputLayout* model_layout;

@@ -37,8 +37,6 @@ public:
 	void Update();
 	int GetVertexCount() { return this->mesh.vertexCount; }
 
-
-
 	XMMATRIX GetWorldMatrix() { return this->worldMatrix; }
 	ID3D11Buffer** GetBuffer() { return &this->vertexBuffer; }
 	ID3D11Buffer** GetMTLBuffer() { return &this->mesh.mtlBuffer; }

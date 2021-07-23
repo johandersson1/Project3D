@@ -6,10 +6,12 @@
 #include "D3D11Helper.h"
 #include "PipelineHelper.h"
 #include "ParticleSystemRenderer.h"
+#include "Lights.h"
 #include "ModelRenderer.h"
 #include "TerrainRenderer.h"
 #include "ShadowRenderer.h"
-#include "Lights.h"
+#include "WaterRenderer.h"
+
 //Console Setup
 #include<io.h>
 #include<fcntl.h>
@@ -89,7 +91,7 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	ID3D11InputLayout* inputLayout, ID3D11SamplerState* sampler, GeometryBuffer gBuffer,
 	ID3D11ShaderResourceView* textureSRV, ID3D11Buffer* vertexBuffer,ParticleSystem* particlesystem, 
 	ParticleRenderer* pRenderer, ModelRenderer* mRenderer, const std::vector <Model*>&models, TerrainRenderer* tRenderer, Model* terrain,
-	ShadowRenderer* sRenderer, ID3D11RasterizerState*& rasterizerStateWireFrame, ID3D11RasterizerState*& rasterizerStateSolid)
+	ShadowRenderer* sRenderer, ID3D11RasterizerState*& rasterizerStateWireFrame, ID3D11RasterizerState*& rasterizerStateSolid, WaterRenderer* wRenderer)
 {
 	ShaderData::shadowmap->Bind(immediateContext); // Binds the shadowmap (sets resources)
 
@@ -111,6 +113,8 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 
 	tRenderer->Render(immediateContext, terrain);
 	pRenderer->Render(immediateContext, particlesystem);
+	for (auto model : models)
+		wRenderer->Render(immediateContext, model);
 
 	//Clean up
 	ID3D11RenderTargetView* nullArr[gBuffer.NROFBUFFERS];
@@ -256,7 +260,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	Model* water = new Model(device, "water", { 32.0f, -5.0f, -10.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 1.2f, 1.2f, 1.2f });
 	models.push_back(water);
 
-	water->WaterSettings(true, DirectX::XMFLOAT2(0.1f, 0.0f), DirectX::XMFLOAT2(0.0f, 0.0f), 1.0f);
+	//water->WaterSettings(true, DirectX::XMFLOAT2(0.1f, 0.0f), DirectX::XMFLOAT2(0.0f, 0.0f), 1.0f);
 
 	Model* terrain = new Model(device, "terrain", { 0.0f, -4.0f, 0.0f }, { 0.0f, XM_PIDIV4, 0.0f }, { 2.2f, 2.2f, 2.2f });
 	terrain->SetDisplacementTexture(device, "Models/terrain/displacement.png");
@@ -267,6 +271,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	ModelRenderer* mRenderer = new ModelRenderer(device);
 	TerrainRenderer* tRenderer = new TerrainRenderer(device);
 	ShadowRenderer* sRenderer = new ShadowRenderer(device);
+	WaterRenderer* wRenderer = new WaterRenderer(device);
 
 	ShaderData::Initialize(device, mRenderer->GetByteCode());
 	//SetUpLight(device, pointLightBuffer, pointLight);
@@ -292,7 +297,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 		RenderGBufferPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout,
 			sampler, gBuffer, textureSRV, vertexBuffer, particlesystem, pRenderer, mRenderer,models, tRenderer, terrain, sRenderer, 
-			rasterizerStateWireFrame, rasterizerStateSolid);
+			rasterizerStateWireFrame, rasterizerStateSolid, wRenderer);
 		
 		update(immediateContext, dt, camera, constantBuffers, wvp, particlesystem, pointLight, pointLightBuffer);
 

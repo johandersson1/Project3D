@@ -7,7 +7,8 @@
 	XMFLOAT3 ShaderData::cameraPosition;
 	XMMATRIX ShaderData::viewMatrix;
 	XMMATRIX ShaderData::perspectiveMatrix;
-	
+
+	ID3D11InputLayout* ShaderData::texOnly_layout;
 	ID3D11InputLayout* ShaderData::positionOnly_layout;
 	ID3D11InputLayout* ShaderData::model_layout;
 
@@ -54,12 +55,22 @@
 
 	shaderData.clear();
 	reader.close();
+	D3D11_INPUT_ELEMENT_DESC TexDesc[2] =
+	{
+		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+	};
+
+	HRESULT hr = device->CreateInputLayout(TexDesc, 1, byteCode.c_str(), byteCode.length(), &texOnly_layout);
+	if (FAILED(hr))
+	{
+		std::cout << "FAILED TO CREATE TEXCOORD INPUT LAYOUT" << std::endl;
+	}
 	D3D11_INPUT_ELEMENT_DESC positionDesc[1] = 
 	{ 
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0} 
 	};
 
-	HRESULT hr = device->CreateInputLayout(positionDesc, 1, byteCode.c_str(), byteCode.length(), &positionOnly_layout);
+	hr = device->CreateInputLayout(positionDesc, 1, byteCode.c_str(), byteCode.length(), &positionOnly_layout);
 	if (FAILED(hr))
 	{
 		std::cout << "FAILED TO CREATE POSITION INPUT LAYOUT" << std::endl;
