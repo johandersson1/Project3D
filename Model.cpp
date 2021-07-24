@@ -38,9 +38,8 @@ Model::Model(ID3D11Device* device, std::string name, XMVECTOR position, XMVECTOR
 	hr = device->CreateBuffer(&desc, &data, &positionsBuffer);
 	if (FAILED(hr))
 	{
-		std::cout << "FAILED TO CREATE MESH VERTEXBUFFER" << std::endl;
+		std::cout << "FAILED TO CREATE POSITION VERTEXBUFFER" << std::endl;
 	}
-
 
 	//// MTL BUFFER
 	//D3D11_BUFFER_DESC mtlDesc = {};

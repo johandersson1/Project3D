@@ -44,8 +44,8 @@ void clearView(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rt
 }
 
 // Update function to update the camera, the particles and the CB containing worldSpace and WVP matricies
-void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera, ID3D11Buffer* constantBuffers, WVP& wvp, 
-			ParticleSystem* particlesystem, PointLight &pointlight, ID3D11Buffer* pointLightBuffer)
+void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera, ID3D11Buffer* constantBuffers, WVP& wvp,
+			ParticleSystem* particlesystem, PointLight& pointlight, ID3D11Buffer* pointLightBuffer, Model* water)
 {
 	camera.Update(dt);
 	particlesystem->Update(immediateContext, dt);
@@ -79,9 +79,11 @@ void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera, ID3
 	//}
 
 	pointlight.UpdatePosition(pointlight.position);
-	std::cout << " lightPos: " << pointlight.position.x << " Y: " << pointlight.position.y << " Z: " << pointlight.position.z << std::endl;
+	//std::cout << " lightPos: " << pointlight.position.x << " Y: " << pointlight.position.y << " Z: " << pointlight.position.z << std::endl;
 
 	UpdateBuffer(immediateContext, pointLightBuffer, pointlight);
+	water->WaterSettings(true, DirectX::XMFLOAT2(0.1f, 0.0f), DirectX::XMFLOAT2(0.0f, 0.0f), dt);
+	UpdateBuffer(immediateContext, *water->GetWaterBuffer(), water);
 
 }
 
@@ -91,7 +93,8 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	ID3D11InputLayout* inputLayout, ID3D11SamplerState* sampler, GeometryBuffer gBuffer,
 	ID3D11ShaderResourceView* textureSRV, ID3D11Buffer* vertexBuffer,ParticleSystem* particlesystem, 
 	ParticleRenderer* pRenderer, ModelRenderer* mRenderer, const std::vector <Model*>&models, TerrainRenderer* tRenderer, Model* terrain,
-	ShadowRenderer* sRenderer, WaterRenderer* wRenderer,ID3D11RasterizerState*& rasterizerStateWireFrame, ID3D11RasterizerState*& rasterizerStateSolid)
+	ShadowRenderer* sRenderer, WaterRenderer* wRenderer,ID3D11RasterizerState*& rasterizerStateWireFrame, ID3D11RasterizerState*& rasterizerStateSolid,
+	Model* water, ID3D11Device * device)
 {
 	ShaderData::shadowmap->Bind(immediateContext); // Binds the shadowmap (sets resources)
 
@@ -109,7 +112,9 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	immediateContext->OMSetRenderTargets(gBuffer.NROFBUFFERS, gBuffer.gBuffergBufferRtv, dsView);
 
 	for (auto model : models)
-		mRenderer->Render(immediateContext, model);
+		mRenderer->Render(device, immediateContext, model, false);
+
+	mRenderer->Render(device,immediateContext, water, true);
 
 	tRenderer->Render(immediateContext, terrain);
 	pRenderer->Render(immediateContext, particlesystem);
@@ -257,10 +262,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	Model* buildings = new Model(device, "buildings", { 0.0f, -4.8f, 0.0f }, { 0.0f,0.0f,0.0f }, { 1.7f, 1.7f, 1.7f });
 	models.push_back(buildings);
 
-	Model* water = new Model(device, "water", { 32.0f, -5.0f, -10.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 1.2f, 1.2f, 1.2f });
+	Model* water = new Model(device, "water", { 14, -4.0f, 3.2f }, { 0.0f,XM_PIDIV4,0.0f }, { 1.2f, 1.2f, 1.2f });
 	/*models.push_back(water);*/
 
-	//water->WaterSettings(true, DirectX::XMFLOAT2(0.1f, 0.0f), DirectX::XMFLOAT2(0.0f, 0.0f), 1.0f);
+	water->WaterSettings(true, DirectX::XMFLOAT2(0.1f, 0.0f), DirectX::XMFLOAT2(0.0f, 0.0f), 1.0f);
 
 	Model* terrain = new Model(device, "terrain", { 0.0f, -4.0f, 0.0f }, { 0.0f, XM_PIDIV4, 0.0f }, { 2.2f, 2.2f, 2.2f });
 	terrain->SetDisplacementTexture(device, "Models/terrain/displacement.png");
@@ -279,6 +284,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	CreateBuffer(device, pointLightBuffer, sizeof(PointLight));
 	UpdateBuffer(immediateContext, pointLightBuffer, pointLight);
 	CreateBuffer(device, cameraBuffer, sizeof(XMFLOAT4));
+	//CreateBuffer(device, *water->GetWaterBuffer(), sizeof(XMFLOAT2));
 
 	MSG msg = {};
 
@@ -297,9 +303,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 		RenderGBufferPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout,
 			sampler, gBuffer, textureSRV, vertexBuffer, particlesystem, pRenderer, mRenderer,models, tRenderer, terrain, sRenderer, 
-			wRenderer, rasterizerStateWireFrame, rasterizerStateSolid);
+			wRenderer, rasterizerStateWireFrame, rasterizerStateSolid, water, device);
 		
-		update(immediateContext, dt, camera, constantBuffers, wvp, particlesystem, pointLight, pointLightBuffer);
+		update(immediateContext, dt, camera, constantBuffers, wvp, particlesystem, pointLight, pointLightBuffer, water);
 
 		
 		RenderLightPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout, vertexBuffer,

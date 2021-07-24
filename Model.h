@@ -41,6 +41,7 @@ public:
 	ID3D11Buffer** GetBuffer() { return &this->vertexBuffer; }
 	ID3D11Buffer** GetMTLBuffer() { return &this->mesh.mtlBuffer; }
 	ID3D11Buffer** GetWaterBuffer() { return &this->waterBuffer; }
+	XMFLOAT2* GetUVOffset() { return &this->OffsetUv; }
 	ID3D11Buffer** GetPositionsBuffer() { return &this->positionsBuffer; }
 	const Material::Data& GetMaterial() {return this->mesh.material.data;}
 	ID3D11ShaderResourceView** GetTexture() { return this->mesh.material.diffuseTexture.Get(); }

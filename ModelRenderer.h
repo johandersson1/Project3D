@@ -17,6 +17,8 @@ private:
 	ID3D11PixelShader* pixelShader;
 	const std::string vs_path = "x64/Debug/VertexShaderDeferred.cso";
 	ID3D11VertexShader* vertexShader;
+	const std::string ps_water_path = "x64/Debug/PixelShaderWater.cso";
+	ID3D11PixelShader* pixelShaderWater;
 
 	ID3D11Buffer* matricesBuffer;
 	ID3D11Buffer* mtlBuffer;
@@ -79,15 +81,61 @@ public:
 
 		shaderData.clear();
 		reader.close();
+
+		// WATER PIXEL SHADER
+		reader.open(ps_path, std::ios::binary | std::ios::beg);
+
+		if (!reader.is_open())
+		{
+			std::cout << "COULD NOT OPEN FILE: " + ps_water_path << std::endl;
+			return;
+		}
+
+		reader.seekg(0, std::ios::end);
+		shaderData.reserve(static_cast<unsigned int>(reader.tellg()));
+		reader.seekg(0, std::ios::beg);
+		shaderData.assign((std::istreambuf_iterator<char>(reader)), std::istreambuf_iterator<char>());
+
+		hr = device->CreatePixelShader(shaderData.c_str(), shaderData.length(), nullptr, &pixelShaderWater);
+		if FAILED(hr)
+		{
+			std::cout << "FAILED TO CREATE PIXEL SHADER" << std::endl;
+			return;
+		}
+
+		shaderData.clear();
+		reader.close();
+
 	
 	}
 
-	void Render(ID3D11DeviceContext* context, Model* model)
+	void Render(ID3D11Device* device, ID3D11DeviceContext* context, Model* model, bool water = false)
 	{
 		context->IASetInputLayout(ShaderData::model_layout);
 		context->VSSetShader(vertexShader, NULL, 0);
-		context->PSSetShader(pixelShader, NULL, 0);
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		if (water == true)
+		{
+			
+			CreateBuffer(device, *model->GetWaterBuffer(), sizeof(XMFLOAT4));
+
+			context->PSSetShader(pixelShaderWater, NULL, 0);
+
+			D3D11_MAPPED_SUBRESOURCE mappedBuffer = {};
+
+			HRESULT hr = context->Map(*model->GetWaterBuffer(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedBuffer);
+			if FAILED(hr)
+			{
+				std::cout << "FAILED TO UPDATE MTL BUFFER" << std::endl;
+				return;
+			}
+			memcpy(mappedBuffer.pData, model->GetUVOffset(), sizeof(model->GetUVOffset()));
+			context->Unmap(*model->GetWaterBuffer(), 0);
+
+			context->PSSetConstantBuffers(1, 1, model->GetWaterBuffer());
+		}
+
+		context->PSSetShader(pixelShader, NULL, 0);
 
 		XMStoreFloat4x4(&matrices.worldSpace, model->GetWorldMatrix());
 		XMMATRIX WVP = XMMatrixTranspose(model->GetWorldMatrix() * ShaderData::viewMatrix * ShaderData::perspectiveMatrix);
