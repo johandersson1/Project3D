@@ -22,6 +22,7 @@ private:
 
 	ID3D11Buffer* matricesBuffer;
 	ID3D11Buffer* mtlBuffer;
+	ID3D11Buffer* lightBuffer;
 	struct Matrices { XMFLOAT4X4 WVP; XMFLOAT4X4 worldSpace; }matrices;
 public: 
 	
@@ -29,6 +30,7 @@ public:
 				  :matrices(), pixelShader(nullptr), vertexShader(nullptr)
 	{
 		CreateBuffer(device, matricesBuffer, sizeof(Matrices));	
+		CreateBuffer(device, lightBuffer, sizeof(XMMATRIX));
 
 		std::string shaderData;
 		std::ifstream reader;
@@ -83,7 +85,7 @@ public:
 		reader.close();
 
 		// WATER PIXEL SHADER
-		reader.open(ps_path, std::ios::binary | std::ios::beg);
+		reader.open(ps_water_path, std::ios::binary | std::ios::beg);
 
 		if (!reader.is_open())
 		{
@@ -116,9 +118,6 @@ public:
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		if (water == true)
 		{
-			
-			CreateBuffer(device, *model->GetWaterBuffer(), sizeof(XMFLOAT4));
-
 			context->PSSetShader(pixelShaderWater, NULL, 0);
 
 			D3D11_MAPPED_SUBRESOURCE mappedBuffer = {};
@@ -134,15 +133,20 @@ public:
 
 			context->PSSetConstantBuffers(1, 1, model->GetWaterBuffer());
 		}
+		else
+		{
+			context->PSSetShader(pixelShader, NULL, 0);
+		}
+		UpdateBuffer(context, lightBuffer, ShaderData::lightMatrix);
+		context->PSSetConstantBuffers(1, 1, &lightBuffer);
 
-		context->PSSetShader(pixelShader, NULL, 0);
-
+		context->PSSetShaderResources(1, 1, ShaderData::shadowmap->GetSRV());
+	
 		XMStoreFloat4x4(&matrices.worldSpace, model->GetWorldMatrix());
 		XMMATRIX WVP = XMMatrixTranspose(model->GetWorldMatrix() * ShaderData::viewMatrix * ShaderData::perspectiveMatrix);
 		XMStoreFloat4x4(&matrices.WVP, WVP);
 		UpdateBuffer(context, matricesBuffer, matrices);
 		context->VSSetConstantBuffers(1, 1, &matricesBuffer);
-		
 		context->PSSetShaderResources(0, 1, model->GetTextures(1));
 		
 		D3D11_MAPPED_SUBRESOURCE mappedBuffer = {};
@@ -157,7 +161,6 @@ public:
 		context->Unmap(*model->GetMTLBuffer(), 0);
 
 		context->PSSetConstantBuffers(0, 1, model->GetMTLBuffer());
-
 		context->IASetVertexBuffers(0, 1, model->GetBuffer(), &stride, &offset);
 		context->Draw(model->GetVertexCount(), 0);
 		

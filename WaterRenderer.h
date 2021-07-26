@@ -14,7 +14,9 @@ private:
 
 	//Deferred
 	const std::string ps_path = "x64/Debug/PixelShaderWater.cso";
+	const std::string vs_path = "x64/Debug/VertexShaderDeferred.cso";
 	ID3D11PixelShader* pixelShader;
+	ID3D11VertexShader* vertexShader;
 	ID3D11Buffer* matricesBuffer;
 
 	struct Matrices { XMFLOAT4X4 WVP; XMFLOAT4X4 worldSpace; }matrices;
@@ -52,7 +54,7 @@ public:
 
 	void Render(ID3D11DeviceContext* context, Model* model)
 	{
-		context->IASetInputLayout(ShaderData::texOnly_layout);
+		context->IASetInputLayout(ShaderData::model_layout);
 		context->PSSetShader(pixelShader, NULL, 0);
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 

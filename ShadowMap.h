@@ -76,6 +76,7 @@ public:
 	~ShadowMap() { this->depthMapSRV->Release(); this->depthMapDSV->Release(); }
 	
 	ID3D11DepthStencilView** GetDSV() { return &this->depthMapDSV; }
+	ID3D11ShaderResourceView** GetSRV() { return &this->depthMapSRV; }
 
 	void Bind(ID3D11DeviceContext* context)
 	{

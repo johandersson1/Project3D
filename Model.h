@@ -55,5 +55,5 @@ public:
 	void SetRotation(XMVECTOR rotation) { this->transform.rotation = rotation; }
 	void SetScale(XMVECTOR scale) {this->transform.scale = scale; }
 	// Water
-	void WaterSettings(bool moveUv, XMFLOAT2 movementSpeedUv, XMFLOAT2 OffsetUv, float deltatime);
+	void WaterSettings(XMFLOAT2 movementSpeedUv, float deltatime);
 };

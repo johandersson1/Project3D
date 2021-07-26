@@ -1,4 +1,5 @@
 Texture2D diffuseTex : register(t0);
+Texture2D shadowMap : register(t1);
 
 SamplerState mySampler : register(s0);
 
@@ -19,6 +20,7 @@ struct PixelOutput
     float4 ambientMTL : SV_TARGET4;
     float4 diffuseMTL : SV_TARGET5;
     float4 specularMTL : SV_TARGET6;
+    float4 shadowMap : SV_TARGET7;
     
 };
 
@@ -29,6 +31,10 @@ cbuffer mtlData : register(b0)
     float4 kS;
 }
 
+cbuffer LightMatrix : register(b1)
+{
+    float4x4 lightMatrix;
+}
 
 PixelOutput main(PixelInput input)
 {
@@ -36,7 +42,7 @@ PixelOutput main(PixelInput input)
     
     //input.tex.x += uCord;
     //input.tex.y += vCord;
-    
+   
     output.position = input.position;
     output.normal = input.normal;
     output.worldPos = input.worldPos;
@@ -44,6 +50,8 @@ PixelOutput main(PixelInput input)
     output.ambientMTL = kA;
     output.diffuseMTL = kD;
     output.specularMTL = kS;
+    
+    output.diffuse = shadowMap.Sample(mySampler, input.tex);
     
     return output; 
 }

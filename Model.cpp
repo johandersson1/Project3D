@@ -6,14 +6,6 @@ Model::Model(ID3D11Device* device, std::string name, XMVECTOR position, XMVECTOR
 {
 	Update();
 	this->mesh = Mesh(device, name);
-	
-	/*for (auto& face : mesh.faces)
-	{
-		for (int i = 0; i < 3; ++i)
-		{
-			
-		}
-	}*/
 
 	D3D11_BUFFER_DESC desc = {};
 	desc.ByteWidth = (int)mesh.faces.size() * sizeof(Face);
@@ -40,21 +32,12 @@ Model::Model(ID3D11Device* device, std::string name, XMVECTOR position, XMVECTOR
 	{
 		std::cout << "FAILED TO CREATE POSITION VERTEXBUFFER" << std::endl;
 	}
-
-	//// MTL BUFFER
-	//D3D11_BUFFER_DESC mtlDesc = {};
-	//desc.ByteWidth = sizeof(Material.)
-
-
-
-
 }
 
 Model::~Model()
 {
 	vertexBuffer->Release();
 	positionsBuffer->Release();
-	
 }
 
 void Model::Update()
@@ -66,16 +49,12 @@ void Model::Update()
 
 }
 
-void Model::WaterSettings(bool moveUv, XMFLOAT2 movementSpeedUv, XMFLOAT2 OffsetUv, float deltatime)
-{
-	if (this->moveUv == true)
-	{
-		OffsetUv.x += movementSpeedUv.x * deltatime;
-		OffsetUv.y += movementSpeedUv.y * deltatime;
-	}
-	else
-	{
-		OffsetUv.x = 0;
-		OffsetUv.y = 0;
-	}
+void Model::WaterSettings(XMFLOAT2 movementSpeedUv, float deltatime)
+{	
+	OffsetUv.x += movementSpeedUv.x * deltatime;
+	if (OffsetUv.x > 1)
+		OffsetUv.x = 1 - OffsetUv.x;
+	OffsetUv.y += movementSpeedUv.y * deltatime;
+	if (OffsetUv.y > 1)
+		OffsetUv.y = 1 - OffsetUv.y;
 }

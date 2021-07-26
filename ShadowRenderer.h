@@ -10,15 +10,17 @@ class ShadowRenderer
 private:
 	const unsigned int stride = sizeof(XMFLOAT3);
 	const unsigned int offset = 0;
+
 	const std::string vs_path = "x64/Debug/ShadowMapVertex.cso";
 	ID3D11VertexShader* vertexShader;
+
 	ID3D11Buffer* matrixBuffer;
+
 
 public:
 
 	ShadowRenderer(ID3D11Device* device) :matrixBuffer(nullptr), vertexShader(nullptr)
 	{
-
 		CreateBuffer(device, matrixBuffer, sizeof(XMFLOAT4X4));
 
 		std::string shaderData;
@@ -55,10 +57,11 @@ public:
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		XMFLOAT4X4 WVP1;
-		XMMATRIX WVP = XMMatrixTranspose(model->GetWorldMatrix());
+		XMMATRIX WVP = ShaderData::lightMatrix * XMMatrixTranspose(model->GetWorldMatrix());
+		
 		XMStoreFloat4x4(&WVP1, WVP);
 		UpdateBuffer(context, matrixBuffer, WVP1);
-
+		context->VSSetConstantBuffers(0, 1, &matrixBuffer);
 		context->IASetVertexBuffers(0, 1, model->GetPositionsBuffer(), &stride, &offset);
 		context->Draw(model->GetVertexCount(), 0);
 	}

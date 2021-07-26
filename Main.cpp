@@ -45,46 +45,18 @@ void clearView(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rt
 
 // Update function to update the camera, the particles and the CB containing worldSpace and WVP matricies
 void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera, ID3D11Buffer* constantBuffers, WVP& wvp,
-			ParticleSystem* particlesystem, PointLight& pointlight, ID3D11Buffer* pointLightBuffer, Model* water)
+			ParticleSystem* particlesystem, DirectionalLight& dirLight, ID3D11Buffer* dirLightBuffer, Model* water, Model* cube)
 {
 	camera.Update(dt);
 	particlesystem->Update(immediateContext, dt);
-	//std::cout << dt << std::endl;
-	float pos = pointlight.position.z;
-	bool max = false;
-	
-	if (max == false)
-	{
-		pointlight.position.z += 2.0f * dt;
-		
-	}
-	if (pos >= 8.0f)
-	{
-		max = true;
-	}
 
-	if (max == true)
-	{
-		pointlight.position.z = -1.0f;
-		max = false;
-	}
+	dirLight.Update(dt);
+	UpdateBuffer(immediateContext, dirLightBuffer, dirLight.data);
+	cube->SetTranslation(dirLight.GetPosition());
+	cube->Update();
 
-	//if (max == true)
-	//{
-	//	pointlight.position.z -= 0.7f * dt;
-	//}
-	//if (pos == 0.0f)
-	//{
-	//	max = false;
-	//}
-
-	pointlight.UpdatePosition(pointlight.position);
-	//std::cout << " lightPos: " << pointlight.position.x << " Y: " << pointlight.position.y << " Z: " << pointlight.position.z << std::endl;
-
-	UpdateBuffer(immediateContext, pointLightBuffer, pointlight);
-	water->WaterSettings(true, DirectX::XMFLOAT2(0.1f, 0.0f), DirectX::XMFLOAT2(0.0f, 0.0f), dt);
-	UpdateBuffer(immediateContext, *water->GetWaterBuffer(), water);
-
+	water->WaterSettings(DirectX::XMFLOAT2(0.1f, 0.1f), dt);
+	UpdateBuffer(immediateContext, *water->GetWaterBuffer(), water->GetUVOffset());
 }
 
 // Geometry Pass for deferred rendering (and shadows)
@@ -93,7 +65,7 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	ID3D11InputLayout* inputLayout, ID3D11SamplerState* sampler, GeometryBuffer gBuffer,
 	ID3D11ShaderResourceView* textureSRV, ID3D11Buffer* vertexBuffer,ParticleSystem* particlesystem, 
 	ParticleRenderer* pRenderer, ModelRenderer* mRenderer, const std::vector <Model*>&models, TerrainRenderer* tRenderer, Model* terrain,
-	ShadowRenderer* sRenderer, WaterRenderer* wRenderer,ID3D11RasterizerState*& rasterizerStateWireFrame, ID3D11RasterizerState*& rasterizerStateSolid,
+	ShadowRenderer* sRenderer, ID3D11RasterizerState*& rasterizerStateWireFrame, ID3D11RasterizerState*& rasterizerStateSolid,
 	Model* water, ID3D11Device * device)
 {
 	ShaderData::shadowmap->Bind(immediateContext); // Binds the shadowmap (sets resources)
@@ -101,6 +73,8 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	// Loops through the models-vector and renders shadows
 	for (auto model : models)
 		sRenderer->Render(immediateContext, model);
+	sRenderer->Render(immediateContext, water);
+	sRenderer->Render(immediateContext, terrain);
 
 	clearView(immediateContext, rtv, dsView, gBuffer); 	// Clear the window for next render pass
 
@@ -134,8 +108,8 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 void RenderLightPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsView, D3D11_VIEWPORT& viewport,
 	ID3D11PixelShader* pShaderDeferredRender,ID3D11VertexShader* vShaderDeferred, ID3D11InputLayout* inputLayout, ID3D11Buffer* vertexBuffer,
 	ID3D11ShaderResourceView* textureSRV, ID3D11SamplerState* sampler, GeometryBuffer gBuffer, ID3D11PixelShader* lightPShaderDeferred, 
-	ID3D11VertexShader* lightVShaderDeferred, ID3D11InputLayout* renderTargetMeshInputLayout, ID3D11Buffer* screenQuadMesh, PointLight &pointLight, 
-	ID3D11Buffer* pointLightBuffer, Camera camera, ID3D11Buffer* cameraPos)
+	ID3D11VertexShader* lightVShaderDeferred, ID3D11InputLayout* renderTargetMeshInputLayout, ID3D11Buffer* screenQuadMesh, DirectionalLight &dirLight, 
+	ID3D11Buffer* dirLightBuffer, Camera camera, ID3D11Buffer* cameraPos)
 {
 	
 	immediateContext->PSSetConstantBuffers(1, 1, &cameraPos);
@@ -149,7 +123,7 @@ void RenderLightPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetVi
 	immediateContext->RSSetViewports(1, &viewport);
 	immediateContext->PSSetShader(lightPShaderDeferred, NULL, 0);
 	immediateContext->PSSetShaderResources(0, gBuffer.NROFBUFFERS, gBuffer.gBufferSrv);
-	immediateContext->PSSetConstantBuffers(0, 1, &pointLightBuffer);
+	immediateContext->PSSetConstantBuffers(0, 1, &dirLightBuffer);
 	immediateContext->PSSetSamplers(0, 1, &sampler);
 	immediateContext->RSSetState(nullptr);
 	immediateContext->OMSetRenderTargets(1, &rtv, dsView);
@@ -216,10 +190,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		gBuffer.gBufferTexture[i] = nullptr;
 	}
 
-	DirectionalLight dirLight;
+	DirectionalLight dirLight(50, { 1,1,1 });
 	ID3D11Buffer* dirLightBuffer;
 
-	PointLight pointLight(10, { 6, 3, -1 });
+	PointLight pointLight(5, { 16, 2, -1 });
 	ID3D11Buffer* pointLightBuffer;
 
 	//ConstantBuffer(s)
@@ -250,24 +224,24 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	std::vector <Model*>models;
 	// Creating a new model for each mesh in the scene
 
-	Model* bike = new Model(device, "biker", { 10.0f, -3.6f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.5f, 0.5f, 0.5f });
+	Model* bike = new Model(device, "biker", { 10.0f, -3.6f, 0.0f }, { 0.0f,0.0f,0.0f }, { 0.5f, 0.5f, 0.5f });
 	models.push_back(bike);
 
-	Model* sword = new Model(device, "sword", { 15.0f, -3.4f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.4f, 0.4f, 0.4f });
+	Model* sword = new Model(device, "sword", { 15.0f, -3.4f, 0.0f }, { 0.0f,XM_PIDIV2,0.0f }, { 0.4f, 0.4f, 0.4f });
 	models.push_back(sword);
-
-	Model* cigg = new Model(device, "cigg", { 25.0f, -3.0f, 0.0f }, { 0.0f,XM_PIDIV4,0.0f }, { 0.1f, 0.1f, 0.1f });
-	models.push_back(cigg);
 
 	Model* buildings = new Model(device, "buildings", { 0.0f, -4.8f, 0.0f }, { 0.0f,0.0f,0.0f }, { 1.7f, 1.7f, 1.7f });
 	models.push_back(buildings);
 
-	Model* water = new Model(device, "water", { 14, -4.0f, 3.2f }, { 0.0f,XM_PIDIV4,0.0f }, { 1.2f, 1.2f, 1.2f });
-	/*models.push_back(water);*/
+	Model* cube = new Model(device, "newCube", { 0.0f, -4.8f, 0.0f }, { 0.0f,0.0f,0.0f }, {1, 1, 1});
+	models.push_back(cube);
 
-	water->WaterSettings(true, DirectX::XMFLOAT2(0.1f, 0.0f), DirectX::XMFLOAT2(0.0f, 0.0f), 1.0f);
+	Model* water = new Model(device, "water", { 0, -3.6, 0 }, { 0.0f,0,0.0f }, { 50, 50, 50 });
+	//models.push_back(water);
 
-	Model* terrain = new Model(device, "terrain", { 0.0f, -4.0f, 0.0f }, { 0.0f, XM_PIDIV4, 0.0f }, { 2.2f, 2.2f, 2.2f });
+	//water->WaterSettings(true, DirectX::XMFLOAT2(0.1f, 0.0f), DirectX::XMFLOAT2(0.0f, 0.0f), 1.0f);
+
+	Model* terrain = new Model(device, "terrain", { 0.0f, -4.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.2f, 2.2f, 2.2f });
 	terrain->SetDisplacementTexture(device, "Models/terrain/displacement.png");
 	terrain->AddTexture(device, "snow.jpg");
 
@@ -276,15 +250,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	ModelRenderer* mRenderer = new ModelRenderer(device);
 	TerrainRenderer* tRenderer = new TerrainRenderer(device);
 	ShadowRenderer* sRenderer = new ShadowRenderer(device);
-	WaterRenderer* wRenderer = new WaterRenderer(device);
+	//WaterRenderer* wRenderer = new WaterRenderer(device);
 
 	ShaderData::Initialize(device, mRenderer->GetByteCode());
-	//SetUpLight(device, pointLightBuffer, pointLight);
 
-	CreateBuffer(device, pointLightBuffer, sizeof(PointLight));
-	UpdateBuffer(immediateContext, pointLightBuffer, pointLight);
+	CreateBuffer(device, dirLightBuffer, sizeof(DirectionalLight::Data));
+	UpdateBuffer(immediateContext, dirLightBuffer, dirLight.data);
 	CreateBuffer(device, cameraBuffer, sizeof(XMFLOAT4));
-	//CreateBuffer(device, *water->GetWaterBuffer(), sizeof(XMFLOAT2));
+	CreateBuffer(device, *water->GetWaterBuffer(), sizeof(XMFLOAT4));
+
 
 	MSG msg = {};
 
@@ -298,19 +272,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 			DispatchMessage(&msg);
 		}
 	
-		ShaderData::Update(immediateContext, camera);
-		UpdateBuffer(immediateContext, cameraBuffer, camera.GetPosition());
+		ShaderData::Update(immediateContext, camera, dirLight);
+
+		//UpdateBuffer(immediateContext, cameraBuffer, camera.GetPosition());
 
 		RenderGBufferPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout,
 			sampler, gBuffer, textureSRV, vertexBuffer, particlesystem, pRenderer, mRenderer,models, tRenderer, terrain, sRenderer, 
-			wRenderer, rasterizerStateWireFrame, rasterizerStateSolid, water, device);
+			rasterizerStateWireFrame, rasterizerStateSolid, water, device);
 		
-		update(immediateContext, dt, camera, constantBuffers, wvp, particlesystem, pointLight, pointLightBuffer, water);
+		update(immediateContext, dt, camera, constantBuffers, wvp, particlesystem, dirLight, dirLightBuffer, water, cube);
 
-		
 		RenderLightPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout, vertexBuffer,
 			textureSRV, sampler, gBuffer, lightPShaderDeferred,	lightVShaderDeferred, renderTargetMeshInputLayout, screenQuadMesh, 
-			pointLight, pointLightBuffer, camera, cameraBuffer);
+			dirLight, dirLightBuffer, camera, cameraBuffer);
 
 		swapChain->Present(0, 0); // Presents a rendered image to the user.
 		
@@ -327,7 +301,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		gBuffer.gBufferTexture[i]->Release();
 	}
 	cameraBuffer->Release();
-	pointLightBuffer->Release();
+	dirLightBuffer->Release();
 	vShaderDeferred->Release();
 	pShaderDeferred->Release();
 	screenQuadMesh->Release();

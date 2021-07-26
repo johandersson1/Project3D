@@ -1,27 +1,66 @@
 #pragma once
 #include <DirectXMath.h>
 #include <Windows.h>
+#include "Timer.h"
 using namespace DirectX;
 
 class DirectionalLight
 {
 private:
+
+	float range;
+	int dir = 1;
+	float currentAngle = 0.5;
+	XMVECTOR position;
+	XMMATRIX viewMatrix;
+	XMMATRIX ortographicMatrix;
 	XMMATRIX matrix = XMMatrixIdentity();
 public:
+	struct Data
+	{
+		XMFLOAT4 color{ 1, 1, 1, 1 };
+		XMFLOAT3 direction;
+		float range;
+	}data;
+public:
+
 	DirectionalLight() = default;
 	DirectionalLight(float range, XMVECTOR direction)
 	{
+		data.range = range;
 		direction = XMVector3Normalize(direction);
-
-		XMVECTOR position = -direction * range;
+		position = -direction * range;
 		XMVECTOR target = { 0,0,0 };
 		XMVECTOR up = { 0,1,0 };
 
-		XMMATRIX M1 = XMMatrixLookAtLH(position, target, up);
-		XMMATRIX M2 = XMMatrixOrthographicOffCenterLH(-range, range, -range, range, -range, range);
+		viewMatrix = XMMatrixLookAtLH(position, target, up);
+		ortographicMatrix = XMMatrixOrthographicOffCenterLH(-range, range, -range, range, -range, range);
 
-		matrix = XMMatrixTranspose(M1 * M2);
+		matrix = XMMatrixTranspose(viewMatrix * ortographicMatrix);
 	}
+
+	void Update(float dt)
+	{
+		currentAngle += dt * 0.35f * dir;
+		if (currentAngle > XM_PI - 0.5f || currentAngle < 0 + 0.5f)
+		{
+			dir *= -1;
+		}
+		float x = cos(currentAngle);
+		float y = sin(currentAngle);
+
+		XMVECTOR direction = { x, y, 0 };
+		XMVector2Normalize(direction);
+
+		position = direction * data.range;
+		
+		XMStoreFloat3(&data.direction, direction);
+
+		this->viewMatrix = XMMatrixLookAtLH(position, { 0,0,0 }, { 0,1,0 });
+		matrix = XMMatrixTranspose(viewMatrix * ortographicMatrix);
+	}
+
+	XMVECTOR GetPosition() { return this->position; }
 
 	XMMATRIX GetMatrix() const { return this->matrix; }
 };
