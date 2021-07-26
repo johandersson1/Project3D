@@ -39,8 +39,6 @@ cbuffer uvMovementCalc : register(b2)
 {
     float uCord;
     float vCord;
-    float pad1;
-    float pad2;
 };
 
 PixelOutput main(PixelInput input)

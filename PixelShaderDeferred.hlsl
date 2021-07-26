@@ -59,7 +59,7 @@ PixelOutput main(PixelInput input)
 
     float shadow = (depth - 0.015f) > sm ? 0.0f : sm;
     
-    output.shadowMap = float4(shadow, shadow, shadow, 1);
+    output.shadowMap = shadow;
     //output.shadowMap = depth;
     return output; 
 }

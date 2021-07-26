@@ -53,8 +53,8 @@ void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera, ID3
 
 	dirLight.Update(dt);
 	UpdateBuffer(immediateContext, dirLightBuffer, dirLight.data);
-	/*cube->SetTranslation(dirLight.GetPosition());
-	cube->Update();*/
+	cube->SetTranslation(dirLight.GetPosition());
+	cube->Update();
 	XMFLOAT3 xPos;
 	XMStoreFloat3(&xPos, dirLight.GetPosition());
 	std::cout << xPos.x << " " << xPos.y << " " << xPos.z << std::endl;
@@ -69,10 +69,10 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	ID3D11ShaderResourceView* textureSRV, ID3D11Buffer* vertexBuffer,ParticleSystem* particlesystem, 
 	ParticleRenderer* pRenderer, ModelRenderer* mRenderer, const std::vector <Model*>&models, TerrainRenderer* tRenderer, Model* terrain,
 	ShadowRenderer* sRenderer, ID3D11RasterizerState*& rasterizerStateWireFrame, ID3D11RasterizerState*& rasterizerStateSolid,
-	Model* water, ID3D11Device * device)
+	Model* water, ID3D11Device * device, Model* cube)
 {
 	
-
+	ShaderData::shadowmap->Bind(immediateContext); // Binds the shadowmap (sets resources)
 	// Loops through the models-vector and renders shadows
 	for (auto model : models)
 		sRenderer->Render(immediateContext, model);
@@ -92,11 +92,9 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 		mRenderer->Render(device, immediateContext, model, false);
 
 	mRenderer->Render(device,immediateContext, water, true);
-
+	mRenderer->Render(device, immediateContext, cube, false);
 	tRenderer->Render(immediateContext, terrain);
 	pRenderer->Render(immediateContext, particlesystem);
-
-	ShaderData::shadowmap->Bind(immediateContext); // Binds the shadowmap (sets resources)
 
 
 	//Clean up
@@ -282,7 +280,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 		RenderGBufferPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout,
 			sampler, gBuffer, textureSRV, vertexBuffer, particlesystem, pRenderer, mRenderer,models, tRenderer, terrain, sRenderer, 
-			rasterizerStateWireFrame, rasterizerStateSolid, water, device);
+			rasterizerStateWireFrame, rasterizerStateSolid, water, device, cube);
 		
 		update(immediateContext, dt, camera, constantBuffers, wvp, particlesystem, dirLight, dirLightBuffer, water, cube);
 

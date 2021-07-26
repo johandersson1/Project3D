@@ -42,9 +42,6 @@ LightResult LightCalculation(float4 P, float3 N, float4 D, float4 S)
 
     float3 E = normalize(cameraPosition - P.xyz);
 
-   // float3 lPos = { 10, 10, 10 };
-    
-   
     float diffuse = saturate(dot(N, direction));
 
     if (diffuse < 0.0f) // IF BACKFACED
@@ -97,5 +94,5 @@ float4 main(PixelInput input) : SV_Target
     float4 A = ambientMaterial;
     
     float4 finalColor = albedo * (lResult.diffuse + lResult.specular + A) * globalAmbient * shadowMap.r;
-    return finalColor;
+    return float4(normal, 1.0f);
 }
