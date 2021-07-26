@@ -51,10 +51,10 @@ void Model::Update()
 
 void Model::WaterSettings(XMFLOAT2 movementSpeedUv, float deltatime)
 {	
-	OffsetUv.x += movementSpeedUv.x * deltatime;
-	if (OffsetUv.x > 1)
-		OffsetUv.x = 1 - OffsetUv.x;
-	OffsetUv.y += movementSpeedUv.y * deltatime;
-	if (OffsetUv.y > 1)
-		OffsetUv.y = 1 - OffsetUv.y;
+	offsetUV.x += movementSpeedUv.x * deltatime;
+	if (offsetUV.x > 1)
+		offsetUV.x = 1 - offsetUV.x;
+	offsetUV.y += movementSpeedUv.y * deltatime;
+	if (offsetUV.y > 1)
+		offsetUV.y = 1 - offsetUV.y;
 }

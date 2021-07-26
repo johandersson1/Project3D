@@ -6,6 +6,7 @@ Texture2D diffuseAlbedoTexture : register(t3);
 Texture2D ambientMatTexture : register(t4);
 Texture2D diffuseMatTexture : register(t5);
 Texture2D specularMatTexture : register(t6);
+Texture2D shadowMapTexture : register(t7);
 
 SamplerState mySampler : register(s0);
 
@@ -79,7 +80,9 @@ float4 main(PixelInput input) : SV_Target
     float4 ambientMaterial = ambientMatTexture.Sample(mySampler, input.tex);
     float4 diffuseMaterial = diffuseMatTexture.Sample(mySampler, input.tex);
     float4 specularMaterial = specularMatTexture.Sample(mySampler, input.tex);
-        
+    
+    float4 shadowMap = shadowMapTexture.Sample(mySampler, input.tex);
+    
     if (diffuseMaterial.x < 0)
     {
         return albedo;
@@ -87,9 +90,12 @@ float4 main(PixelInput input) : SV_Target
     
     LightResult lResult = LightCalculation(worldPos, normal, diffuseMaterial, specularMaterial);
     
+    
+    
+    
     float4 globalAmbient = { 0.6f, 0.6f, 0.6f, 1.0f };
     float4 A = ambientMaterial;
     
-    float4 finalColor = albedo * (lResult.diffuse + lResult.specular + A) * globalAmbient;
+    float4 finalColor = albedo * (lResult.diffuse + lResult.specular + A) * globalAmbient * shadowMap.r;
     return finalColor;
 }

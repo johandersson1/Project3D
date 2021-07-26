@@ -19,6 +19,7 @@ struct PixelOutput
     float4 ambientMTL : SV_TARGET4;
     float4 diffuseMTL : SV_TARGET5;
     float4 specularMTL : SV_TARGET6;
+    float4 shadowMap : SV_TARGET7;
     
 };
 
@@ -29,7 +30,12 @@ cbuffer mtlData : register(b0)
     float4 kS;
 }
 
-cbuffer uvMovementCalc : register(b1)
+cbuffer LightMatrix : register(b1)
+{
+    float4x4 lightMatrix;
+}
+
+cbuffer uvMovementCalc : register(b2)
 {
     float uCord;
     float vCord;
@@ -50,10 +56,10 @@ PixelOutput main(PixelInput input)
     input.tex.y += vCord;
     
     output.diffuse = diffuseTex.Sample(mySampler, input.tex);
-    
     // MTL
     output.ambientMTL = kA;
     output.diffuseMTL = float4(-1.0f, -1.0f, -1.0f, 0.0f);
+    
     output.specularMTL = kS;
 
     return output;

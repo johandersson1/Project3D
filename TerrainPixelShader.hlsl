@@ -1,5 +1,6 @@
 Texture2D textures[2] : register(t0);
 Texture2D blendTexture : register(t2);
+Texture2D shadowTexture : register(t3);
 sampler mySampler : register(s0);
 
 struct PSInput
@@ -19,7 +20,13 @@ struct PSOutput
     float4 ambientMTL : SV_TARGET4;
     float4 diffuseMTL : SV_TARGET5;
     float4 specularMTL : SV_TARGET6;
+    float4 shadowMap : SV_TARGET7;
 };
+
+cbuffer LightMatrix : register(b0)
+{
+    float4x4 lightMatrix;
+}
 
 PSOutput main(PSInput input)
 {
@@ -31,9 +38,7 @@ PSOutput main(PSInput input)
     output.ambientMTL = float4(0.5f, 0.5f, 0.5f, 1);
     output.diffuseMTL = float4(0.5f, 0.5f, 0.5f, 1);
     output.specularMTL = float4(0.2f, 0.2f, 0.2f, 1);
-    static const float TEX_LOW_BOUND = 0.4f;
-    static const float TEX_HIGH_BOUND = 0.7f;
-
+    output.shadowMap = shadowTexture.Sample(mySampler, input.tex);
     float4 texColour;
     float4 lowColour = textures[0].Sample(mySampler, input.tex);
     float4 hiColour = textures[1].Sample(mySampler, input.tex);
@@ -43,6 +48,19 @@ PSOutput main(PSInput input)
     float lowAmount = 1.0f - blendValue;
         
     texColour = saturate(texColour);
+    
+    float4 lightClip = mul(float4(output.worldPos, 1.0f), lightMatrix);
+    
+    //SHADOWS
+    lightClip.xy /= lightClip.w;
+    float2 tx = float2(0.5f * lightClip.x + 0.5f, -0.5f * lightClip.y + 0.5);
+    float4 sm = shadowTexture.Sample(mySampler, tx);
+
+    float depth = lightClip.z / lightClip.w;
+
+    float shadow = (depth - 0.015f) > sm ? 0.0f : sm;
+    
+    output.shadowMap = float4(shadow, shadow, shadow, 1);
    
     output.diffuse = highAmount * hiColour + lowAmount * lowColour;
     return output;

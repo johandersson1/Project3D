@@ -58,6 +58,8 @@ public:
 
 		this->viewMatrix = XMMatrixLookAtLH(position, { 0,0,0 }, { 0,1,0 });
 		matrix = XMMatrixTranspose(viewMatrix * ortographicMatrix);
+
+		
 	}
 
 	XMVECTOR GetPosition() { return this->position; }

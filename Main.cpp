@@ -40,6 +40,7 @@ void clearView(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rt
 	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[4], clearcolor);
 	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[5], clearcolor);
 	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[6], clearcolor);
+	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[7], clearcolor);
 	immediateContext->ClearDepthStencilView(dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 }
 
@@ -52,9 +53,11 @@ void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera, ID3
 
 	dirLight.Update(dt);
 	UpdateBuffer(immediateContext, dirLightBuffer, dirLight.data);
-	cube->SetTranslation(dirLight.GetPosition());
-	cube->Update();
-
+	/*cube->SetTranslation(dirLight.GetPosition());
+	cube->Update();*/
+	XMFLOAT3 xPos;
+	XMStoreFloat3(&xPos, dirLight.GetPosition());
+	std::cout << xPos.x << " " << xPos.y << " " << xPos.z << std::endl;
 	water->WaterSettings(DirectX::XMFLOAT2(0.1f, 0.1f), dt);
 	UpdateBuffer(immediateContext, *water->GetWaterBuffer(), water->GetUVOffset());
 }
@@ -68,7 +71,7 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	ShadowRenderer* sRenderer, ID3D11RasterizerState*& rasterizerStateWireFrame, ID3D11RasterizerState*& rasterizerStateSolid,
 	Model* water, ID3D11Device * device)
 {
-	ShaderData::shadowmap->Bind(immediateContext); // Binds the shadowmap (sets resources)
+	
 
 	// Loops through the models-vector and renders shadows
 	for (auto model : models)
@@ -93,7 +96,8 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	tRenderer->Render(immediateContext, terrain);
 	pRenderer->Render(immediateContext, particlesystem);
 
-	//wRenderer->Render(immediateContext, wRenderer);
+	ShaderData::shadowmap->Bind(immediateContext); // Binds the shadowmap (sets resources)
+
 
 	//Clean up
 	ID3D11RenderTargetView* nullArr[gBuffer.NROFBUFFERS];
@@ -234,7 +238,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	models.push_back(buildings);
 
 	Model* cube = new Model(device, "newCube", { 0.0f, -4.8f, 0.0f }, { 0.0f,0.0f,0.0f }, {1, 1, 1});
-	models.push_back(cube);
+	//models.push_back(cube);
 
 	Model* water = new Model(device, "water", { 0, -3.6, 0 }, { 0.0f,0,0.0f }, { 50, 50, 50 });
 	//models.push_back(water);

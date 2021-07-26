@@ -22,15 +22,16 @@ private:
 	const std::string gs_path = "x64/Debug/TerrainGeometryShader.cso";
 	ID3D11GeometryShader* geometryShader;
 
-
-	
 	ID3D11Buffer* matricesBuffer;
+	ID3D11Buffer* lightBuffer;
+
 	struct Matrices { XMFLOAT4X4 viewPerspective; XMFLOAT4X4 worldSpace; }matrices;
 public:
 
 	TerrainRenderer(ID3D11Device* device) :matrices(), hullShader(nullptr), domainShader(nullptr), vertexShader(nullptr)
 	{
 		CreateBuffer(device, matricesBuffer, sizeof(Matrices));
+		CreateBuffer(device, lightBuffer, sizeof(XMMATRIX));
 
 		std::string shaderData;
 		std::ifstream reader;
@@ -174,8 +175,12 @@ public:
 		UpdateBuffer(context, matricesBuffer, matrices);
 		context->DSSetConstantBuffers(0, 1, &matricesBuffer);
 
+
+		UpdateBuffer(context, lightBuffer, ShaderData::lightMatrix);
+		context->PSSetConstantBuffers(0, 1, &lightBuffer);
 		context->PSSetShaderResources(0, 2, model->GetTextures(2));
 		context->PSSetShaderResources(2, 1, model->GetDisplacementTexture());
+		context->PSSetShaderResources(3, 1, ShaderData::shadowmap->GetSRV());
 		context->DSSetShaderResources(0, 1, model->GetDisplacementTexture());
 		
 		context->IASetVertexBuffers(0, 1, model->GetBuffer(), &stride, &offset);

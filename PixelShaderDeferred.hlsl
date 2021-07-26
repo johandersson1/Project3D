@@ -39,10 +39,7 @@ cbuffer LightMatrix : register(b1)
 PixelOutput main(PixelInput input)
 {
     PixelOutput output;
-    
-    //input.tex.x += uCord;
-    //input.tex.y += vCord;
-   
+       
     output.position = input.position;
     output.normal = input.normal;
     output.worldPos = input.worldPos;
@@ -51,8 +48,19 @@ PixelOutput main(PixelInput input)
     output.diffuseMTL = kD;
     output.specularMTL = kS;
     
-    output.diffuse = shadowMap.Sample(mySampler, input.tex);
+    float4 lightClip = mul(float4(output.worldPos, 1.0f), lightMatrix);
     
+    //SHADOWS
+    lightClip.xy /= lightClip.w;
+    float2 tx = float2(0.5f * lightClip.x + 0.5f, -0.5f * lightClip.y + 0.5);
+    float4 sm = shadowMap.Sample(mySampler, tx);
+
+    float depth = lightClip.z / lightClip.w;
+
+    float shadow = (depth - 0.015f) > sm ? 0.0f : sm;
+    
+    output.shadowMap = float4(shadow, shadow, shadow, 1);
+    //output.shadowMap = depth;
     return output; 
 }
 

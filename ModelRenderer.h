@@ -107,8 +107,6 @@ public:
 
 		shaderData.clear();
 		reader.close();
-
-	
 	}
 
 	void Render(ID3D11Device* device, ID3D11DeviceContext* context, Model* model, bool water = false)
@@ -116,6 +114,7 @@ public:
 		context->IASetInputLayout(ShaderData::model_layout);
 		context->VSSetShader(vertexShader, NULL, 0);
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 		if (water == true)
 		{
 			context->PSSetShader(pixelShaderWater, NULL, 0);
@@ -128,18 +127,19 @@ public:
 				std::cout << "FAILED TO UPDATE MTL BUFFER" << std::endl;
 				return;
 			}
+
 			memcpy(mappedBuffer.pData, model->GetUVOffset(), sizeof(model->GetUVOffset()));
 			context->Unmap(*model->GetWaterBuffer(), 0);
-
-			context->PSSetConstantBuffers(1, 1, model->GetWaterBuffer());
+			context->PSSetConstantBuffers(2, 1, model->GetWaterBuffer());
 		}
+
 		else
 		{
 			context->PSSetShader(pixelShader, NULL, 0);
 		}
+
 		UpdateBuffer(context, lightBuffer, ShaderData::lightMatrix);
 		context->PSSetConstantBuffers(1, 1, &lightBuffer);
-
 		context->PSSetShaderResources(1, 1, ShaderData::shadowmap->GetSRV());
 	
 		XMStoreFloat4x4(&matrices.worldSpace, model->GetWorldMatrix());
@@ -159,11 +159,9 @@ public:
 		}
 		memcpy(mappedBuffer.pData, &model->GetMaterial(), sizeof(model->GetMaterial()));
 		context->Unmap(*model->GetMTLBuffer(), 0);
-
 		context->PSSetConstantBuffers(0, 1, model->GetMTLBuffer());
 		context->IASetVertexBuffers(0, 1, model->GetBuffer(), &stride, &offset);
 		context->Draw(model->GetVertexCount(), 0);
-		
 	}
 	std::string GetByteCode() const { return this->byteCode; }
 };
