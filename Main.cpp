@@ -46,15 +46,15 @@ void clearView(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rt
 
 // Update function to update the camera, the particles and the CB containing worldSpace and WVP matricies
 void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera, ID3D11Buffer* constantBuffers, WVP& wvp,
-			ParticleSystem* particlesystem, DirectionalLight& dirLight, ID3D11Buffer* dirLightBuffer, Model* water, Model* cube)
+			ParticleSystem* particlesystem, DirectionalLight& dirLight, ID3D11Buffer* dirLightBuffer, Model* water, Model* cameraModel)
 {
 	camera.Update(dt);
 	particlesystem->Update(immediateContext, dt);
 
 	dirLight.Update(dt);
 	UpdateBuffer(immediateContext, dirLightBuffer, dirLight.data);
-	/*cube->SetTranslation(dirLight.GetPosition());
-	cube->Update();*/
+	cameraModel->SetTranslation(dirLight.GetPosition());
+	cameraModel->Update();
 	XMFLOAT3 xPos;
 	XMStoreFloat3(&xPos, dirLight.GetPosition());
 	std::cout << xPos.x << " " << xPos.y << " " << xPos.z << std::endl;
@@ -69,7 +69,7 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	ID3D11ShaderResourceView* textureSRV, ID3D11Buffer* vertexBuffer,ParticleSystem* particlesystem, 
 	ParticleRenderer* pRenderer, ModelRenderer* mRenderer, const std::vector <Model*>&models, TerrainRenderer* tRenderer, Model* terrain,
 	ShadowRenderer* sRenderer, ID3D11RasterizerState*& rasterizerStateWireFrame, ID3D11RasterizerState*& rasterizerStateSolid,
-	Model* water, ID3D11Device * device, Model* cameraModel, const std::vector <Model*>&things)
+	Model* water, ID3D11Device * device, Model* cameraModel, const std::vector <Model*>&things, ID3D11SamplerState* clampSampler)
 {
 	
 	ShaderData::shadowmap->Bind(immediateContext); // Binds the shadowmap (sets resources)
@@ -84,7 +84,9 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 
 	immediateContext->RSSetViewports(1, &viewport);
 	immediateContext->PSSetSamplers(0, 1, &sampler);
+	immediateContext->PSSetSamplers(1, 1, &clampSampler);
 	immediateContext->DSSetSamplers(0, 1, &sampler);
+	immediateContext->DSSetSamplers(1, 1, &clampSampler);
 	immediateContext->RSSetState(rasterizerStateSolid);
 	immediateContext->GSSetShader(ShaderData::geometryShader, nullptr, 0);
 	immediateContext->OMSetRenderTargets(gBuffer.NROFBUFFERS, gBuffer.gBuffergBufferRtv, dsView);
@@ -111,7 +113,7 @@ void RenderLightPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetVi
 	ID3D11PixelShader* pShaderDeferredRender,ID3D11VertexShader* vShaderDeferred, ID3D11InputLayout* inputLayout, ID3D11Buffer* vertexBuffer,
 	ID3D11ShaderResourceView* textureSRV, ID3D11SamplerState* sampler, GeometryBuffer gBuffer, ID3D11PixelShader* lightPShaderDeferred, 
 	ID3D11VertexShader* lightVShaderDeferred, ID3D11InputLayout* renderTargetMeshInputLayout, ID3D11Buffer* screenQuadMesh, DirectionalLight &dirLight, 
-	ID3D11Buffer* dirLightBuffer, Camera camera, ID3D11Buffer* cameraPos)
+	ID3D11Buffer* dirLightBuffer, Camera camera, ID3D11Buffer* cameraPos, ID3D11SamplerState* clampSampler)
 {
 	
 	immediateContext->PSSetConstantBuffers(1, 1, &cameraPos);
@@ -170,9 +172,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 	ID3D11InputLayout* inputLayout; // Information stored with each vertex to improve the rendering speed
 	ID3D11Buffer* vertexBuffer; // Buffer resource, which is unstructured memory
-	ID3D11Buffer* constantBuffer;
 	ID3D11ShaderResourceView* textureSRV; // Indicates the (sub resources) a shader can access during rendering
-	ID3D11SamplerState* sampler; // Sampler-state that you can bind to any shader stage in the pipeline.
+	ID3D11SamplerState* wrapSampler; // Sampler-state that you can bind to any shader stage in the pipeline.
+	ID3D11SamplerState* clampSampler;
 
 	//Deferred
 	ID3D11PixelShader* lightPShaderDeferred; // A pixelshader interface manages an executable program(a pixel shader) that controls the pixel - shader stage.
@@ -192,11 +194,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		gBuffer.gBufferTexture[i] = nullptr;
 	}
 
-	DirectionalLight dirLight(50, { 1,1,1 });
+	DirectionalLight dirLight(30, { 1,1,1 });
 	ID3D11Buffer* dirLightBuffer;
-
-	PointLight pointLight(5, { 16, 2, -1 });
-	ID3D11Buffer* pointLightBuffer;
 
 	//ConstantBuffer(s)
 	ID3D11Buffer* constantBuffers;
@@ -215,8 +214,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	}
 
 	if (!SetupPipeline(device, vertexBuffer, inputLayout, 
-		constantBuffers, texture, textureSRV, sampler, pShaderDeferred, vShaderDeferred, lightPShaderDeferred, lightVShaderDeferred,
-		renderTargetMeshInputLayout, screenQuadMesh, rasterizerStateWireFrame, rasterizerStateSolid))
+		constantBuffers, texture, textureSRV, wrapSampler, pShaderDeferred, vShaderDeferred, lightPShaderDeferred, lightVShaderDeferred,
+		renderTargetMeshInputLayout, screenQuadMesh, rasterizerStateWireFrame, rasterizerStateSolid, clampSampler))
 	{
 		std::cerr << "Failed to setup pipeline!" << std::endl;
 		return -3;
@@ -237,10 +236,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	//models.push_back(buildings);
 	 
 	Model* cameraModel = new Model(device, "newCube", { 10, -3.6, 0 }, { 0.0f,0.0f,0.0f }, {0.2, 0.2,0.2});
-	/*models.push_back(cameraModel);
-	things.push_back(cameraModel);*/
+	models.push_back(cameraModel);
+	things.push_back(cameraModel);
 
-	Model* water = new Model(device, "water", { 10, -3.6, 0 }, { 0.0f,0,0.0f }, { 10, 10, 10 });
+	Model* water = new Model(device, "water", { -10, -3.6, 0 }, { 0.0f,0,-XM_PIDIV2 }, { 10, 10, 10 });
 	//models.push_back(water);
 	things.push_back(water);
 
@@ -256,7 +255,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	models.push_back(wChessPieces);
 	things.push_back(wChessPieces);
 
-	Model* terrain = new Model(device, "terrain", { 0.0f, -4.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.2f, 2.2f, 2.2f });
+	Model* terrain = new Model(device, "terrain", { 0.0f, -4.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.5f,1.5f,1.5f });
 	terrain->SetDisplacementTexture(device, "Models/terrain/displacement.png");
 	terrain->AddTexture(device, "snow.jpg");
 	things.push_back(terrain);
@@ -294,14 +293,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		//UpdateBuffer(immediateContext, cameraBuffer, camera.GetPosition());
 
 		RenderGBufferPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout,
-			sampler, gBuffer, textureSRV, vertexBuffer, particlesystem, pRenderer, mRenderer,models, tRenderer, terrain, sRenderer, 
-			rasterizerStateWireFrame, rasterizerStateSolid, water, device, cameraModel, things);
+			wrapSampler, gBuffer, textureSRV, vertexBuffer, particlesystem, pRenderer, mRenderer,models, tRenderer, terrain, sRenderer, 
+			rasterizerStateWireFrame, rasterizerStateSolid, water, device, cameraModel, things, clampSampler);
 		
 		update(immediateContext, dt, camera, constantBuffers, wvp, particlesystem, dirLight, dirLightBuffer, water, cameraModel);
 
 		RenderLightPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout, vertexBuffer,
-			textureSRV, sampler, gBuffer, lightPShaderDeferred,	lightVShaderDeferred, renderTargetMeshInputLayout, screenQuadMesh, 
-			dirLight, dirLightBuffer, camera, cameraBuffer);
+			textureSRV, wrapSampler, gBuffer, lightPShaderDeferred,	lightVShaderDeferred, renderTargetMeshInputLayout, screenQuadMesh, 
+			dirLight, dirLightBuffer, camera, cameraBuffer, clampSampler);
 
 		swapChain->Present(0, 0); // Presents a rendered image to the user.
 		
@@ -327,7 +326,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	lightPShaderDeferred->Release();
 	constantBuffers->Release();
 	texture->Release();
-	sampler->Release();
+	clampSampler->Release();
+	wrapSampler->Release();
 	textureSRV->Release();
 	vertexBuffer->Release();
 	inputLayout->Release();

@@ -1,7 +1,8 @@
 Texture2D textures[2] : register(t0);
 Texture2D blendTexture : register(t2);
 Texture2D shadowTexture : register(t3);
-sampler mySampler : register(s0);
+sampler wrapSampler : register(s0);
+sampler clampSampler : register(s1);
 
 struct PSInput
 {
@@ -40,9 +41,9 @@ PSOutput main(PSInput input)
     output.specularMTL = float4(0.2f, 0.2f, 0.2f, 1);
     //output.shadowMap = shadowTexture.Sample(mySampler, input.tex);
     float4 texColour;
-    float4 lowColour = textures[0].Sample(mySampler, input.tex);
-    float4 hiColour = textures[1].Sample(mySampler, input.tex);
-    float blendValue = blendTexture.Sample(mySampler, input.tex).r;
+    float4 lowColour = textures[0].Sample(wrapSampler, input.tex);
+    float4 hiColour = textures[1].Sample(wrapSampler, input.tex);
+    float blendValue = blendTexture.Sample(clampSampler, input.tex).r;
         
     float highAmount = blendValue;
     float lowAmount = 1.0f - blendValue;
@@ -54,7 +55,7 @@ PSOutput main(PSInput input)
     //SHADOWS
     lightClip.xyz /= lightClip.w;
     float2 tx = float2(0.5f * lightClip.x + 0.5f, -0.5f * lightClip.y + 0.5);
-    float sm = shadowTexture.Sample(mySampler, tx).r;
+    float sm = shadowTexture.Sample(wrapSampler, tx).r;
 
     float shadow = (sm + 0.005f < lightClip.z) ? sm : 1.0f;
     

@@ -1,7 +1,7 @@
 Texture2D displacementTexture : register(t0);
 
 SamplerState mySampler : register(s0);
-
+SamplerState clampSampler : register(s1);
 cbuffer matrices : register(b0)
 {
     float4x4 viewPerspective;
@@ -51,8 +51,8 @@ DS_OUTPUT main(
     output.worldPos = mul(output.position, worldSpace);
     
     //Displacement
-    const float disfactor = 0.0f;
-    float h = displacementTexture.SampleLevel(mySampler, output.tex, 0).r;
+    const float disfactor = 1.0f;
+    float h = displacementTexture.SampleLevel(clampSampler, output.tex, 0).r;
     output.blendValue = h;
     output.worldPos.xyz += h * disfactor * output.normal;
    

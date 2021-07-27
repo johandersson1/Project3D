@@ -245,7 +245,7 @@ bool CreateConstantBuffer(ID3D11Device* device, ID3D11Buffer*& constantBuffers)
 //	return !FAILED(hr);
 //}
 
-bool CreateSamplerState(ID3D11Device* device, ID3D11SamplerState*& sampler)
+bool CreateSamplerState(ID3D11Device* device, ID3D11SamplerState*& sampler, ID3D11SamplerState*& clampSampler)
 {
 	D3D11_SAMPLER_DESC desc;
 	desc.Filter = D3D11_FILTER_ANISOTROPIC; // Improve image quality
@@ -263,6 +263,23 @@ bool CreateSamplerState(ID3D11Device* device, ID3D11SamplerState*& sampler)
 	// where 0 is the largest and most detailed mipmap level and any level higher than that is less detailed
 
 	HRESULT hr = device->CreateSamplerState(&desc, &sampler);
+	if (FAILED(hr))
+		return false ;
+
+	desc.Filter = D3D11_FILTER_ANISOTROPIC; 
+	desc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	desc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	desc.MipLODBias = 0; 
+	desc.MaxAnisotropy = 16;
+	desc.BorderColor[0] = desc.BorderColor[1] = desc.BorderColor[2] = desc.BorderColor[3] = 0; 
+	desc.MinLOD = 0; 
+	desc.MaxLOD = D3D11_FLOAT32_MAX;
+	
+	hr = device->CreateSamplerState(&desc, &clampSampler);
+	if (FAILED(hr))
+		return false;
+
 	return !FAILED(hr);
 }
 // CreateTexture funktionen
@@ -353,7 +370,7 @@ bool SetupPipeline(ID3D11Device* device, ID3D11Buffer*& vertexBuffer, ID3D11Inpu
 	ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& textureSRV, ID3D11SamplerState*& sampler, 
 	ID3D11PixelShader*& pShaderDeferred, ID3D11VertexShader*& vShaderDeferred, ID3D11PixelShader*& lightPShaderDeferred,
 	ID3D11VertexShader*& lightVShaderDeferred, ID3D11InputLayout*& renderTargetMesh, ID3D11Buffer*& screenQuadMesh, 
-	ID3D11RasterizerState*& rasterizerStateWireFrame, ID3D11RasterizerState*& rasterizerStateSolid)
+	ID3D11RasterizerState*& rasterizerStateWireFrame, ID3D11RasterizerState*& rasterizerStateSolid, ID3D11SamplerState*& clampSampler)
 {
 	std::string vShaderByteCode;
 	std::string defVShaderByteCode;
@@ -413,7 +430,7 @@ bool SetupPipeline(ID3D11Device* device, ID3D11Buffer*& vertexBuffer, ID3D11Inpu
 		return false;
 	}
 
-	if (!CreateSamplerState(device, sampler))
+	if (!CreateSamplerState(device, sampler, clampSampler))
 	{
 		std::cerr << "Error creating sampler state! " << std::endl;
 		return false;
