@@ -53,8 +53,8 @@ void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera, ID3
 
 	dirLight.Update(dt);
 	UpdateBuffer(immediateContext, dirLightBuffer, dirLight.data);
-	cube->SetTranslation(dirLight.GetPosition());
-	cube->Update();
+	/*cube->SetTranslation(dirLight.GetPosition());
+	cube->Update();*/
 	XMFLOAT3 xPos;
 	XMStoreFloat3(&xPos, dirLight.GetPosition());
 	std::cout << xPos.x << " " << xPos.y << " " << xPos.z << std::endl;
@@ -69,15 +69,16 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	ID3D11ShaderResourceView* textureSRV, ID3D11Buffer* vertexBuffer,ParticleSystem* particlesystem, 
 	ParticleRenderer* pRenderer, ModelRenderer* mRenderer, const std::vector <Model*>&models, TerrainRenderer* tRenderer, Model* terrain,
 	ShadowRenderer* sRenderer, ID3D11RasterizerState*& rasterizerStateWireFrame, ID3D11RasterizerState*& rasterizerStateSolid,
-	Model* water, ID3D11Device * device, Model* cube)
+	Model* water, ID3D11Device * device, Model* cameraModel, const std::vector <Model*>&things)
 {
 	
 	ShaderData::shadowmap->Bind(immediateContext); // Binds the shadowmap (sets resources)
 	// Loops through the models-vector and renders shadows
-	for (auto model : models)
-		sRenderer->Render(immediateContext, model);
-	sRenderer->Render(immediateContext, water);
-	sRenderer->Render(immediateContext, terrain);
+	for (auto thing : things)
+		sRenderer->Render(immediateContext, thing);
+
+	//sRenderer->Render(immediateContext, water);
+	//sRenderer->Render(immediateContext, terrain);
 
 	clearView(immediateContext, rtv, dsView, gBuffer); 	// Clear the window for next render pass
 
@@ -92,7 +93,6 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 		mRenderer->Render(device, immediateContext, model, false);
 
 	mRenderer->Render(device,immediateContext, water, true);
-	mRenderer->Render(device, immediateContext, cube, false);
 	tRenderer->Render(immediateContext, terrain);
 	pRenderer->Render(immediateContext, particlesystem);
 
@@ -224,28 +224,43 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 	// Creating a vector that stores the models
 	std::vector <Model*>models;
+	std::vector <Model*>things;
 	// Creating a new model for each mesh in the scene
 
-	Model* bike = new Model(device, "biker", { 10.0f, -3.6f, 0.0f }, { 0.0f,0.0f,0.0f }, { 0.5f, 0.5f, 0.5f });
-	models.push_back(bike);
+	Model* bike = new Model(device, "biker", { 10.0f, 5, 0.0f }, { 0.0f,0.0f,0.0f }, { 0.5f, 0.5f, 0.5f });
+	//models.push_back(bike);
 
 	Model* sword = new Model(device, "sword", { 15.0f, -3.4f, 0.0f }, { 0.0f,XM_PIDIV2,0.0f }, { 0.4f, 0.4f, 0.4f });
-	models.push_back(sword);
+	//models.push_back(sword);
 
 	Model* buildings = new Model(device, "buildings", { 0.0f, -4.8f, 0.0f }, { 0.0f,0.0f,0.0f }, { 1.7f, 1.7f, 1.7f });
-	models.push_back(buildings);
+	//models.push_back(buildings);
+	 
+	Model* cameraModel = new Model(device, "newCube", { 10, -3.6, 0 }, { 0.0f,0.0f,0.0f }, {0.2, 0.2,0.2});
+	/*models.push_back(cameraModel);
+	things.push_back(cameraModel);*/
 
-	Model* cube = new Model(device, "newCube", { 0.0f, -4.8f, 0.0f }, { 0.0f,0.0f,0.0f }, {1, 1, 1});
-	//models.push_back(cube);
-
-	Model* water = new Model(device, "water", { 0, -3.6, 0 }, { 0.0f,0,0.0f }, { 50, 50, 50 });
+	Model* water = new Model(device, "water", { 10, -3.6, 0 }, { 0.0f,0,0.0f }, { 10, 10, 10 });
 	//models.push_back(water);
+	things.push_back(water);
 
-	//water->WaterSettings(true, DirectX::XMFLOAT2(0.1f, 0.0f), DirectX::XMFLOAT2(0.0f, 0.0f), 1.0f);
+	Model* chessBoard = new Model(device, "ChessBoard", { 0.0f, -2, 10.0f }, { 0.0f,0.0f,0.0f }, { 15, 15, 15});
+	models.push_back(chessBoard);
+	things.push_back(chessBoard);
+
+	Model* bChessPieces = new Model(device, "BlackChess", { 0.0f, -2, 10.0f }, { 0.0f,0.0f,0.0f }, { 15, 15, 15 });
+	models.push_back(bChessPieces);
+	things.push_back(bChessPieces);
+
+	Model* wChessPieces = new Model(device, "WhiteChess", { 0.0f, -2, 10.0f }, { 0.0f,0.0f,0.0f }, { 15, 15, 15 });
+	models.push_back(wChessPieces);
+	things.push_back(wChessPieces);
 
 	Model* terrain = new Model(device, "terrain", { 0.0f, -4.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2.2f, 2.2f, 2.2f });
 	terrain->SetDisplacementTexture(device, "Models/terrain/displacement.png");
 	terrain->AddTexture(device, "snow.jpg");
+	things.push_back(terrain);
+
 
 	ParticleSystem* particlesystem = new ParticleSystem(device, 200, 5, 1, { 60,25,60 }, { 0,20,0 });
 	ParticleRenderer* pRenderer = new ParticleRenderer(device);
@@ -280,9 +295,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 		RenderGBufferPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout,
 			sampler, gBuffer, textureSRV, vertexBuffer, particlesystem, pRenderer, mRenderer,models, tRenderer, terrain, sRenderer, 
-			rasterizerStateWireFrame, rasterizerStateSolid, water, device, cube);
+			rasterizerStateWireFrame, rasterizerStateSolid, water, device, cameraModel, things);
 		
-		update(immediateContext, dt, camera, constantBuffers, wvp, particlesystem, dirLight, dirLightBuffer, water, cube);
+		update(immediateContext, dt, camera, constantBuffers, wvp, particlesystem, dirLight, dirLightBuffer, water, cameraModel);
 
 		RenderLightPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout, vertexBuffer,
 			textureSRV, sampler, gBuffer, lightPShaderDeferred,	lightVShaderDeferred, renderTargetMeshInputLayout, screenQuadMesh, 

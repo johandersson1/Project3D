@@ -38,7 +38,7 @@ PSOutput main(PSInput input)
     output.ambientMTL = float4(0.5f, 0.5f, 0.5f, 1);
     output.diffuseMTL = float4(0.5f, 0.5f, 0.5f, 1);
     output.specularMTL = float4(0.2f, 0.2f, 0.2f, 1);
-    output.shadowMap = shadowTexture.Sample(mySampler, input.tex);
+    //output.shadowMap = shadowTexture.Sample(mySampler, input.tex);
     float4 texColour;
     float4 lowColour = textures[0].Sample(mySampler, input.tex);
     float4 hiColour = textures[1].Sample(mySampler, input.tex);
@@ -52,15 +52,13 @@ PSOutput main(PSInput input)
     float4 lightClip = mul(float4(output.worldPos, 1.0f), lightMatrix);
     
     //SHADOWS
-    lightClip.xy /= lightClip.w;
+    lightClip.xyz /= lightClip.w;
     float2 tx = float2(0.5f * lightClip.x + 0.5f, -0.5f * lightClip.y + 0.5);
-    float4 sm = shadowTexture.Sample(mySampler, tx);
+    float sm = shadowTexture.Sample(mySampler, tx).r;
 
-    float depth = lightClip.z / lightClip.w;
-
-    float shadow = (depth - 0.015f) > sm ? 0.0f : sm;
+    float shadow = (sm + 0.005f < lightClip.z) ? sm : 1.0f;
     
-    output.shadowMap = float4(shadow, shadow, shadow, 1);
+    output.shadowMap = float4(shadow, 0, 0, 1);
    
     output.diffuse = highAmount * hiColour + lowAmount * lowColour;
     return output;

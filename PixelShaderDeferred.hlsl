@@ -1,5 +1,5 @@
 Texture2D diffuseTex : register(t0);
-Texture2D shadowMap : register(t1);
+Texture2D shadowTex : register(t1);
 
 SamplerState mySampler : register(s0);
 
@@ -51,16 +51,14 @@ PixelOutput main(PixelInput input)
     float4 lightClip = mul(float4(output.worldPos, 1.0f), lightMatrix);
     
     //SHADOWS
-    lightClip.xy /= lightClip.w;
+    lightClip.xyz /= lightClip.w;
     float2 tx = float2(0.5f * lightClip.x + 0.5f, -0.5f * lightClip.y + 0.5);
-    float4 sm = shadowMap.Sample(mySampler, tx);
+    float sm = shadowTex.Sample(mySampler, tx).r;
 
-    float depth = lightClip.z / lightClip.w;
-
-    float shadow = (depth - 0.015f) > sm ? 0.0f : sm;
+    float shadow = (sm + 0.005f < lightClip.z) ? sm : 1.0f;
     
-    output.shadowMap = shadow;
-    //output.shadowMap = depth;
+    output.shadowMap = float4(shadow, 0, 0, 1);
+    
     return output; 
 }
 

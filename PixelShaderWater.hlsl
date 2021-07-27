@@ -1,5 +1,5 @@
 Texture2D diffuseTex : register(t0);
-
+Texture2D shadowTex : register(t1);
 SamplerState mySampler : register(s0);
 
 struct PixelInput
@@ -49,12 +49,24 @@ PixelOutput main(PixelInput input)
     output.normal = input.normal;
     output.worldPos = input.worldPos;
     
+    float4 lightClip = mul(float4(output.worldPos, 1.0f), lightMatrix);
+    
+    //SHADOWS
+    lightClip.xyz /= lightClip.w;
+    float2 tx = float2(0.5f * lightClip.x + 0.5f, -0.5f * lightClip.y + 0.5);
+    float sm = shadowTex.Sample(mySampler, tx).r;
+
+    float shadow = (sm + 0.005f < lightClip.z) ? sm : 1.0f;
+    
+    output.shadowMap = float4(shadow, 0, 0, 1);
+    
     // UV 
     input.tex.x += uCord;
     input.tex.y += vCord;
     
     output.diffuse = diffuseTex.Sample(mySampler, input.tex);
     // MTL
+    
     output.ambientMTL = kA;
     output.diffuseMTL = float4(-1.0f, -1.0f, -1.0f, 0.0f);
     

@@ -28,15 +28,7 @@ public:
 	DirectionalLight(float range, XMVECTOR direction)
 	{
 		data.range = range;
-		direction = XMVector3Normalize(direction);
-		position = -direction * range;
-		XMVECTOR target = { 0,0,0 };
-		XMVECTOR up = { 0,1,0 };
-
-		viewMatrix = XMMatrixLookAtLH(position, target, up);
-		ortographicMatrix = XMMatrixOrthographicOffCenterLH(-range, range, -range, range, -range, range);
-
-		matrix = XMMatrixTranspose(viewMatrix * ortographicMatrix);
+		ortographicMatrix = XMMatrixOrthographicOffCenterLH(-range, range, -range, range, -range, range * 4);
 	}
 
 	void Update(float dt)
@@ -53,13 +45,18 @@ public:
 		XMVector2Normalize(direction);
 
 		position = direction * data.range;
-		
+
+		XMVECTOR up = { 0 ,1 ,0 };
+
+		if (currentAngle > XM_PIDIV2)
+		{
+			up = { 0, -1, 0 };
+		}
+
 		XMStoreFloat3(&data.direction, direction);
 
-		this->viewMatrix = XMMatrixLookAtLH(position, { 0,0,0 }, { 0,1,0 });
+		this->viewMatrix = XMMatrixLookAtLH(position, { 0,0,0 }, up);
 		matrix = XMMatrixTranspose(viewMatrix * ortographicMatrix);
-
-		
 	}
 
 	XMVECTOR GetPosition() { return this->position; }

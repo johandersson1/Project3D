@@ -27,7 +27,7 @@
 
 	void ShaderData::Initialize(ID3D11Device* device, std::string modelVSByteCode)
 {
-	shadowmap = new ShadowMap(device, 1024);
+	shadowmap = new ShadowMap(device, 4096);
 	std::string byteCode;
 	std::string shaderData;
 	std::ifstream reader;
