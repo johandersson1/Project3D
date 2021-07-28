@@ -28,7 +28,7 @@ public:
 	DirectionalLight(float range, XMVECTOR direction)
 	{
 		data.range = range;
-		ortographicMatrix = XMMatrixOrthographicOffCenterLH(-range, range, -range, range, -range, range * 2);
+		ortographicMatrix = XMMatrixOrthographicOffCenterLH(-range, range, -range, range, -range, range * 2.0f);
 	}
 
 	void Update(float dt)

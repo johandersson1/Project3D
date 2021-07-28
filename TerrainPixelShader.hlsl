@@ -57,7 +57,7 @@ PSOutput main(PSInput input)
     float2 tx = float2(0.5f * lightClip.x + 0.5f, -0.5f * lightClip.y + 0.5);
     float sm = shadowTexture.Sample(wrapSampler, tx).r;
 
-    float shadow = (sm + 0.0008f < lightClip.z) ? sm : 1.0f;
+    float shadow = (sm + 0.005f < lightClip.z) ? sm : 1.0f;
     
     output.shadowMap = float4(shadow, 0, 0, 1);
    

@@ -111,6 +111,11 @@ public:
 
 	void Render(ID3D11Device* device, ID3D11DeviceContext* context, Model* model, bool water = false)
 	{
+		XMStoreFloat4x4(&matrices.worldSpace, model->GetWorldMatrix());
+		XMMATRIX WVP = XMMatrixTranspose(model->GetWorldMatrix() * ShaderData::viewMatrix * ShaderData::perspectiveMatrix);
+		XMStoreFloat4x4(&matrices.WVP, WVP);
+
+		UpdateBuffer(context, matricesBuffer, matrices);
 		context->IASetInputLayout(ShaderData::model_layout);
 		context->VSSetShader(vertexShader, NULL, 0);
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -140,14 +145,11 @@ public:
 
 		UpdateBuffer(context, lightBuffer, ShaderData::lightMatrix);
 		context->PSSetConstantBuffers(1, 1, &lightBuffer);
+		context->PSSetShaderResources(0, 1, model->GetTextures(1));
 		context->PSSetShaderResources(1, 1, ShaderData::shadowmap->GetSRV());
 	
-		XMStoreFloat4x4(&matrices.worldSpace, model->GetWorldMatrix());
-		XMMATRIX WVP = XMMatrixTranspose(model->GetWorldMatrix() * ShaderData::viewMatrix * ShaderData::perspectiveMatrix);
-		XMStoreFloat4x4(&matrices.WVP, WVP);
-		UpdateBuffer(context, matricesBuffer, matrices);
 		context->VSSetConstantBuffers(1, 1, &matricesBuffer);
-		context->PSSetShaderResources(0, 1, model->GetTextures(1));
+	
 		
 		D3D11_MAPPED_SUBRESOURCE mappedBuffer = {};
 
@@ -157,6 +159,7 @@ public:
 			std::cout << "FAILED TO UPDATE MTL BUFFER" << std::endl;
 			return;
 		}
+
 		memcpy(mappedBuffer.pData, &model->GetMaterial(), sizeof(model->GetMaterial()));
 		context->Unmap(*model->GetMTLBuffer(), 0);
 		context->PSSetConstantBuffers(0, 1, model->GetMTLBuffer());

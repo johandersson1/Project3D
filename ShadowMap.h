@@ -81,7 +81,7 @@ public:
 	void Bind(ID3D11DeviceContext* context)
 	{
 		ID3D11ShaderResourceView* null = nullptr;
-		//context->PSSetShaderResources(0, 1, &null);
+		context->PSSetShaderResources(0, 1, &null);
 		context->RSSetViewports(1, &viewPort);
 		// Set null render target because we are only going to draw to depth buffer. 
 		//Setting a null render target will disable color writes.

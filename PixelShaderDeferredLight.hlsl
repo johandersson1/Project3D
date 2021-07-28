@@ -9,6 +9,7 @@ Texture2D specularMatTexture : register(t6);
 Texture2D shadowMapTexture : register(t7);
 
 SamplerState mySampler : register(s0);
+SamplerState clampSampler : register(s1);
 
 cbuffer DirectionalLight : register(b0)
 {
@@ -78,7 +79,7 @@ float4 main(PixelInput input) : SV_Target
     float4 diffuseMaterial = diffuseMatTexture.Sample(mySampler, input.tex);
     float4 specularMaterial = specularMatTexture.Sample(mySampler, input.tex);
     
-    float4 shadowMap = shadowMapTexture.Sample(mySampler, input.tex);
+    float4 shadowMap = shadowMapTexture.Sample(clampSampler, input.tex);
     
     if (diffuseMaterial.x < 0)
     {
