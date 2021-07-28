@@ -53,8 +53,8 @@ void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera, ID3
 
 	dirLight.Update(dt);
 	UpdateBuffer(immediateContext, dirLightBuffer, dirLight.data);
-	cameraModel->SetTranslation(dirLight.GetPosition());
-	cameraModel->Update();
+	/*cameraModel->SetTranslation(dirLight.GetPosition());
+	cameraModel->Update();*/
 	XMFLOAT3 xPos;
 	XMStoreFloat3(&xPos, dirLight.GetPosition());
 	std::cout << xPos.x << " " << xPos.y << " " << xPos.z << std::endl;
@@ -72,14 +72,15 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	Model* water, ID3D11Device * device, Model* cameraModel, const std::vector <Model*>&things, ID3D11SamplerState* clampSampler)
 {
 	
-	ShaderData::shadowmap->Bind(immediateContext); // Binds the shadowmap (sets resources)
+	ShaderData::shadowmap->Bind(immediateContext); 
+	// Binds the shadowmap (sets resources)
 	// Loops through the models-vector and renders shadows
-	for (auto thing : things)
-		sRenderer->Render(immediateContext, thing);
+	for (auto model : models)
+		sRenderer->Render(immediateContext, model);
 
-	//sRenderer->Render(immediateContext, water);
-	//sRenderer->Render(immediateContext, terrain);
-
+	sRenderer->Render(immediateContext, water);
+	sRenderer->Render(immediateContext, terrain);
+	immediateContext->RSSetViewports(NULL, NULL);
 	clearView(immediateContext, rtv, dsView, gBuffer); 	// Clear the window for next render pass
 
 	immediateContext->RSSetViewports(1, &viewport);
@@ -130,7 +131,7 @@ void RenderLightPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetVi
 	immediateContext->PSSetConstantBuffers(0, 1, &dirLightBuffer);
 	immediateContext->PSSetSamplers(0, 1, &sampler);
 	immediateContext->RSSetState(nullptr);
-	immediateContext->OMSetRenderTargets(1, &rtv, dsView);
+	immediateContext->OMSetRenderTargets(1, &rtv, dsView); //*ShaderData::shadowmap->GetDSV()
 	immediateContext->Draw(4, 0);
 
 	//Clean up the PixelShaders
@@ -194,7 +195,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		gBuffer.gBufferTexture[i] = nullptr;
 	}
 
-	DirectionalLight dirLight(30, { 1,1,1 });
+	DirectionalLight dirLight(15, { 1,1,1 });
 	ID3D11Buffer* dirLightBuffer;
 
 	//ConstantBuffer(s)
@@ -226,7 +227,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	std::vector <Model*>things;
 	// Creating a new model for each mesh in the scene
 
-	Model* bike = new Model(device, "biker", { 10.0f, 5, 0.0f }, { 0.0f,0.0f,0.0f }, { 0.5f, 0.5f, 0.5f });
+	Model* bike = new Model(device, "biker", { 10.0f, 5, 0.0f }, { 0.0f,XM_PIDIV2,0.0f }, { 0.5f, 0.5f, 0.5f });
 	//models.push_back(bike);
 
 	Model* sword = new Model(device, "sword", { 15.0f, -3.4f, 0.0f }, { 0.0f,XM_PIDIV2,0.0f }, { 0.4f, 0.4f, 0.4f });
@@ -239,23 +240,23 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	models.push_back(cameraModel);
 	things.push_back(cameraModel);
 
-	Model* water = new Model(device, "water", { -10, -3.6, 0 }, { 0.0f,0,-XM_PIDIV2 }, { 10, 10, 10 });
+	Model* water = new Model(device, "water", { 0, -3.6, 40 }, { 0.0f,0,0.0f }, { 10, 10, 10 });
 	//models.push_back(water);
 	things.push_back(water);
 
-	Model* chessBoard = new Model(device, "ChessBoard", { 0.0f, -2, 10.0f }, { 0.0f,0.0f,0.0f }, { 15, 15, 15});
+	Model* chessBoard = new Model(device, "ChessBoard", { 0.0f, -2, 23.0f }, { 0.0f,0.0f,0.0f }, { 15, 15, 15});
 	models.push_back(chessBoard);
 	things.push_back(chessBoard);
 
-	Model* bChessPieces = new Model(device, "BlackChess", { 0.0f, -2, 10.0f }, { 0.0f,0.0f,0.0f }, { 15, 15, 15 });
+	Model* bChessPieces = new Model(device, "BlackChess", { 0.0f, -1, 23.0f }, { 0.0f,0.0f,0.0f }, { 15, 15, 15 });
 	models.push_back(bChessPieces);
 	things.push_back(bChessPieces);
 
-	Model* wChessPieces = new Model(device, "WhiteChess", { 0.0f, -2, 10.0f }, { 0.0f,0.0f,0.0f }, { 15, 15, 15 });
+	Model* wChessPieces = new Model(device, "WhiteChess", { 0.0f, -1, 23.0f }, { 0.0f,0.0f,0.0f }, { 15, 15, 15 });
 	models.push_back(wChessPieces);
 	things.push_back(wChessPieces);
 
-	Model* terrain = new Model(device, "terrain", { 0.0f, -4.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.5f,1.5f,1.5f });
+	Model* terrain = new Model(device, "terrain", { 0.0f, -6.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.5f,1.5f,1.5f });
 	terrain->SetDisplacementTexture(device, "Models/terrain/displacement.png");
 	terrain->AddTexture(device, "snow.jpg");
 	things.push_back(terrain);

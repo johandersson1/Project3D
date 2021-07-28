@@ -52,7 +52,7 @@ DS_OUTPUT main(
     
     //Displacement
     const float disfactor = 1.0f;
-    float h = displacementTexture.SampleLevel(clampSampler, output.tex, 0).r;
+    float h = displacementTexture.SampleLevel(mySampler, output.tex, 0).r;
     output.blendValue = h;
     output.worldPos.xyz += h * disfactor * output.normal;
    
