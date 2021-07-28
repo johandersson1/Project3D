@@ -53,8 +53,8 @@ void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera, ID3
 
 	dirLight.Update(dt);
 	UpdateBuffer(immediateContext, dirLightBuffer, dirLight.data);
-	/*cameraModel->SetTranslation(dirLight.GetPosition());
-	cameraModel->Update();*/
+	cameraModel->SetTranslation(dirLight.GetPosition());
+	cameraModel->Update();
 	XMFLOAT3 xPos;
 	XMStoreFloat3(&xPos, dirLight.GetPosition());
 	std::cout << xPos.x << " " << xPos.y << " " << xPos.z << std::endl;
@@ -154,7 +154,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 	WVP wvp;
 
-	Camera camera(XM_PIDIV4, (float)WIDTH / (float)HEIGHT, 0.1, 100, 2.5, 5.0f, { 12.0f,0.0f,10.0f });
+	Camera camera(XM_PIDIV4, (float)WIDTH / (float)HEIGHT, 0.1, 100, 2.5, 5.0f, { 15.0f, 10.0f ,0.0f });
 	ID3D11Buffer* cameraBuffer;
 	Timer timer;
 	float dt = 0.0f;
@@ -195,7 +195,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		gBuffer.gBufferTexture[i] = nullptr;
 	}
 
-	DirectionalLight dirLight(15, { 1,1,1 });
+	DirectionalLight dirLight(30, { 1,1,1 });
 	ID3D11Buffer* dirLightBuffer;
 
 	//ConstantBuffer(s)
@@ -244,19 +244,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	//models.push_back(water);
 	things.push_back(water);
 
-	Model* chessBoard = new Model(device, "ChessBoard", { 0.0f, -2, 23.0f }, { 0.0f,0.0f,0.0f }, { 15, 15, 15});
+	Model* chessBoard = new Model(device, "ChessBoard", { 0.0f, 3, 23.0f }, { 0.0f,0.0f,0.0f }, { 15, 15, 15});
 	models.push_back(chessBoard);
 	things.push_back(chessBoard);
 
-	Model* bChessPieces = new Model(device, "BlackChess", { 0.0f, -1, 23.0f }, { 0.0f,0.0f,0.0f }, { 15, 15, 15 });
+	Model* bChessPieces = new Model(device, "BlackChess", { 0.0f, 4, 23.0f }, { 0.0f,0.0f,0.0f }, { 15, 15, 15 });
 	models.push_back(bChessPieces);
 	things.push_back(bChessPieces);
 
-	Model* wChessPieces = new Model(device, "WhiteChess", { 0.0f, -1, 23.0f }, { 0.0f,0.0f,0.0f }, { 15, 15, 15 });
+	Model* wChessPieces = new Model(device, "WhiteChess", { 0.0f, 4, 23.0f }, { 0.0f,0.0f,0.0f }, { 15, 15, 15 });
 	models.push_back(wChessPieces);
 	things.push_back(wChessPieces);
 
-	Model* terrain = new Model(device, "terrain", { 0.0f, -6.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.5f,1.5f,1.5f });
+	Model* terrain = new Model(device, "terrain", { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.5f,1.5f,1.5f });
 	terrain->SetDisplacementTexture(device, "Models/terrain/displacement.png");
 	terrain->AddTexture(device, "snow.jpg");
 	things.push_back(terrain);
