@@ -102,7 +102,6 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 
 	immediateContext->RSSetViewports(NULL, NULL);
 
-
 	immediateContext->RSSetViewports(1, &viewport);
 	immediateContext->PSSetSamplers(0, 1, &sampler);
 	immediateContext->PSSetSamplers(1, 1, &clampSampler);
@@ -119,9 +118,6 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 		mRenderer->Render(device, immediateContext, model, false);
 
 	pRenderer->Render(immediateContext, particlesystem);
-
-
-
 }
 
 // Light pass -- renders the geometry and lighting on the final screen quad
@@ -269,8 +265,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	//models.push_back(bChessPieces);
 
 
-	//Model* wChessPieces = new Model(device, "WhiteChess", { 0.0f, 2, 17 }, { 0.0f,0.0f,0.0f }, { 15, 15, 15 });
-	//models.push_back(wChessPieces);
+	Model* wChessPieces = new Model(device, "WhiteChess", { 0.0f, 2, 17 }, { 0.0f,0.0f,0.0f }, { 15, 15, 15 });
+	models.push_back(wChessPieces);
 
 
 	Model* terrain = new Model(device, "Ground", { 0.0f, 0.0f, 0 }, { 0.0f, 0.0f, 0.0f }, { 1, 1, 1 });
