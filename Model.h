@@ -12,7 +12,6 @@ private:
 	ID3D11Buffer* positionsBuffer;
 	ID3D11Buffer* waterBuffer;
 
-
 	//Water-effect
 	XMFLOAT2 movementSpeedUv;
 	XMFLOAT2 offsetUV;

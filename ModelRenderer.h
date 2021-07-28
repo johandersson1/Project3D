@@ -146,10 +146,10 @@ public:
 		UpdateBuffer(context, lightBuffer, ShaderData::lightMatrix);
 		context->PSSetConstantBuffers(1, 1, &lightBuffer);
 		context->PSSetShaderResources(0, 1, model->GetTextures(1));
-		context->PSSetShaderResources(1, 1, ShaderData::shadowmap->GetSRV());
-	
 		context->VSSetConstantBuffers(1, 1, &matricesBuffer);
-	
+		context->HSSetShader(NULL, NULL, 0);
+		context->DSSetShader(NULL, NULL, 0);
+		//context->GSSetShader(NULL, NULL, 0);
 		
 		D3D11_MAPPED_SUBRESOURCE mappedBuffer = {};
 
@@ -165,6 +165,7 @@ public:
 		context->PSSetConstantBuffers(0, 1, model->GetMTLBuffer());
 		context->IASetVertexBuffers(0, 1, model->GetBuffer(), &stride, &offset);
 		context->Draw(model->GetVertexCount(), 0);
+
 	}
 	std::string GetByteCode() const { return this->byteCode; }
 };

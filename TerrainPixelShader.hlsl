@@ -1,6 +1,6 @@
 Texture2D textures[2] : register(t0);
 Texture2D blendTexture : register(t2);
-Texture2D shadowTexture : register(t3);
+
 sampler wrapSampler : register(s0);
 sampler clampSampler : register(s1);
 
@@ -21,7 +21,7 @@ struct PSOutput
     float4 ambientMTL : SV_TARGET4;
     float4 diffuseMTL : SV_TARGET5;
     float4 specularMTL : SV_TARGET6;
-    float4 shadowMap : SV_TARGET7;
+    float4 lightClipPos : SV_TARGET7;
 };
 
 cbuffer LightMatrix : register(b0)
@@ -50,16 +50,7 @@ PSOutput main(PSInput input)
         
     texColour = saturate(texColour);
     
-    float4 lightClip = mul(float4(output.worldPos, 1.0f), lightMatrix);
-    
-    //SHADOWS
-    lightClip.xyz /= lightClip.w;
-    float2 tx = float2(0.5f * lightClip.x + 0.5f, -0.5f * lightClip.y + 0.5);
-    float sm = shadowTexture.Sample(wrapSampler, tx).r;
-
-    float shadow = (sm + 0.005f < lightClip.z) ? sm : 1.0f;
-    
-    output.shadowMap = float4(shadow, 0, 0, 1);
+    output.lightClipPos = mul(float4(output.worldPos, 1.0f), lightMatrix);
    
     output.diffuse = highAmount * hiColour + lowAmount * lowColour;
     return output;

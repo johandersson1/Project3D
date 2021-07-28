@@ -33,15 +33,25 @@ void RedirectIOToConsole()
 void clearView(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsView, const GeometryBuffer& gBuffer)
 {
 	float clearcolor[4] = { 0.75f, 0.75f, 0.75f,0 };
-	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[0], clearcolor);
-	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[1], clearcolor);
-	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[2], clearcolor);
-	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[3], clearcolor);
-	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[4], clearcolor);
-	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[5], clearcolor);
-	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[6], clearcolor);
-	immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[7], clearcolor);
-	immediateContext->ClearDepthStencilView(dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+
+	//Clean up
+	//ID3D11RenderTargetView* nullArr[gBuffer.NROFBUFFERS];
+	ID3D11ShaderResourceView* nullSrvs[gBuffer.NROFBUFFERS] = { nullptr };
+	immediateContext->PSSetShaderResources(0, gBuffer.NROFBUFFERS, nullSrvs);
+	
+	//for (int i = 0; i < gBuffer.NROFBUFFERS; i++)
+	//{
+	//	nullArr[i] = nullptr;
+	//}
+
+	immediateContext->OMSetRenderTargets(gBuffer.NROFBUFFERS, gBuffer.gBuffergBufferRtv, dsView);
+
+	for (int i = 0; i < gBuffer.NROFBUFFERS; i++)
+	{
+		immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[i], clearcolor);
+	}
+	
+	immediateContext->ClearDepthStencilView(dsView, D3D11_CLEAR_DEPTH , 1, 0);
 }
 
 // Update function to update the camera, the particles and the CB containing worldSpace and WVP matricies
@@ -63,7 +73,7 @@ void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera, ID3
 	// light "pos"
 	//std::cout << xPos.x << " " << xPos.y << " " << xPos.z << std::endl;
 
-	water->WaterSettings(DirectX::XMFLOAT2(0.1f, 0.1f), dt);
+	water->WaterSettings(DirectX::XMFLOAT2(-0.1f, 0.1f), dt);
 	UpdateBuffer(immediateContext, *water->GetWaterBuffer(), water->GetUVOffset());
 }
 
@@ -76,8 +86,12 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	ShadowRenderer* sRenderer, ID3D11RasterizerState*& rasterizerStateWireFrame, ID3D11RasterizerState*& rasterizerStateSolid,
 	Model* water, ID3D11Device * device, Model* cameraModel, ID3D11SamplerState* clampSampler)
 {
-	
+
 	ShaderData::shadowmap->Bind(immediateContext); 
+
+	immediateContext->HSSetShader(NULL, NULL, 0);
+	immediateContext->DSSetShader(NULL, NULL, 0);
+	immediateContext->GSSetShader(NULL, NULL, 0);
 	// Binds the shadowmap (sets resources)
 	// Loops through the models-vector and renders shadows
 	for (auto model : models)
@@ -87,7 +101,7 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	sRenderer->Render(immediateContext, terrain);
 
 	immediateContext->RSSetViewports(NULL, NULL);
-	clearView(immediateContext, rtv, dsView, gBuffer); 	// Clear the window for next render pass
+
 
 	immediateContext->RSSetViewports(1, &viewport);
 	immediateContext->PSSetSamplers(0, 1, &sampler);
@@ -96,23 +110,18 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	immediateContext->DSSetSamplers(1, 1, &clampSampler);
 	immediateContext->RSSetState(rasterizerStateSolid);
 	immediateContext->GSSetShader(ShaderData::geometryShader, nullptr, 0);
-	immediateContext->OMSetRenderTargets(gBuffer.NROFBUFFERS, gBuffer.gBuffergBufferRtv, dsView);
 
+	clearView(immediateContext, rtv, dsView, gBuffer); 	// Clear the window for next render pass
+	mRenderer->Render(device,immediateContext, water, true);
+
+	tRenderer->Render(immediateContext, terrain);
 	for (auto model : models)
 		mRenderer->Render(device, immediateContext, model, false);
 
-	mRenderer->Render(device,immediateContext, water, true);
-	tRenderer->Render(immediateContext, terrain);
 	pRenderer->Render(immediateContext, particlesystem);
 
 
-	//Clean up
-	ID3D11RenderTargetView* nullArr[gBuffer.NROFBUFFERS];
-	for (int i = 0; i < gBuffer.NROFBUFFERS; i++)
-	{
-		nullArr[i] = nullptr;
-	}
-	immediateContext->OMSetRenderTargets(gBuffer.NROFBUFFERS, nullArr, dsView);
+
 }
 
 // Light pass -- renders the geometry and lighting on the final screen quad
@@ -122,31 +131,35 @@ void RenderLightPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetVi
 	ID3D11VertexShader* lightVShaderDeferred, ID3D11InputLayout* renderTargetMeshInputLayout, ID3D11Buffer* screenQuadMesh, DirectionalLight &dirLight, 
 	ID3D11Buffer* dirLightBuffer, Camera camera, ID3D11Buffer* cameraPos, ID3D11SamplerState* clampSampler)
 {
-	
-	immediateContext->PSSetConstantBuffers(1, 1, &cameraPos);
+
 
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
+
+	immediateContext->OMSetRenderTargets(1, &rtv, dsView); //*ShaderData::shadowmap->GetDSV()
+
 	immediateContext->IASetVertexBuffers(0, 1, &screenQuadMesh, &stride, &offset);
 	immediateContext->IASetInputLayout(renderTargetMeshInputLayout);
 	immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 	immediateContext->VSSetShader(lightVShaderDeferred, nullptr, 0);
-	immediateContext->RSSetViewports(1, &viewport);
-	immediateContext->PSSetShader(lightPShaderDeferred, NULL, 0);
+	immediateContext->PSSetShader(lightPShaderDeferred, nullptr, 0);
+
 	immediateContext->PSSetShaderResources(0, gBuffer.NROFBUFFERS, gBuffer.gBufferSrv);
+	immediateContext->PSSetShaderResources(8, 1, ShaderData::shadowmap->GetSRV());
 	immediateContext->PSSetConstantBuffers(0, 1, &dirLightBuffer);
+	immediateContext->PSSetConstantBuffers(1, 1, &cameraPos);
 	immediateContext->PSSetSamplers(0, 1, &sampler);
 	immediateContext->RSSetState(nullptr);
-	immediateContext->OMSetRenderTargets(1, &rtv, dsView); //*ShaderData::shadowmap->GetDSV()
+
 	immediateContext->Draw(4, 0);
 
-	//Clean up the PixelShaders
-	ID3D11ShaderResourceView* nullArr[gBuffer.NROFBUFFERS];
-	for (int i = 0; i < gBuffer.NROFBUFFERS; i++)
-	{
-		nullArr[i] = nullptr;
-	}
-	immediateContext->PSSetShaderResources(0, gBuffer.NROFBUFFERS, nullArr);
+	////Clean up the PixelShaders
+	//ID3D11ShaderResourceView* nullArr[gBuffer.NROFBUFFERS];
+	//for (int i = 0; i < gBuffer.NROFBUFFERS; i++)
+	//{
+	//	nullArr[i] = nullptr;
+	//}
+	//immediateContext->PSSetShaderResources(0, gBuffer.NROFBUFFERS, nullArr);
 }
 
 
@@ -233,36 +246,37 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	std::vector <Model*>things;
 	// Creating a new model for each mesh in the scene
 
-	Model* bike = new Model(device, "biker", { -5.0f, 4, -5.0f }, { 0.0f,XM_PIDIV2, XM_PIDIV4 }, { 1, 1, 1 });
-	models.push_back(bike);
+	//Model* bike = new Model(device, "biker", { -5.0f, 4, -5.0f }, { 0.0f,XM_PIDIV2, XM_PIDIV4 }, { 1, 1, 1 });
+	//models.push_back(bike);
 
-	Model* bike2 = new Model(device, "biker", { 0.0f, 4, 6.0f }, { 0.0f,-XM_PIDIV2, -XM_PIDIV4 }, { 0.5f, 0.5f, 0.5f });
-	models.push_back(bike2);
+	//Model* bike2 = new Model(device, "biker", { 0.0f, 4, 6.0f }, { 0.0f,-XM_PIDIV2, -XM_PIDIV4 }, { 0.5f, 0.5f, 0.5f });
+	//models.push_back(bike2);
 
 	Model* cameraModel = new Model(device, "newCube", { 10, -3.6, 0 }, { 0.0f,0.0f,0.0f }, {0.1, 0.1, 0.1});
 	models.push_back(cameraModel);
 
 
-	Model* water = new Model(device, "water", { 0, 3, 0 }, { 0.0f,0.0f,-XM_PIDIV2 }, { 15, 15,15 });
+	Model* torus = new Model(device, "Torus", { 0, 0.5f, 0.0f }, { 0.0f,0, 0 }, { 0.75,0.75, 0.75});
+	models.push_back(torus);
+
+	Model* water = new Model(device, "water", { 0, 3, 10 }, { 0.0f,XM_PIDIV2,-XM_PIDIV2 }, { 15, 15,15 });
 	
-	//Model* chessBoard = new Model(device, "ChessBoard", { 0.0f, 1.5, -30 }, { 0.0f,0.0f,0.0f }, { 15, 15, 15});
-	//models.push_back(chessBoard);
+	/*Model* chessBoard = new Model(device, "ChessBoard", { 0.0f, 0, 17 }, { 0.0f,0.0f,0.0f }, { 15, 15, 15});
+	models.push_back(chessBoard);*/
 
 
-	/*Model* bChessPieces = new Model(device, "BlackChess", { 0.0f, 2, 20 }, { 0.0f,0.0f,0.0f }, { 15, 15, 15 });
-	models.push_back(bChessPieces);
+	//Model* bChessPieces = new Model(device, "BlackChess", { 0.0f, 2, 17 }, { 0.0f,0.0f,0.0f }, { 15, 15, 15 });
+	//models.push_back(bChessPieces);
 
 
-	Model* wChessPieces = new Model(device, "WhiteChess", { 0.0f, 2, 20 }, { 0.0f,0.0f,0.0f }, { 15, 15, 15 });
-	models.push_back(wChessPieces);*/
+	//Model* wChessPieces = new Model(device, "WhiteChess", { 0.0f, 2, 17 }, { 0.0f,0.0f,0.0f }, { 15, 15, 15 });
+	//models.push_back(wChessPieces);
 
 
-	Model* terrain = new Model(device, "terrain", { 0.0f, 2, 0 }, { 0.0f, 0.0f, 0.0f }, { 1, 1, 1 });
-	terrain->SetDisplacementTexture(device, "Models/terrain/displacement.png");
-	terrain->AddTexture(device, "snow.jpg");
-	things.push_back(terrain);
-
-
+	Model* terrain = new Model(device, "Ground", { 0.0f, 0.0f, 0 }, { 0.0f, 0.0f, 0.0f }, { 1, 1, 1 });
+	terrain->SetDisplacementTexture(device, "Models/Ground/Displacement.png");
+	terrain->AddTexture(device, "DiffuseHigher.png");
+	
 	ParticleSystem* particlesystem = new ParticleSystem(device, 200, 5, 1, { 60,25,60 }, { 0,20,0 });
 	ParticleRenderer* pRenderer = new ParticleRenderer(device);
 	ModelRenderer* mRenderer = new ModelRenderer(device);
@@ -289,16 +303,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-	
-		ShaderData::Update(immediateContext, camera, dirLight);
 
-		//UpdateBuffer(immediateContext, cameraBuffer, camera.GetPosition());
+		update(immediateContext, dt, camera, constantBuffers, wvp, particlesystem, dirLight, dirLightBuffer, water, cameraModel);
+		ShaderData::Update(immediateContext, camera, dirLight);
 
 		RenderGBufferPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout,
 			wrapSampler, gBuffer, textureSRV, vertexBuffer, particlesystem, pRenderer, mRenderer,models, tRenderer, terrain, sRenderer, 
 			rasterizerStateWireFrame, rasterizerStateSolid, water, device, cameraModel, clampSampler);
 		
-		update(immediateContext, dt, camera, constantBuffers, wvp, particlesystem, dirLight, dirLightBuffer, water , cameraModel);
+		
 
 		RenderLightPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout, vertexBuffer,
 			textureSRV, wrapSampler, gBuffer, lightPShaderDeferred,	lightVShaderDeferred, renderTargetMeshInputLayout, screenQuadMesh, 

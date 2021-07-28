@@ -130,5 +130,5 @@ void ShaderData::Update(ID3D11DeviceContext*& context, Camera camera, Directiona
 	UpdateBuffer(context, cameraPos, camera.GetPosition());
 	context->GSSetConstantBuffers(0, 1, &cameraPos);
 	// CAM POS
-	std::cout << "X: " << cameraPosition.x << " Y: " << cameraPosition.y << " Z: " << cameraPosition.z << std::endl;
+	//std::cout << "X: " << cameraPosition.x << " Y: " << cameraPosition.y << " Z: " << cameraPosition.z << std::endl;
 }

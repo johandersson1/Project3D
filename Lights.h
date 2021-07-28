@@ -7,7 +7,6 @@ using namespace DirectX;
 class DirectionalLight
 {
 private:
-
 	float range;
 	int dir = 1;
 	float currentAngle = 0.5;
@@ -28,7 +27,7 @@ public:
 	DirectionalLight(float range, XMVECTOR direction)
 	{
 		data.range = range;
-		ortographicMatrix = XMMatrixOrthographicOffCenterLH(-range, range, -range, range, -range, range * 2.0f);
+		ortographicMatrix = XMMatrixOrthographicOffCenterLH(-range, range, -range, range, -range, range * 12.0f);
 	}
 
 	void Update(float dt)
@@ -42,7 +41,7 @@ public:
 		float y = sin(currentAngle);
 
 		XMVECTOR direction = { x, y, 0 };
-		XMVector2Normalize(direction);
+		XMVector3Normalize(direction);
 
 		position = direction * data.range;
 
@@ -64,27 +63,5 @@ public:
 	XMMATRIX GetMatrix() const { return this->matrix; }
 };
 
-struct PointLight
-{
-public:
-	XMFLOAT4 color = { 1,1,1,1 };
-	XMFLOAT3 position = { 0,0,0 };
-	float range = 0;
-	XMFLOAT3 attenuation = { 0,0,0 };
-	float padding = 0;
-public:
-	PointLight() = default;
-	PointLight(float range, XMFLOAT3 position,  XMFLOAT3 color = { 1.0f, 1.0f, 1.0f }, XMFLOAT3 attenuation = { 1.0f, 1.0f, 1.0f })
-	{
-		this->color = XMFLOAT4(color.x, color.y, color.z, 1.0f);
-		this->position = position;
-		this->attenuation = attenuation;
-		this->range = range;
-	}
-	void UpdatePosition(XMFLOAT3 position)
-	{
-		this->position = position;
-	};
-};
 
 

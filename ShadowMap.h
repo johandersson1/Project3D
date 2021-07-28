@@ -47,7 +47,7 @@ public:
 			return;
 		}
 
-		D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
+		D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
 		dsvDesc.Flags = 0;
 		dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 		dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
@@ -81,7 +81,7 @@ public:
 	void Bind(ID3D11DeviceContext* context)
 	{
 		ID3D11ShaderResourceView* null = nullptr;
-		context->PSSetShaderResources(0, 1, &null);
+		context->PSSetShaderResources(8, 1, &null);
 		context->RSSetViewports(1, &viewPort);
 		// Set null render target because we are only going to draw to depth buffer. 
 		//Setting a null render target will disable color writes.

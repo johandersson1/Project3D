@@ -55,6 +55,7 @@ public:
 		context->VSSetShader(vertexShader, NULL, 0);
 		context->PSSetShader(NULL, NULL, 0);
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		context->GSSetShader(nullptr, nullptr, 0);
 
 		XMFLOAT4X4 WVP1;
 		XMMATRIX WVP = ShaderData::lightMatrix * XMMatrixTranspose(model->GetWorldMatrix());
@@ -64,5 +65,6 @@ public:
 		context->VSSetConstantBuffers(0, 1, &matrixBuffer);
 		context->IASetVertexBuffers(0, 1, model->GetPositionsBuffer(), &stride, &offset);
 		context->Draw(model->GetVertexCount(), 0);
+
 	}
 };

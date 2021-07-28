@@ -6,7 +6,9 @@ Texture2D diffuseAlbedoTexture : register(t3);
 Texture2D ambientMatTexture : register(t4);
 Texture2D diffuseMatTexture : register(t5);
 Texture2D specularMatTexture : register(t6);
-Texture2D shadowMapTexture : register(t7);
+Texture2D lightClipPos : register(t7);
+
+Texture2D shadowMapTex : register(t8);
 
 SamplerState mySampler : register(s0);
 SamplerState clampSampler : register(s1);
@@ -79,7 +81,15 @@ float4 main(PixelInput input) : SV_Target
     float4 diffuseMaterial = diffuseMatTexture.Sample(mySampler, input.tex);
     float4 specularMaterial = specularMatTexture.Sample(mySampler, input.tex);
     
-    float4 shadowMap = shadowMapTexture.Sample(clampSampler, input.tex);
+    float4 lightClip = lightClipPos.Sample(mySampler, input.tex);
+    
+   //SHADOWS
+    lightClip.xyz /= lightClip.w;
+    float depth = lightClip.z;
+    float2 tx = float2(0.5f * lightClip.x + 0.5f, -0.5f * lightClip.y + 0.5); // [-1,1] => [0, 1]
+
+    float sm = shadowMapTex.Sample(mySampler, tx).r;
+    float shadow = (sm + 0.005 < depth) ? sm : 1.0f; //if closest depth (sample) < clip-depth there is a primitive castings shadow.
     
     if (diffuseMaterial.x < 0)
     {
@@ -88,11 +98,11 @@ float4 main(PixelInput input) : SV_Target
     
     LightResult lResult = LightCalculation(worldPos, normal, diffuseMaterial, specularMaterial);
     
-    float4 lighting = (lResult.diffuse + lResult.specular) * shadowMap.r;
+    float4 lighting = (lResult.diffuse + lResult.specular) * shadow;
         
     float4 globalAmbient = { 0.6f, 0.6f, 0.6f, 1.0f };
     float4 A = ambientMaterial;
     
-    float4 finalColor = albedo * (lighting + A) * globalAmbient * shadowMap.r;
-    return finalColor;
+    float4 finalColor = albedo * (lighting + A) * globalAmbient;
+    return float4(shadow, shadow, shadow, 1);
 }

@@ -1,5 +1,4 @@
 Texture2D diffuseTex : register(t0);
-Texture2D shadowTex : register(t1);
 
 SamplerState mySampler : register(s0);
 SamplerState clampSampler : register(s1);
@@ -21,7 +20,7 @@ struct PixelOutput
     float4 ambientMTL : SV_TARGET4;
     float4 diffuseMTL : SV_TARGET5;
     float4 specularMTL : SV_TARGET6;
-    float4 shadowMap : SV_TARGET7;
+    float4 lightClipPos : SV_TARGET7;
     
 };
 
@@ -49,16 +48,8 @@ PixelOutput main(PixelInput input)
     output.diffuseMTL = kD;
     output.specularMTL = kS;
     
-    float4 lightClip = mul(float4(output.worldPos, 1.0f), lightMatrix);
+    output.lightClipPos = mul(float4(output.worldPos, 1.0f), lightMatrix);
     
-    //SHADOWS
-    lightClip.xyz /= lightClip.w;
-    float2 tx = float2(0.5f * lightClip.x + 0.5f, -0.5f * lightClip.y + 0.5);
-    float sm = shadowTex.Sample(clampSampler, tx);
-
-    float shadow = (sm + 0.005f < lightClip.z) ? sm : 1.0f;
-    
-    output.shadowMap = float4(shadow, 0, 0, 1);
     
     return output; 
 }

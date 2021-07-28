@@ -180,13 +180,14 @@ public:
 		context->PSSetConstantBuffers(0, 1, &lightBuffer);
 		context->PSSetShaderResources(0, 2, model->GetTextures(2));
 		context->PSSetShaderResources(2, 1, model->GetDisplacementTexture());
-		context->PSSetShaderResources(3, 1, ShaderData::shadowmap->GetSRV());
 		context->DSSetShaderResources(0, 1, model->GetDisplacementTexture());
 		
 		context->IASetVertexBuffers(0, 1, model->GetBuffer(), &stride, &offset);
 		context->Draw(model->GetVertexCount(), 0);
 		context->HSSetShader(NULL, NULL, 0);
 		context->DSSetShader(NULL, NULL, 0);
+		context->GSSetShader(NULL, NULL, 0);
+
 
 	}
 };
