@@ -111,7 +111,7 @@ public:
 
 	void Render(ID3D11Device* device, ID3D11DeviceContext* context, Model* model, bool water = false)
 	{
-		XMStoreFloat4x4(&matrices.worldSpace, model->GetWorldMatrix());
+		XMStoreFloat4x4(&matrices.worldSpace,XMMatrixTranspose( model->GetWorldMatrix()));
 		XMMATRIX WVP = XMMatrixTranspose(model->GetWorldMatrix() * ShaderData::viewMatrix * ShaderData::perspectiveMatrix);
 		XMStoreFloat4x4(&matrices.WVP, WVP);
 

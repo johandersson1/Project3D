@@ -10,7 +10,7 @@ Texture2D lightClipPos : register(t7);
 
 Texture2D shadowMapTex : register(t8);
 
-SamplerState mySampler : register(s0);
+SamplerState wrapSampler : register(s0);
 SamplerState clampSampler : register(s1);
 
 cbuffer DirectionalLight : register(b0)
@@ -70,25 +70,25 @@ LightResult LightCalculation(float4 P, float3 N, float4 D, float4 S)
 float4 main(PixelInput input) : SV_Target
 {
     
-    float3 normal = normalTexture.Sample(mySampler, input.tex).xyz;
-    float4 albedo = diffuseAlbedoTexture.Sample(mySampler, input.tex);
-    float4 worldPos = worldPosTexture.Sample(mySampler, input.tex);
+    float3 normal = normalTexture.Sample(wrapSampler, input.tex).xyz;
+    float4 albedo = diffuseAlbedoTexture.Sample(wrapSampler, input.tex);
+    float4 worldPos = worldPosTexture.Sample(wrapSampler, input.tex);
    // float4 shadowPosH = shadowMapTexture.Sample(testSampler, input.tex);
     normal = normalize(normal);
 
     //Material properties
-    float4 ambientMaterial = ambientMatTexture.Sample(mySampler, input.tex);
-    float4 diffuseMaterial = diffuseMatTexture.Sample(mySampler, input.tex);
-    float4 specularMaterial = specularMatTexture.Sample(mySampler, input.tex);
+    float4 ambientMaterial = ambientMatTexture.Sample(wrapSampler, input.tex);
+    float4 diffuseMaterial = diffuseMatTexture.Sample(wrapSampler, input.tex);
+    float4 specularMaterial = specularMatTexture.Sample(wrapSampler, input.tex);
     
-    float4 lightClip = lightClipPos.Sample(mySampler, input.tex);
+    float4 lightClip = lightClipPos.Sample(wrapSampler, input.tex);
     
    //SHADOWS
     lightClip.xyz /= lightClip.w;
     float depth = lightClip.z;
     float2 tx = float2(0.5f * lightClip.x + 0.5f, -0.5f * lightClip.y + 0.5); // [-1,1] => [0, 1]
 
-    float sm = shadowMapTex.Sample(mySampler, tx).r;
+    float sm = shadowMapTex.Sample(wrapSampler, tx).r;
     float shadow = (sm + 0.005 < depth) ? sm : 1.0f; //if closest depth (sample) < clip-depth there is a primitive castings shadow.
     
     if (diffuseMaterial.x < 0)
@@ -104,5 +104,6 @@ float4 main(PixelInput input) : SV_Target
     float4 A = ambientMaterial;
     
     float4 finalColor = albedo * (lighting + A) * globalAmbient;
-    return float4(shadow, shadow, shadow, 1);
+    return finalColor;
+    //return float4(shadow, shadow, shadow, 1);
 }

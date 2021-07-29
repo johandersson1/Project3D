@@ -56,10 +56,14 @@ void clearView(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rt
 
 // Update function to update the camera, the particles and the CB containing worldSpace and WVP matricies
 void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera, ID3D11Buffer* constantBuffers, WVP& wvp,
-			ParticleSystem* particlesystem, DirectionalLight& dirLight, ID3D11Buffer* dirLightBuffer, Model* water, Model* cameraModel)
+	ParticleSystem* particlesystem, DirectionalLight& dirLight, ID3D11Buffer* dirLightBuffer, Model* water, Model* cameraModel,
+	const std::vector<Model*> models)
 {
 	camera.Update(dt);
 	particlesystem->Update(immediateContext, dt);
+
+	for (auto model : models)
+		model->Update();
 
 	dirLight.Update(dt);
 	UpdateBuffer(immediateContext, dirLightBuffer, dirLight.data);
@@ -242,36 +246,26 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	std::vector <Model*>things;
 	// Creating a new model for each mesh in the scene
 
-	//Model* bike = new Model(device, "biker", { -5.0f, 4, -5.0f }, { 0.0f,XM_PIDIV2, XM_PIDIV4 }, { 1, 1, 1 });
-	//models.push_back(bike);
-
-	//Model* bike2 = new Model(device, "biker", { 0.0f, 4, 6.0f }, { 0.0f,-XM_PIDIV2, -XM_PIDIV4 }, { 0.5f, 0.5f, 0.5f });
-	//models.push_back(bike2);
+	Model* bike = new Model(device, "biker", { 0,0,0 }, { 0,0,0}, { 5, 5, 5 });
+	models.push_back(bike);
 
 	Model* cameraModel = new Model(device, "newCube", { 10, -3.6, 0 }, { 0.0f,0.0f,0.0f }, {0.1, 0.1, 0.1});
 	models.push_back(cameraModel);
 
-
-	Model* torus = new Model(device, "Torus", { 0, 0.5f, 0.0f }, { 0.0f,0, 0 }, { 0.75,0.75, 0.75});
+	Model* dust = new Model(device, "buildings", { 0,0,0 }, { 0.0f,0.0f,0.0f }, { 1, 1, 1 });
+	//models.push_back(dust);
+	Model* torus = new Model(device, "Torus", { 0,0,-5 }, { 0.0f,0, 0 }, { 5, 5, 5 });
 	models.push_back(torus);
 
-	Model* water = new Model(device, "water", { 0, 3, 10 }, { 0.0f,XM_PIDIV2,-XM_PIDIV2 }, { 15, 15,15 });
-	
-	/*Model* chessBoard = new Model(device, "ChessBoard", { 0.0f, 0, 17 }, { 0.0f,0.0f,0.0f }, { 15, 15, 15});
-	models.push_back(chessBoard);*/
-
-
-	//Model* bChessPieces = new Model(device, "BlackChess", { 0.0f, 2, 17 }, { 0.0f,0.0f,0.0f }, { 15, 15, 15 });
-	//models.push_back(bChessPieces);
-
-
-	Model* wChessPieces = new Model(device, "WhiteChess", { 0.0f, 2, 17 }, { 0.0f,0.0f,0.0f }, { 15, 15, 15 });
+	Model* water = new Model(device, "water", { -5,5,8 }, { 0.0f,XM_PIDIV2 - 0.523598776f ,-XM_PIDIV2 }, { 10, 10, 10 });
+	//
+	Model* wChessPieces = new Model(device, "WhiteChess", { 0,0,3 }, { 0.0f,0.0f,0.0f }, { 5, 5, 5 });
 	models.push_back(wChessPieces);
 
 
-	Model* terrain = new Model(device, "Ground", { 0.0f, 0.0f, 0 }, { 0.0f, 0.0f, 0.0f }, { 1, 1, 1 });
+	Model* terrain = new Model(device, "Ground", { 0.0f, 0.0f, 0 }, { 0.0f, 0.0f, 0.0f }, { 5, 5, 5 });
 	terrain->SetDisplacementTexture(device, "Models/Ground/Displacement.png");
-	terrain->AddTexture(device, "DiffuseHigher.png");
+	terrain->AddTexture(device, "snow.jpg");
 	
 	ParticleSystem* particlesystem = new ParticleSystem(device, 200, 5, 1, { 60,25,60 }, { 0,20,0 });
 	ParticleRenderer* pRenderer = new ParticleRenderer(device);
@@ -300,9 +294,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 			DispatchMessage(&msg);
 		}
 
-		update(immediateContext, dt, camera, constantBuffers, wvp, particlesystem, dirLight, dirLightBuffer, water, cameraModel);
+		update(immediateContext, dt, camera, constantBuffers, wvp, particlesystem, dirLight, dirLightBuffer, water, cameraModel, models);
+	
 		ShaderData::Update(immediateContext, camera, dirLight);
-
+		terrain->Update();
+		water->Update();
+		bike->Update();
+		wChessPieces->Update();
 		RenderGBufferPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout,
 			wrapSampler, gBuffer, textureSRV, vertexBuffer, particlesystem, pRenderer, mRenderer,models, tRenderer, terrain, sRenderer, 
 			rasterizerStateWireFrame, rasterizerStateSolid, water, device, cameraModel, clampSampler);

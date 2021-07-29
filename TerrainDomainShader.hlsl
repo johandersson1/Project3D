@@ -2,6 +2,7 @@ Texture2D displacementTexture : register(t0);
 
 SamplerState mySampler : register(s0);
 SamplerState clampSampler : register(s1);
+
 cbuffer matrices : register(b0)
 {
     float4x4 viewPerspective;
