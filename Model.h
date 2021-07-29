@@ -54,6 +54,7 @@ public:
 	void SetTranslation(XMVECTOR translation) {this->transform.translation = translation; }
 	void SetRotation(XMVECTOR rotation) { this->transform.rotation = rotation; }
 	void SetScale(XMVECTOR scale) {this->transform.scale = scale; }
+	XMVECTOR GetRotation() { return this->transform.rotation; }
 	// Water
 	void WaterSettings(XMFLOAT2 movementSpeedUv, float deltatime);
 };

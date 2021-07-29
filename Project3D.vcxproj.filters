@@ -120,9 +120,6 @@
     <ClInclude Include="Geometry.h">
       <Filter>Header Files\Model</Filter>
     </ClInclude>
-    <ClInclude Include="WaterRenderer.h">
-      <Filter>Header Files\Renderers</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ParticleVertexShader.hlsl">

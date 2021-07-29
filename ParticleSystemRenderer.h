@@ -78,7 +78,7 @@ public:
 		reader.close();
 
 	}
-	~ParticleRenderer()
+	void ShutDown()
 	{
 		cameraBuffer->Release();
 		viewPersPectiveBuffer->Release();

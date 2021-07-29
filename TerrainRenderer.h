@@ -158,6 +158,19 @@ public:
 		reader.close();
 
 	}
+	void ShutDown()
+	{
+		
+		
+		vertexShader->Release();
+		hullShader->Release();
+		domainShader->Release();
+		pixelShader->Release();
+		geometryShader->Release();
+
+		matricesBuffer->Release();
+		lightBuffer->Release();
+	}
 
 	void Render(ID3D11DeviceContext* context, Model* model)
 	{
@@ -187,7 +200,5 @@ public:
 		context->HSSetShader(NULL, NULL, 0);
 		context->DSSetShader(NULL, NULL, 0);
 		context->GSSetShader(NULL, NULL, 0);
-
-
 	}
 };

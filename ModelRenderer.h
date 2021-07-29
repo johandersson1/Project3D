@@ -21,7 +21,6 @@ private:
 	ID3D11PixelShader* pixelShaderWater;
 
 	ID3D11Buffer* matricesBuffer;
-	ID3D11Buffer* mtlBuffer;
 	ID3D11Buffer* lightBuffer;
 	struct Matrices { XMFLOAT4X4 WVP; XMFLOAT4X4 worldSpace; }matrices;
 public: 
@@ -108,8 +107,8 @@ public:
 		shaderData.clear();
 		reader.close();
 	}
-
-	void Render(ID3D11Device* device, ID3D11DeviceContext* context, Model* model, bool water = false)
+	
+	void Render(ID3D11Device* device, ID3D11DeviceContext* context, Model* model, bool water, bool rotation)
 	{
 		XMStoreFloat4x4(&matrices.worldSpace,XMMatrixTranspose( model->GetWorldMatrix()));
 		XMMATRIX WVP = XMMatrixTranspose(model->GetWorldMatrix() * ShaderData::viewMatrix * ShaderData::perspectiveMatrix);
@@ -137,10 +136,10 @@ public:
 			context->Unmap(*model->GetWaterBuffer(), 0);
 			context->PSSetConstantBuffers(2, 1, model->GetWaterBuffer());
 		}
-
 		else
 		{
 			context->PSSetShader(pixelShader, NULL, 0);
+
 		}
 
 		UpdateBuffer(context, lightBuffer, ShaderData::lightMatrix);
@@ -168,4 +167,13 @@ public:
 
 	}
 	std::string GetByteCode() const { return this->byteCode; }
+
+	void ShutDown()
+	{
+		pixelShader->Release();
+		vertexShader->Release();
+		pixelShaderWater->Release();
+		matricesBuffer->Release();
+		lightBuffer->Release();
+	}
 };

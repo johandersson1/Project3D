@@ -7,6 +7,7 @@ using namespace DirectX;
 class DirectionalLight
 {
 private:
+
 	float range;
 	int dir = 1;
 	float currentAngle = 0.5;
@@ -14,6 +15,7 @@ private:
 	XMMATRIX viewMatrix;
 	XMMATRIX ortographicMatrix;
 	XMMATRIX matrix = XMMatrixIdentity();
+
 public:
 	struct Data
 	{
@@ -21,6 +23,7 @@ public:
 		XMFLOAT3 direction;
 		float range;
 	}data;
+
 public:
 
 	DirectionalLight() = default;

@@ -67,4 +67,10 @@ public:
 		context->Draw(model->GetVertexCount(), 0);
 
 	}
+
+	void ShutDown()
+	{
+		matrixBuffer->Release();
+		vertexShader->Release();
+	}
 };

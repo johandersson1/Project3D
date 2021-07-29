@@ -100,7 +100,7 @@ float4 main(PixelInput input) : SV_Target
     
     float4 lighting = (lResult.diffuse + lResult.specular) * shadow;
         
-    float4 globalAmbient = { 0.6f, 0.6f, 0.6f, 1.0f };
+    float4 globalAmbient = { 0.4f, 0.4f, 0.4f, 1.0f };
     float4 A = ambientMaterial;
     
     float4 finalColor = albedo * (lighting + A) * globalAmbient;

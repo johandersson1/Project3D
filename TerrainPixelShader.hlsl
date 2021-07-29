@@ -47,7 +47,9 @@ PSOutput main(PSInput input)
         
     float highAmount = blendValue;
     float lowAmount = 1.0f - blendValue;
-        
+    
+    
+    
     texColour = saturate(texColour);
     
     output.lightClipPos = mul(float4(output.worldPos, 1.0f), lightMatrix);

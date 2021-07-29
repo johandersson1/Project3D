@@ -6,9 +6,6 @@ using namespace DirectX;
 
 struct Material
 {
-private:
-    //std::string defaultTexture = "Models/Default/Missing_Texture.jpg";
-public:
     struct Data
     {
         XMFLOAT4 diffuse = { 0.0f, 0.0f, 0.0f, 1.0f };
@@ -19,12 +16,12 @@ public:
     } data;
 
     bool hasDiffuseTexture = false;
-    Texture diffuseTexture; // = Texture(defaultTexture);
+    Texture diffuseTexture; 
     
     std::vector<Texture> diffuseTexures;
 
     bool hasDisplacementTexture = false;
-    Texture displacementTexture; // = Texture(defaultTexture);
+    Texture displacementTexture;
 
     ID3D11ShaderResourceView** GetDiffuseTextures(int count)
     {

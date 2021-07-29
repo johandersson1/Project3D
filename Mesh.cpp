@@ -168,16 +168,10 @@ bool Mesh::LoadMaterial(ID3D11Device* device, std::string name)
 			material.data.specular = specular;
 		}
 
-		if (text == "Ns")
-		{
-			reader >> material.data.specularPower;
-		}
-
 		if (text == "map_Kd")
 		{
 			std::string diffuse;
 			reader >> diffuse;
-			//material.diffuseTexture = Texture(device, "Models/" + name + "/" + diffuse);
 			material.diffuseTexures.push_back(Texture(device, "Models/" + name + "/" + diffuse));
 		}
 

@@ -48,18 +48,17 @@ PixelOutput main(PixelInput input)
     output.position = input.position;
     output.normal = input.normal;
     output.worldPos = input.worldPos;
-    
-    output.lightClipPos = mul(float4(output.worldPos, 1.0f), lightMatrix);
-    // UV 
     input.tex.x += uCord;
     input.tex.y += vCord;
-    
     output.diffuse = diffuseTex.Sample(mySampler, input.tex);
+    output.lightClipPos = mul(float4(output.worldPos, 1.0f), lightMatrix);
+    // UV 
+  
+  
     // MTL
     
     output.ambientMTL = kA;
     output.diffuseMTL = float4(-1.0f, -1.0f, -1.0f, 0.0f);
-    
     output.specularMTL = kS;
 
     return output;
