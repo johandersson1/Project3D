@@ -10,8 +10,6 @@ private:
 	unsigned int stride = sizeof(XMFLOAT3);
 	unsigned int offset = 0;
 
-	
-
 	ID3D11Buffer* cameraBuffer;
 	ID3D11Buffer* viewPersPectiveBuffer;
 	const std::string ps_path = "x64/Debug/ParticlePixelShader.cso";
@@ -80,8 +78,8 @@ public:
 	}
 	void ShutDown()
 	{
-		cameraBuffer->Release();
-		viewPersPectiveBuffer->Release();
+		//cameraBuffer->Release();
+		//viewPersPectiveBuffer->Release();
 		geometryShader->Release();
 		pixelShader->Release();
 	}
