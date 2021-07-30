@@ -74,8 +74,8 @@ void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera, ID3
 }
 
 // Geometry Pass for deferred rendering (and shadows)
-void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsView, D3D11_VIEWPORT& viewport,
-	ID3D11PixelShader* pShaderDeferredRender, ID3D11VertexShader* vShaderDeferred,
+void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsView, 
+	D3D11_VIEWPORT& viewport, ID3D11PixelShader* pShaderDeferredRender, ID3D11VertexShader* vShaderDeferred,
 	ID3D11InputLayout* inputLayout, ID3D11SamplerState* sampler, GeometryBuffer gBuffer,
 	ID3D11ShaderResourceView* textureSRV, ID3D11Buffer* vertexBuffer,ParticleSystem* particlesystem, 
 	ParticleRenderer* pRenderer, ModelRenderer* mRenderer, const std::vector <Model*>&models, TerrainRenderer* tRenderer, Model* terrain,
@@ -245,7 +245,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 	Model* terrain = new Model(device, "Ground", { 0.0f, 0.0f, 0 }, { 0.0f, 0.0f, 0.0f }, { 7.0f, 7.0f, 7.0f });
 	terrain->SetDisplacementTexture(device, "Models/Ground/Displacement2.png");
-	terrain->AddTexture(device, "snow.jpg");
+	terrain->AddTexture(device, "lava.jpg");
 	
 	ParticleSystem* particlesystem = new ParticleSystem(device, 200, 5, 1, { 60, 25, 60 }, { 0, 20, 0 });
 	ParticleRenderer* pRenderer = new ParticleRenderer(device);
@@ -298,7 +298,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		gBuffer.gBufferSrv[i]->Release();
 		gBuffer.gBufferTexture[i]->Release();
 	}
-	pRenderer->ShutDown();
+	//pRenderer->ShutDown();
 	tRenderer->ShutDown();
 	sRenderer->ShutDown();
 	mRenderer->ShutDown();

@@ -8,6 +8,7 @@ cbuffer matrices : register(b0)
     float4x4 viewPerspective;
     float4x4 worldSpace;
 }
+
 struct DS_OUTPUT
 {
     float4 position : SV_POSITION;
@@ -52,7 +53,7 @@ DS_OUTPUT main(
     output.worldPos = mul(output.position, worldSpace);
     
     //Displacement
-    const float disfactor = 1.5f;
+    const float disfactor = 1.0f;
     float h = displacementTexture.SampleLevel(clampSampler, output.tex, 0).r;
     output.blendValue = h;
     output.worldPos.xyz += h * disfactor * output.normal;

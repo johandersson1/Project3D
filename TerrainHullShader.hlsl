@@ -46,15 +46,15 @@ HS_CONSTANT_DATA_OUTPUT CalcHSPatchConstants(
 [outputcontrolpoints(3)]
 [patchconstantfunc("CalcHSPatchConstants")]
 HS_OUTPUT main( 
-	InputPatch<HS_INPUT, NUM_CONTROL_POINTS> ip,
+	InputPatch<HS_INPUT, NUM_CONTROL_POINTS> input,
 	uint i : SV_OutputControlPointID,
 	uint PatchID : SV_PrimitiveID )
 {
     HS_OUTPUT output;
 	
-    output.position = ip[i].position;
-    output.tex = ip[i].tex;
-    output.normal = ip[i].normal;
+    output.position = input[i].position;
+    output.tex = input[i].tex;
+    output.normal = input[i].normal;
     
 	return output;
 }
