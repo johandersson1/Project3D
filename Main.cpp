@@ -289,8 +289,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		dt = timer.DeltaTime();
 	}
 
-	delete particlesystem;
-	delete pRenderer;
 
 	for (int i = 0; i < gBuffer.NROFBUFFERS; i++)
 	{
@@ -298,11 +296,25 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		gBuffer.gBufferSrv[i]->Release();
 		gBuffer.gBufferTexture[i]->Release();
 	}
+	
+	delete bike;
+	delete dust;
+	delete sword;
+	delete statue;
+	delete water;
+	delete cameraModel;
+
 	//pRenderer->ShutDown();
 	tRenderer->ShutDown();
 	sRenderer->ShutDown();
 	mRenderer->ShutDown();
 	ShaderData::Shutdown();
+
+	delete particlesystem;
+	delete pRenderer;
+	delete mRenderer;
+	delete tRenderer;
+	delete sRenderer;
 	rasterizerStateWireFrame->Release();
 	rasterizerStateSolid->Release();
 	cameraBuffer->Release();
@@ -326,6 +338,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	swapChain->Release();
 	immediateContext->Release();
 	device->Release();
+
+	ID3D11Debug* debug;
+	device->QueryInterface(__uuidof(ID3D11Debug), (void**)&debug);
+	debug->ReportLiveDeviceObjects(D3D11_RLDO_SUMMARY);
+	debug->Release();
 
 	return 0;
 }

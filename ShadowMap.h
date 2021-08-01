@@ -73,6 +73,11 @@ public:
 		depthmap->Release(); // View saves as a referemce to the texture so we can release our reference
 
 	}
+	void ShutDown()
+	{
+		this->depthMapDSV->Release();
+		this->depthMapSRV->Release();
+	}
 	~ShadowMap() { this->depthMapSRV->Release(); this->depthMapDSV->Release(); }
 	
 	ID3D11DepthStencilView** GetDSV() { return &this->depthMapDSV; }

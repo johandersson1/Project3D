@@ -159,15 +159,12 @@ public:
 
 	}
 	void ShutDown()
-	{
-		
-		
+	{		
 		vertexShader->Release();
 		hullShader->Release();
 		domainShader->Release();
 		pixelShader->Release();
 		geometryShader->Release();
-
 		matricesBuffer->Release();
 		lightBuffer->Release();
 	}
