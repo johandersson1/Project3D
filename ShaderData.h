@@ -28,9 +28,6 @@ private:
 	static XMMATRIX perspectiveMatrix;
 	static XMMATRIX lightMatrix;
 
-
-	static ID3D11InputLayout* texOnly_layout;
-
 	static ID3D11InputLayout* positionOnly_layout;
 
 	static ID3D11InputLayout* model_layout;

@@ -12,6 +12,6 @@ public:
 
     Texture() = default;
     Texture(ID3D11Device* device, std::string path);
-    void ShutDown() { texture->Release(); }
+    void ShutDown() { /*this->texture->Release(); */}
  /*   ~Texture() { if(texture)texture->Release(); }*/
 };

@@ -81,5 +81,5 @@ void ParticleSystem::UpdateBuffer(ID3D11DeviceContext* context)
 
 ParticleSystem::~ParticleSystem()
 {
-    vertexBuffer->Release();
+
 }

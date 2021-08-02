@@ -40,6 +40,6 @@ public:
 	ParticleSystem(ID3D11Device* device, int maxParticles, float maxVelocity, float minVelocity, XMFLOAT3 bounds, XMFLOAT3 position);
 	~ParticleSystem();
 	void Update(ID3D11DeviceContext* context, float dt);
-
+	void Shutdown() { vertexBuffer->Release(); }
 
 };

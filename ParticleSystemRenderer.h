@@ -78,8 +78,8 @@ public:
 	}
 	void ShutDown()
 	{
-		//cameraBuffer->Release();
-		//viewPersPectiveBuffer->Release();
+		cameraBuffer->Release();
+		viewPersPectiveBuffer->Release();
 		geometryShader->Release();
 		pixelShader->Release();
 	}

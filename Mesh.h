@@ -14,6 +14,10 @@ private:
 	bool LoadMaterial(ID3D11Device* device, std::string name);
 	std::string name;
 public:
+
+	Material material;
+
+	ID3D11Buffer* mtlBuffer;
 	Mesh() = default;
 	Mesh(ID3D11Device* device, std::string name)
 		:name(name)
@@ -23,9 +27,7 @@ public:
 	}
 	~Mesh();
 
-	Material material;
-
-	ID3D11Buffer* mtlBuffer;
+	
 
 	void AddDiffuseTexture(ID3D11Device* device, std::string fileName) { material.diffuseTexures.push_back(Texture(device, "Models/" + name + "/" + fileName)); }
 		
@@ -36,4 +38,10 @@ public:
 	int vertexCount = 0;
 	std::vector<Face> faces;
 	std::vector<XMFLOAT3> positions;
+
+	void Shutdown()
+	{
+		mtlBuffer->Release();
+		//material.Shutdown();
+	}
 };

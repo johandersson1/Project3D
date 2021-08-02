@@ -44,6 +44,7 @@ void clearView(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rt
 	for (int i = 0; i < gBuffer.NROFBUFFERS; i++)
 	{
 		immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[i], clearcolor);
+		//nullSrvs[i]->Release();
 	}
 	
 	immediateContext->ClearDepthStencilView(dsView, D3D11_CLEAR_DEPTH , 1, 0);
@@ -289,27 +290,44 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		dt = timer.DeltaTime();
 	}
 
-
 	for (int i = 0; i < gBuffer.NROFBUFFERS; i++)
 	{
 		gBuffer.gBuffergBufferRtv[i]->Release();
 		gBuffer.gBufferSrv[i]->Release();
 		gBuffer.gBufferTexture[i]->Release();
 	}
-	
+
+
+	// Clear the vector
+	models.clear();
+
+	// Vet inte var alla minnesläckor finns, kolla outputten efter live objects ( ny grej som sophia löste (otippat))
+	// Tror det är i material & texture men klurigt hur det ska gå till, tror att vi försöker fixa så mycket som möjligt sen skriva kommentarer och låta sophia lösa det eller något
+
+	bike->Shutdown();
+	dust->Shutdown();
+	sword->Shutdown();
+	statue->Shutdown();
+	cameraModel->Shutdown();
+	terrain->Shutdown();
+	water->waterBuffer->Release();
+	water->Shutdown();
+
 	delete bike;
 	delete dust;
 	delete sword;
 	delete statue;
 	delete water;
 	delete cameraModel;
-
-	//pRenderer->ShutDown();
+	delete terrain;
+	
+	pRenderer->ShutDown();
 	tRenderer->ShutDown();
 	sRenderer->ShutDown();
 	mRenderer->ShutDown();
+	
 	ShaderData::Shutdown();
-
+	particlesystem->Shutdown();
 	delete particlesystem;
 	delete pRenderer;
 	delete mRenderer;

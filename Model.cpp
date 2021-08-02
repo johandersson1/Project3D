@@ -36,8 +36,7 @@ Model::Model(ID3D11Device* device, std::string name, XMVECTOR position, XMVECTOR
 
 Model::~Model()
 {
-	vertexBuffer->Release();
-	positionsBuffer->Release();
+	//this->mesh.Shutdown();
 }
 
 void Model::Update()

@@ -8,9 +8,8 @@ class Model
 private:
 	Mesh mesh;
 	XMMATRIX worldMatrix;
-	ID3D11Buffer* vertexBuffer;
-	ID3D11Buffer* positionsBuffer;
-	ID3D11Buffer* waterBuffer;
+
+
 
 	//Water-effect
 	XMFLOAT2 movementSpeedUv;
@@ -34,6 +33,19 @@ public:
 	Model(ID3D11Device* device, std::string name, XMVECTOR position = { 0.0f,0.0f,0.0f }, 
 		  XMVECTOR rotation = { 0.0f,0.0f,0.0f }, XMVECTOR scale = { 1.0f, 1.0f, 1.0f });
 	~Model();
+
+	ID3D11Buffer* waterBuffer;
+	ID3D11Buffer* vertexBuffer;
+	ID3D11Buffer* positionsBuffer;
+	void Shutdown()
+	{
+		vertexBuffer->Release();
+		positionsBuffer->Release();
+		mesh.Shutdown();
+		//waterBuffer->Release();
+	}
+
+
 	void Update();
 	int GetVertexCount() { return this->mesh.vertexCount; }
 

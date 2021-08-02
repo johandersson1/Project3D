@@ -34,7 +34,18 @@ struct Material
             srvs[i] = *diffuseTexures[i].Get();
         }
         return srvs;
+		for (int i = 0; i < count; i++)
+		{
+			srvs[i]->Release();
+		}
     }
 
     Material() = default;
+
+	void Shutdown()
+	{
+		diffuseTexures.clear();
+		//displacementTexture.ShutDown();
+		//diffuseTexture.ShutDown();
+	}
 };
