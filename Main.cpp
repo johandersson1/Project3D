@@ -227,7 +227,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	
 	// Creating a new model for each mesh in the scene
 
-	Model* bike = new Model(device, "biker", { 3.0f, 2.0f, 0.0f }, { XM_PIDIV4, 0.0f, XM_PIDIV4 }, { 5.0f, 5.0f, 5.0f });
+	Model* bike = new Model(device, "biker", { 3.0f, 2.0f, 0.0f }, { XM_PIDIV4, 0.0f, XM_PIDIV4 }, { 0.5f, 0.5f, 0.5f });
 	models.push_back(bike);
 	
 	Model* cameraModel = new Model(device, "cube", { 0.0f, -5.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, {0.05f, 0.05f, 0.05f});
