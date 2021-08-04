@@ -110,17 +110,21 @@ public:
 	
 	void Render(ID3D11Device* device, ID3D11DeviceContext* context, Model* model, bool water, bool rotation)
 	{
+		// Get the WorldMatrix, store and update the buffer for the model
 		XMStoreFloat4x4(&matrices.worldSpace,XMMatrixTranspose( model->GetWorldMatrix()));
 		XMMATRIX WVP = XMMatrixTranspose(model->GetWorldMatrix() * ShaderData::viewMatrix * ShaderData::perspectiveMatrix);
 		XMStoreFloat4x4(&matrices.WVP, WVP);
-
 		UpdateBuffer(context, matricesBuffer, matrices);
+
+		// Set the inputlayout, VS and topology
 		context->IASetInputLayout(ShaderData::model_layout);
 		context->VSSetShader(vertexShader, NULL, 0);
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
+		
+		// Water specific stuff
 		if (water == true)
 		{
+			// Water uses its own PS because of the UV animation
 			context->PSSetShader(pixelShaderWater, NULL, 0);
 
 			D3D11_MAPPED_SUBRESOURCE mappedBuffer = {};
@@ -134,23 +138,30 @@ public:
 
 			memcpy(mappedBuffer.pData, model->GetUVOffset(), sizeof(model->GetUVOffset()));
 			context->Unmap(*model->GetWaterBuffer(), 0);
+
+			// The CB that contains the information that is used to move the UVs
 			context->PSSetConstantBuffers(2, 1, model->GetWaterBuffer());
 		}
+		// If the model isnt water, use the "regular" PS for each model
 		else
 		{
+			
 			context->PSSetShader(pixelShader, NULL, 0);
 
 		}
-
+		// Update the lightbuffer for each model, based on the directional lights orthographic-view matrix (why orthographic?)
 		UpdateBuffer(context, lightBuffer, ShaderData::lightMatrix);
-		context->PSSetConstantBuffers(1, 1, &lightBuffer);
-		context->PSSetShaderResources(0, 1, model->GetTextures(1));
-		context->VSSetConstantBuffers(1, 1, &matricesBuffer);
+		context->PSSetConstantBuffers(1, 1, &lightBuffer); // set the CB containing light info
+		context->PSSetShaderResources(0, 1, model->GetTextures(1)); // Set the shader resource with the specific texture used for the model
+		context->VSSetConstantBuffers(1, 1, &matricesBuffer); // set the CB for the vs with the WVP and worldspace matrices
+		// DS and HS not used for regular models
 		context->HSSetShader(NULL, NULL, 0);
 		context->DSSetShader(NULL, NULL, 0);
-		//context->GSSetShader(NULL, NULL, 0);
+		// GS already set outside the renderer
 		
 		D3D11_MAPPED_SUBRESOURCE mappedBuffer = {};
+
+		// Get, update and set the MTL data for each model
 
 		HRESULT hr = context->Map(*model->GetMTLBuffer(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedBuffer);
 		if FAILED(hr)

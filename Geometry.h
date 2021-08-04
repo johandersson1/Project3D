@@ -1,13 +1,12 @@
 #pragma once
 #include <array>
-
+// Struct for the data a vertex contains ( used in the mesh.cpp ) 
 struct Vertex
 {
 	float pos[3];
 	float tex[2];
 	float nor[3];
 	
-
 	Vertex() = default;
 	Vertex(const std::array<float, 3>& position, const std::array<float, 2>& textureCoords, const std::array<float, 3>& normal)
 	{
@@ -20,7 +19,7 @@ struct Vertex
 		tex[0] = textureCoords[0];
 		tex[1] = textureCoords[1];
 	}
-
+	// Assignment-operator 
 	Vertex& operator=(const Vertex& vertex)
 	{
 		for (int i = 0; i < 3; ++i)
@@ -36,7 +35,7 @@ struct Vertex
 		return *this;
 	}
 };
-
+// Struct that contains the data of a face ( three vertices ) ( used in the mesh.cpp ) 
 struct Face
 {
 	Vertex vertices[3];

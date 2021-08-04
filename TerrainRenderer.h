@@ -172,6 +172,7 @@ public:
 
 	void Render(ID3D11DeviceContext* context, Model* model)
 	{
+
 		context->IASetInputLayout(ShaderData::model_layout);
 		context->VSSetShader(vertexShader, NULL, 0);
 		context->PSSetShader(pixelShader, NULL, 0);

@@ -51,9 +51,10 @@ public:
 	}
 	void Render(ID3D11DeviceContext* context, Model* model)
 	{
+		// Shadows use an positions only input layout to determin the position of each pixel
 		context->IASetInputLayout(ShaderData::positionOnly_layout);
-		context->VSSetShader(vertexShader, NULL, 0);
-		context->PSSetShader(NULL, NULL, 0);
+		context->VSSetShader(vertexShader, NULL, 0); // VS containting a position 
+		context->PSSetShader(NULL, NULL, 0); // not using a pixelshader
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		context->GSSetShader(nullptr, nullptr, 0);
 
@@ -61,10 +62,10 @@ public:
 		XMMATRIX WVP = ShaderData::lightMatrix * XMMatrixTranspose(model->GetWorldMatrix());
 		
 		XMStoreFloat4x4(&WVP1, WVP);
-		UpdateBuffer(context, matrixBuffer, WVP1);
-		context->VSSetConstantBuffers(0, 1, &matrixBuffer);
-		context->IASetVertexBuffers(0, 1, model->GetPositionsBuffer(), &stride, &offset);
-		context->Draw(model->GetVertexCount(), 0);
+		UpdateBuffer(context, matrixBuffer, WVP1); // Update the buffer containing the models TRANSPOSED worldmatrix (unsure why the matrix has to be transposed)
+		context->VSSetConstantBuffers(0, 1, &matrixBuffer); // Set the CB for the VS
+		context->IASetVertexBuffers(0, 1, model->GetPositionsBuffer(), &stride, &offset); // Set the VB with the vertex information
+		context->Draw(model->GetVertexCount(), 0); // draw the model for the shadow pass
 
 	}
 

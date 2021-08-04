@@ -74,7 +74,7 @@ void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera, ID3
 
 	
 	water->WaterSettings(DirectX::XMFLOAT2(-0.1f, 0.1f), dt); // Function for the water UV animation
-	UpdateBuffer(immediateContext, *water->GetWaterBuffer(), water->GetUVOffset());
+	UpdateBuffer(immediateContext, *water->GetWaterBuffer(), water->GetUVOffset()); // Update the buffer containing the data of UVs for the water
 }
 
 // Geometry Pass for deferred rendering (and shadows)
@@ -86,22 +86,26 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	ShadowRenderer* sRenderer, ID3D11RasterizerState*& rasterizerStateWireFrame, ID3D11RasterizerState*& rasterizerStateSolid,
 	Model* water, ID3D11Device * device, Model* cameraModel, ID3D11SamplerState* clampSampler)
 {
-
+	// Binds the shadowmap (sets resources)
 	ShaderData::shadowmap->Bind(immediateContext); 
 
+	// Set the HS, DS and GS shaders to NULL, used in the different renderers
 	immediateContext->HSSetShader(NULL, NULL, 0);
 	immediateContext->DSSetShader(NULL, NULL, 0);
 	immediateContext->GSSetShader(NULL, NULL, 0);
-	// Binds the shadowmap (sets resources)
+
 	// Loops through the models-vector and renders shadows
 	for (auto model : models)
 		sRenderer->Render(immediateContext, model);
 
+	// Same thing for the terrain and water, they are not in the same vector as the other "regular" models
 	sRenderer->Render(immediateContext, water);
 	sRenderer->Render(immediateContext, terrain);
 
+	// Reset the Viewport for the next pass (geometry pass)
 	immediateContext->RSSetViewports(NULL, NULL);
 
+	// Set all the Samplers, Rasterizerstate, viewport and geometryshader (GS used for culling)
 	immediateContext->RSSetViewports(1, &viewport);
 	immediateContext->PSSetSamplers(0, 1, &sampler);
 	immediateContext->PSSetSamplers(1, 1, &clampSampler);
@@ -110,12 +114,16 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	immediateContext->RSSetState(rasterizerStateSolid);
 	immediateContext->GSSetShader(ShaderData::geometryShader, nullptr, 0);
 
+	
 	clearView(immediateContext, rtv, dsView, gBuffer); 	// Clear the window for next render pass
 
+	// Render the models using different renderers (mRenderer, tRendererm pRenderer)
 	for (auto model : models)
 		mRenderer->Render(device, immediateContext, model, false, false);
 
 	mRenderer->Render(device, immediateContext, water, true, false);
+
+	// Render the terrain and particles 
 	tRenderer->Render(immediateContext, terrain);
 	pRenderer->Render(immediateContext, particlesystem);
 }
