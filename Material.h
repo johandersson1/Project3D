@@ -20,6 +20,9 @@ struct Material
     
     std::vector<Texture> diffuseTexures;
 
+    std::vector<Texture> tempVector;
+
+
     bool hasDisplacementTexture = false;
     Texture displacementTexture;
 
@@ -36,16 +39,18 @@ struct Material
         return srvs;
 		for (int i = 0; i < count; i++)
 		{
+            diffuseTexures.clear();
+            diffuseTexures.swap(tempVector);
 			srvs[i]->Release();
 		}
     }
 
     Material() = default;
 
-	void Shutdown()
-	{
-		diffuseTexures.clear();
-		//displacementTexture.ShutDown();
-		//diffuseTexture.ShutDown();
-	}
+	//void Shutdown()
+	//{
+	//	diffuseTexures.clear();
+	//	//displacementTexture.ShutDown();
+	//	//diffuseTexture.ShutDown();
+	//}
 };
