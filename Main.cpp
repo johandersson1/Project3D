@@ -12,7 +12,7 @@
 #include "ShadowRenderer.h"
 #include "WaterRenderer.h"
 
-//Console Setup
+// For the console
 #include<io.h>
 #include<fcntl.h>
 // Console Function -- found online
@@ -32,45 +32,48 @@ void RedirectIOToConsole()
 // Function to clear the window
 void clearView(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsView, const GeometryBuffer& gBuffer)
 {
+	// Background Color
 	float clearcolor[4] = { 0.75f, 0.75f, 0.75f,0 };
 
-	//Clean up
-	//ID3D11RenderTargetView* nullArr[gBuffer.NROFBUFFERS];
+	// Clean SRVs to clean the OS
 	ID3D11ShaderResourceView* nullSrvs[gBuffer.NROFBUFFERS] = { nullptr };
 	immediateContext->PSSetShaderResources(0, gBuffer.NROFBUFFERS, nullSrvs);
 	
+	// Reset the RTVs
 	immediateContext->OMSetRenderTargets(gBuffer.NROFBUFFERS, gBuffer.gBuffergBufferRtv, dsView);
 
 	for (int i = 0; i < gBuffer.NROFBUFFERS; i++)
 	{
+		// Clear the RTVs with the BG-color
 		immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[i], clearcolor);
-		//nullSrvs[i]->Release();
+
 	}
-	
+	// Clear the DSV
 	immediateContext->ClearDepthStencilView(dsView, D3D11_CLEAR_DEPTH , 1, 0);
 }
 
-// Update function to update the camera, the particles and the CB containing worldSpace and WVP matricies
+// Update function to update the camera, the directional light, cameramodel and water
 void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera, ID3D11Buffer* constantBuffers, WVP& wvp,
 	ParticleSystem* particlesystem, DirectionalLight& dirLight, ID3D11Buffer* dirLightBuffer, Model* water, Model* cameraModel,
 	const std::vector<Model*> models)
 {
-	camera.Update(dt);
-	particlesystem->Update(immediateContext, dt);
+	camera.Update(dt); // Update the camera 
+	particlesystem->Update(immediateContext, dt); // Update the particles
 
-	dirLight.Update(dt);
-	UpdateBuffer(immediateContext, dirLightBuffer, dirLight.data);
+	dirLight.Update(dt); // Update the directionalLight
+	UpdateBuffer(immediateContext, dirLightBuffer, dirLight.data); // Update the buffer for the directional light
 
-	cameraModel->SetTranslation(dirLight.GetPosition());
-	cameraModel->Update();
+	cameraModel->SetTranslation(dirLight.GetPosition()); // Set the lightCameraModels position to the lights "position" 
+														 // (Directionallights dont have a positions, only used to represent where the light is coming from
+	cameraModel->Update(); // Update the mesh
 
-	XMFLOAT3 xPos;
+	// Variable to used to print the position of the light (used when debugging)
+	/*XMFLOAT3 xPos;
 	XMStoreFloat3(&xPos, dirLight.GetPosition());
+	std::cout << xPos.x << " " << xPos.y << " " << xPos.z << std::endl; */
 
-	// light "pos"
-	//std::cout << xPos.x << " " << xPos.y << " " << xPos.z << std::endl;
-
-	water->WaterSettings(DirectX::XMFLOAT2(-0.1f, 0.1f), dt);
+	
+	water->WaterSettings(DirectX::XMFLOAT2(-0.1f, 0.1f), dt); // Function for the water UV animation
 	UpdateBuffer(immediateContext, *water->GetWaterBuffer(), water->GetUVOffset());
 }
 

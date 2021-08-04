@@ -38,9 +38,10 @@ Model::~Model()
 {
 	//this->mesh.Shutdown();
 }
-
+// Function to update the models matrices after changing either of them
 void Model::Update()
 {
+
 	XMMATRIX translation = XMMatrixTranslationFromVector(transform.translation);
 	XMMATRIX rotation = XMMatrixRotationRollPitchYawFromVector(transform.rotation);
 	XMMATRIX scale = XMMatrixScalingFromVector(transform.scale);
@@ -50,6 +51,9 @@ void Model::Update()
 
 void Model::WaterSettings(XMFLOAT2 movementSpeedUv, float deltatime)
 {	
+	// Offset the UVs on both X and Y axis with the variable from the parameter * deltatime
+	// Reset the the offset down below 1 so the value doesnt get too large
+
 	offsetUV.x += movementSpeedUv.x * deltatime;
 	if (offsetUV.x > 1)
 		offsetUV.x = 1 - offsetUV.x;

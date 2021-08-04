@@ -5,6 +5,8 @@
 #include <iostream>
 #include <DirectXMath.h>
 
+// The G-Buffer with NROFBUFFERS and the views & textures
+
 struct GeometryBuffer
 {
     enum indexName {

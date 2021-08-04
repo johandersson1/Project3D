@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Random.h"
+#include "Random.h" // Randomizer
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include <vector>
@@ -28,8 +28,8 @@ private:
 	float timeBetweenParticles;
 	float timeSinceLastParticle;
 
-	std::vector<Particle> particles;
-	std::vector<XMFLOAT3> positions;
+	std::vector<Particle> particles; // vector containing each particle (used to loop through the vector and update the positions)
+	std::vector<XMFLOAT3> positions; // vector containing each particles position ( used to update the vertexbuffer containgin each points position )
 
 	ID3D11Buffer* vertexBuffer;
 

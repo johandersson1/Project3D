@@ -10,7 +10,7 @@ private:
 
 	float range;
 	int dir = 1;
-	float currentAngle = 0.5;
+	float currentAngle = 0.7;
 	XMVECTOR position;
 	XMMATRIX viewMatrix;
 	XMMATRIX ortographicMatrix;
@@ -35,11 +35,11 @@ public:
 
 	void Update(float dt)
 	{
-		currentAngle += dt * 0.35f * dir;
-		if (currentAngle > XM_PI - 0.5f || currentAngle < 0 + 0.5f)
+		//currentAngle += dt * 0.35f * dir;
+	/*	if (currentAngle > XM_PI - 0.5f || currentAngle < 0 + 0.5f)
 		{
 			dir *= -1;
-		}
+		}*/
 		float x = cos(currentAngle);
 		float y = sin(currentAngle);
 

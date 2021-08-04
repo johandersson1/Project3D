@@ -22,8 +22,14 @@ public:
 	Mesh(ID3D11Device* device, std::string name)
 		:name(name)
 	{
-		if (!LoadModel(name) || !LoadMaterial(device, name))
-			std::cout << "FAILED TO LOAD MESH DATA" << std::endl;
+		if (!LoadModel(name))
+		{
+			std::cout << "FAILED TO LOAD MODEL DATA" << std::endl;
+		}
+		if (!LoadMaterial(device, name))
+		{
+			std::cout << "FAILED TO LOAD MATERIAL DATA" << std::endl;
+		}
 	}
 	~Mesh();
 

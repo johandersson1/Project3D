@@ -97,6 +97,8 @@ void Camera::Rotate(float dx, float dy)
 
 void Camera::Update(float dt)
 {
+	// Move and change the camera on key press
+
 	if (GetAsyncKeyState('W'))
 	{
 		MoveForward(dt);
