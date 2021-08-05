@@ -149,7 +149,7 @@ public:
 			context->PSSetShader(pixelShader, NULL, 0);
 
 		}
-		// Update the lightbuffer for each model, based on the directional lights orthographic-view matrix (why orthographic?)
+		// Update the lightbuffer for each model, used for the shadows (sent to the clipspace target in the PS)
 		UpdateBuffer(context, lightBuffer, ShaderData::lightMatrix);
 		context->PSSetConstantBuffers(1, 1, &lightBuffer); // set the CB containing light info
 		context->PSSetShaderResources(0, 1, model->GetTextures(1)); // Set the shader resource with the specific texture used for the model

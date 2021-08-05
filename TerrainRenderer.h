@@ -172,28 +172,31 @@ public:
 
 	void Render(ID3D11DeviceContext* context, Model* model)
 	{
-
+		// Terrain uses the same input layout as models since it is a model 
 		context->IASetInputLayout(ShaderData::model_layout);
+		// Terrain uses its own shaders
 		context->VSSetShader(vertexShader, NULL, 0);
-		context->PSSetShader(pixelShader, NULL, 0);
+		context->PSSetShader(pixelShader, NULL, 0); // Used for texturing and blending
 		context->HSSetShader(hullShader, NULL, 0);
 		context->DSSetShader(domainShader, NULL, 0);
-		context->GSSetShader(geometryShader, NULL, 0);
-		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
+		context->GSSetShader(geometryShader, NULL, 0); // Used to recalculate the normals of the triangles
+		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST); // Used because if we use regular trianglelist, the HS and DS isnt called on ( i think )
 
+		// Get the matrices (models worldmatrix and the viewPerspecive) and store send them to the domainshader
 		XMStoreFloat4x4(&matrices.worldSpace, XMMatrixTranspose(model->GetWorldMatrix()));
 		XMMATRIX viewPerspective = XMMatrixTranspose(ShaderData::viewMatrix *ShaderData::perspectiveMatrix);
 		XMStoreFloat4x4(&matrices.viewPerspective, viewPerspective);
 		UpdateBuffer(context, matricesBuffer, matrices);
 		context->DSSetConstantBuffers(0, 1, &matricesBuffer);
 
-
+		// Update the light for the model used for the shadows (clipspace)
 		UpdateBuffer(context, lightBuffer, ShaderData::lightMatrix);
 		context->PSSetConstantBuffers(0, 1, &lightBuffer);
+		// Textures used
 		context->PSSetShaderResources(0, 2, model->GetTextures(2));
 		context->PSSetShaderResources(2, 1, model->GetDisplacementTexture());
 		context->DSSetShaderResources(0, 1, model->GetDisplacementTexture());
-		
+		// Set the Vertexbuffer, draw and reset the shaders for the next renderer (particles)
 		context->IASetVertexBuffers(0, 1, model->GetBuffer(), &stride, &offset);
 		context->Draw(model->GetVertexCount(), 0);
 		context->HSSetShader(NULL, NULL, 0);

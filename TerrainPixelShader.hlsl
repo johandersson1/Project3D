@@ -1,4 +1,6 @@
+// Array of textures since we are also blending based on the height value of the displacement
 Texture2D textures[2] : register(t0);
+// The displacement texture that the blending is based upon
 Texture2D blendTexture : register(t2);
 
 sampler wrapSampler : register(s0);
@@ -40,8 +42,7 @@ PSOutput main(PSInput input)
     output.diffuseMTL = float4(0.5f, 0.5f, 0.5f, 1);
     output.specularMTL = float4(0.2f, 0.2f, 0.2f, 1);
     //output.shadowMap = shadowTexture.Sample(mySampler, input.tex);
-    float4 texColour;
-    
+  
     
     float4 lowColour = textures[0].Sample(wrapSampler, input.tex);
     float4 hiColour = textures[1].Sample(wrapSampler, input.tex);
@@ -50,10 +51,7 @@ PSOutput main(PSInput input)
     float highAmount = blendValue;
     float lowAmount = 1.0f - blendValue;
     
-    
-    
-    texColour = saturate(texColour);
-    
+
     output.lightClipPos = mul(float4(output.worldPos, 1.0f), lightMatrix);
    
     output.diffuse = highAmount * hiColour + lowAmount * lowColour;

@@ -20,6 +20,8 @@ void main(
 	inout TriangleStream< GSOutput > output
 )
 {
+	// Recalculates the normals for each triangle after the tesselation and displacement
+
     float3 p0 = input[0].position.xyz;
     float3 p1 = input[1].position.xyz;
     float3 p2 = input[2].position.xyz;
