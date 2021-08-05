@@ -211,28 +211,29 @@ bool RenderMeshInputLayout(ID3D11Device* device, ID3D11InputLayout*& renderTarge
 
     return !FAILED(hr);
 }
-// Function to create constant buffer used to update the square ("TheQuad")
-bool CreateConstantBuffer(ID3D11Device* device, ID3D11Buffer*& constantBuffers)
-{
-	WVP Rotation;
 
-	D3D11_BUFFER_DESC constantBufferDesc;
-	constantBufferDesc.ByteWidth = sizeof(WVP); // Bytesize 
-	constantBufferDesc.Usage = D3D11_USAGE_DYNAMIC; // Becomes available for both GPU (read only) and CPU (write only) use Map
-	constantBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER; // Binds a buffer as a constant buffer to a shader stage
-	constantBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; // The resource must be mappable so that the CPU can change the contents
-	constantBufferDesc.MiscFlags = 0; // No need for additional flags
-	constantBufferDesc.StructureByteStride = 0; // Defines the size of each element in buffer, not needed
-	 
-	D3D11_SUBRESOURCE_DATA TheData;
-	TheData.pSysMem = &Rotation; // Pointer to the initialization data
-	TheData.SysMemPitch = 0; // The distance between the beginning of a line in a texture to the next line, in bytes
-	TheData.SysMemSlicePitch = 0; // The distance (in bytes) from the beginning of one depth level to the next
-
-	HRESULT hr = device->CreateBuffer(&constantBufferDesc, &TheData, &constantBuffers);
-
-	return !FAILED(hr);
-}
+//// Function to create constant buffer used to update the square ("TheQuad")
+//bool CreateConstantBuffer(ID3D11Device* device, ID3D11Buffer*& constantBuffers)
+//{
+//	WVP Rotation;
+//
+//	D3D11_BUFFER_DESC constantBufferDesc;
+//	constantBufferDesc.ByteWidth = sizeof(WVP); // Bytesize 
+//	constantBufferDesc.Usage = D3D11_USAGE_DYNAMIC; // Becomes available for both GPU (read only) and CPU (write only) use Map
+//	constantBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER; // Binds a buffer as a constant buffer to a shader stage
+//	constantBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; // The resource must be mappable so that the CPU can change the contents
+//	constantBufferDesc.MiscFlags = 0; // No need for additional flags
+//	constantBufferDesc.StructureByteStride = 0; // Defines the size of each element in buffer, not needed
+//	 
+//	D3D11_SUBRESOURCE_DATA TheData;
+//	TheData.pSysMem = &Rotation; // Pointer to the initialization data
+//	TheData.SysMemPitch = 0; // The distance between the beginning of a line in a texture to the next line, in bytes
+//	TheData.SysMemSlicePitch = 0; // The distance (in bytes) from the beginning of one depth level to the next
+//
+//	HRESULT hr = device->CreateBuffer(&constantBufferDesc, &TheData, &constantBuffers);
+//
+//	return !FAILED(hr);
+//}
 
 //bool createRasterizerState(ID3D11Device*& device, ID3D11RasterizerState*& rasterizerState)
 //{
@@ -366,7 +367,7 @@ bool SetUpRasterizer(ID3D11Device*& device, ID3D11RasterizerState*& rasterizerSt
 }
 
 // Calls the various functions
-bool SetupPipeline(ID3D11Device* device, ID3D11Buffer*& vertexBuffer, ID3D11InputLayout*& inputLayout, ID3D11Buffer*& constantBuffers,
+bool SetupPipeline(ID3D11Device* device, ID3D11Buffer*& vertexBuffer, ID3D11InputLayout*& inputLayout,
 	ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& textureSRV, ID3D11SamplerState*& sampler, 
 	ID3D11PixelShader*& pShaderDeferred, ID3D11VertexShader*& vShaderDeferred, ID3D11PixelShader*& lightPShaderDeferred,
 	ID3D11VertexShader*& lightVShaderDeferred, ID3D11InputLayout*& renderTargetMesh, ID3D11Buffer*& screenQuadMesh, 
@@ -418,11 +419,11 @@ bool SetupPipeline(ID3D11Device* device, ID3D11Buffer*& vertexBuffer, ID3D11Inpu
 		return false;
 	}
 
-	if (!CreateConstantBuffer(device, constantBuffers))
-	{
-		std::cerr << "Error creating constant buffer!" << std::endl;
-		return false;
-	}
+	//if (!CreateConstantBuffer(device, constantBuffers))
+	//{
+	//	std::cerr << "Error creating constant buffer!" << std::endl;
+	//	return false;
+	//}
 
 	if (!CreateTexture(device, texture, textureSRV))
 	{

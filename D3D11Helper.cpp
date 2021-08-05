@@ -100,11 +100,9 @@ void SetViewPort(D3D11_VIEWPORT& viewport, UINT width, UINT height)
 
 bool CreateGbuffer(ID3D11Device* device, GeometryBuffer& gBuffer)
 {
-    //device->CreateTexture2D();
-    //device->CreateRenderTargetView();
-    //device->CreateShaderResourceView();
-    HRESULT hr;
 
+    HRESULT hr;
+	// Create textures 
     D3D11_TEXTURE2D_DESC TextureGbufferDesc;
     ZeroMemory(&TextureGbufferDesc, sizeof(TextureGbufferDesc));
 
@@ -115,7 +113,7 @@ bool CreateGbuffer(ID3D11Device* device, GeometryBuffer& gBuffer)
     TextureGbufferDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
     TextureGbufferDesc.SampleDesc.Count = 1;
     TextureGbufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    TextureGbufferDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+    TextureGbufferDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;	// Render target and Shader resource to write to and use in a shader
     TextureGbufferDesc.CPUAccessFlags = 0;
     TextureGbufferDesc.MiscFlags = 0;
 
@@ -128,11 +126,12 @@ bool CreateGbuffer(ID3D11Device* device, GeometryBuffer& gBuffer)
         }
     }
 
+	// Create RTVs
     D3D11_RENDER_TARGET_VIEW_DESC rtvGbufferDesc;
     ZeroMemory(&rtvGbufferDesc, sizeof(rtvGbufferDesc));
-    rtvGbufferDesc.Format = TextureGbufferDesc.Format;
-    rtvGbufferDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-    rtvGbufferDesc.Texture2D.MipSlice = 0;
+    rtvGbufferDesc.Format = TextureGbufferDesc.Format;										// Same format as the texture ( could just type it out but.. )
+    rtvGbufferDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;							// Will be used as a Texture2D
+    rtvGbufferDesc.Texture2D.MipSlice = 0;									
 
     for (int i = 0; i < gBuffer.NROFBUFFERS; i++)
     {
@@ -143,10 +142,12 @@ bool CreateGbuffer(ID3D11Device* device, GeometryBuffer& gBuffer)
         }
     }
 
+
+	// Create Shader Resource Views
     D3D11_SHADER_RESOURCE_VIEW_DESC srvGbufferDesc;
     ZeroMemory(&srvGbufferDesc, sizeof(srvGbufferDesc));
-    srvGbufferDesc.Format = TextureGbufferDesc.Format;
-    srvGbufferDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    srvGbufferDesc.Format = TextureGbufferDesc.Format;										// Same format as the texture ( could just type it out but.. )
+    srvGbufferDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;							
     srvGbufferDesc.Texture2D.MostDetailedMip = 0;
     srvGbufferDesc.Texture2D.MipLevels = 1;
 
@@ -173,6 +174,7 @@ bool SetupD3D11(UINT width, UINT height, HWND window, ID3D11Device*& device, ID3
         return false;
     }
 
+	// New function for deferred rendering
     if (!CreateGbuffer(device, gBuffer))
     {
         OutputDebugString(L"Failed to create Gbuffer!");

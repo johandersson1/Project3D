@@ -53,7 +53,7 @@ void clearView(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rt
 }
 
 // Update function to update the camera, the directional light, cameramodel and water
-void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera, ID3D11Buffer* constantBuffers, WVP& wvp,
+void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera,
 	ParticleSystem* particlesystem, DirectionalLight& dirLight, ID3D11Buffer* dirLightBuffer, Model* water, Model* cameraModel,
 	const std::vector<Model*> models)
 {
@@ -158,46 +158,49 @@ void RenderLightPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetVi
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
+	// Width and height of the window
 	const UINT WIDTH = 1600;
 	const UINT HEIGHT = 900;
 	HWND window; 
-	RedirectIOToConsole();
 
-	WVP wvp;
+	RedirectIOToConsole(); // Console window-function
 
+	// Camera
 	Camera camera(XM_PIDIV4, (float)WIDTH / (float)HEIGHT, 0.1, 100, 2.5, 5.0f, { 15.0f, 10.0f ,0.0f });
 	ID3D11Buffer* cameraBuffer;
+
+	// Time
 	Timer timer;
 	float dt = 0.0f;
 
-	ID3D11Device* device; // Used to create resources.
-	ID3D11DeviceContext* immediateContext; // Generates rendering commands.
-	IDXGISwapChain* swapChain;// This function changes the back buffer (rtv) and the display screen.
-	ID3D11RenderTargetView* rtv; // This variable is a pointer to an object that contains all the information about the rendering object. 
-	ID3D11DepthStencilView* dsView; // The Depth / Stencil Buffer stores depth information for the pixels to be rendered.
-	D3D11_VIEWPORT viewport; // Defines the dimensions of a viewport.
-	ID3D11Texture2D* dsTexture; // An ID3D11Texture2D is an object that stores a flat image.
-	ID3D11RasterizerState* rasterizerStateWireFrame;
-	ID3D11RasterizerState* rasterizerStateSolid;
+	ID3D11Device* device;								// Used to create resources.
+	ID3D11DeviceContext* immediateContext;				// Generates rendering commands.
+	IDXGISwapChain* swapChain;							// This function changes the back buffer (rtv) and the display screen.
+	ID3D11RenderTargetView* rtv;						// This variable is a pointer to an object that contains all the information about the rendering object. 
+	ID3D11DepthStencilView* dsView;						// The Depth / Stencil Buffer stores depth information for the pixels to be rendered.
+	D3D11_VIEWPORT viewport;							// Defines the dimensions of a viewport.
+	ID3D11Texture2D* dsTexture;							// An ID3D11Texture2D is an object that stores a flat image.
+	ID3D11RasterizerState* rasterizerStateWireFrame;	// RasterizerState - wireframe
+	ID3D11RasterizerState* rasterizerStateSolid;		// RasterizerState - solid
 
 	ID3D11Texture2D* texture;
 
-	ID3D11InputLayout* inputLayout; // Information stored with each vertex to improve the rendering speed
-	ID3D11Buffer* vertexBuffer; // Buffer resource, which is unstructured memory
-	ID3D11ShaderResourceView* textureSRV; // Indicates the (sub resources) a shader can access during rendering
-	ID3D11SamplerState* wrapSampler; // Sampler-state that you can bind to any shader stage in the pipeline.
-	ID3D11SamplerState* clampSampler;
+	ID3D11InputLayout* inputLayout;						 // Information stored with each vertex to improve the rendering speed
+	ID3D11Buffer* vertexBuffer;							 // Buffer resource, which is unstructured memory
+	ID3D11ShaderResourceView* textureSRV;				 // Indicates the (sub resources) a shader can access during rendering
+	ID3D11SamplerState* wrapSampler;					 // Wrap sampler - wraps or "loops" the texture
+	ID3D11SamplerState* clampSampler;					 // Clamp sampler - clamps the UV values [0.0 - 1.0]
 
 	//Deferred
-	ID3D11PixelShader* lightPShaderDeferred; // A pixelshader interface manages an executable program(a pixel shader) that controls the pixel - shader stage.
-	ID3D11VertexShader* lightVShaderDeferred;
-	ID3D11PixelShader* pShaderDeferred;
-	ID3D11VertexShader* vShaderDeferred;
-	ID3D11InputLayout* renderTargetMeshInputLayout; // An input-layout interface holds a definition of how to feed vertex data 
-													// that is laid out in memory into the input-assembler stage of the graphics pipeline.
-	ID3D11Buffer* screenQuadMesh;
+	ID3D11PixelShader* lightPShaderDeferred;			// Pixel Shader for the light pass ( quad )
+	ID3D11VertexShader* lightVShaderDeferred;		    // Vertex Shader for the light pass ( quad ) 
+	ID3D11PixelShader* pShaderDeferred;					// Pixel Shader for the geometry pass
+	ID3D11VertexShader* vShaderDeferred;				// Vertex Shader for the geometry pass
+	ID3D11InputLayout* renderTargetMeshInputLayout;		// Input layout for the quad covering the sqreen
+													
+	ID3D11Buffer* screenQuadMesh;						// Quad covering the screen used in the deferred rendering- light pass
 
-	//Gbuffer
+	//Gbuffer struct
 	GeometryBuffer gBuffer;
 	gBuffer.screenWidth = WIDTH;
 	gBuffer.screenHeight = HEIGHT;
@@ -209,8 +212,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	DirectionalLight dirLight(14, { 0, 1,0 });
 	ID3D11Buffer* dirLightBuffer;
 
-	//ConstantBuffer(s)
-	ID3D11Buffer* constantBuffers;
 
 	if (!SetupWindow(hInstance, WIDTH, HEIGHT, nCmdShow, window))
 	{
@@ -225,8 +226,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		return -2;
 	}
 
-	if (!SetupPipeline(device, vertexBuffer, inputLayout, 
-		constantBuffers, texture, textureSRV, wrapSampler, pShaderDeferred, vShaderDeferred, lightPShaderDeferred, lightVShaderDeferred,
+	if (!SetupPipeline(device, vertexBuffer, inputLayout, texture, textureSRV, wrapSampler, pShaderDeferred, vShaderDeferred, lightPShaderDeferred, lightVShaderDeferred,
 		renderTargetMeshInputLayout, screenQuadMesh, rasterizerStateWireFrame, rasterizerStateSolid, clampSampler))
 	{
 		std::cerr << "Failed to setup pipeline!" << std::endl;
@@ -284,7 +284,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 			DispatchMessage(&msg);
 		}
 
-		update(immediateContext, dt, camera, constantBuffers, wvp, particlesystem, dirLight, dirLightBuffer, water, cameraModel, models);
+		update(immediateContext, dt, camera, particlesystem, dirLight, dirLightBuffer, water, cameraModel, models);
 	
 		ShaderData::Update(immediateContext, camera, dirLight);
 
@@ -354,7 +354,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	renderTargetMeshInputLayout->Release();
 	lightVShaderDeferred->Release();
 	lightPShaderDeferred->Release();
-	constantBuffers->Release();
 	texture->Release();
 	clampSampler->Release();
 	wrapSampler->Release();
