@@ -28,8 +28,8 @@ void main(triangle GSINPUT input[3] : SV_POSITION, inout TriangleStream<GSOOUTPU
 
     //Calc normal from vertices
     float3 faceNormal = normalize(cross(p1 - p0, p2 - p0));
-    // Behöver inte camera pga WVP är redan inräknad
-    //Get dot value, if value >= 0.0f the triangle is frontfaced. (p0 = (0,0,0) - (p0), a vector from pov to point).
+    // Don't need camera because WVP is already calculated
+    // Get dot value, if value >= 0.0f the triangle is frontfaced. (p0 = (0,0,0) - (p0), a vector from pov to point).
     float dotVal = dot(faceNormal, -p0);
 
     if (dotVal >= 0.0f)

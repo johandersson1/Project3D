@@ -6,16 +6,16 @@
 #include <DirectXMath.h>
 
 // The G-Buffer with NROFBUFFERS and the views & textures
-
-struct GeometryBuffer
+// Geometry buffer, the information about our geometry is stored in a gBuffer
+struct GeometryBuffer 
 {
-    // Enum constants are public, static and final 
-   /* enum indexName {
+    // Enum constants are public, static and final, används detta?? 
+    enum indexName {
         indexPosition,
         indexColor,
         indexNormal,
         indexCount
-    };*/
+    };
     static const int NROFBUFFERS = 8;
     int screenWidth;
     int screenHeight;
