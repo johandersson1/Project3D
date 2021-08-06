@@ -9,12 +9,13 @@
 
 struct GeometryBuffer
 {
-    enum indexName {
+    // Enum constants are public, static and final 
+   /* enum indexName {
         indexPosition,
         indexColor,
         indexNormal,
         indexCount
-    };
+    };*/
     static const int NROFBUFFERS = 8;
     int screenWidth;
     int screenHeight;

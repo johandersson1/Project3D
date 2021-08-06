@@ -187,7 +187,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 	ID3D11InputLayout* inputLayout;						 // Information stored with each vertex to improve the rendering speed
 	ID3D11Buffer* vertexBuffer;							 // Buffer resource, which is unstructured memory
-	ID3D11ShaderResourceView* textureSRV;				 // Indicates the (sub resources) a shader can access during rendering
+	ID3D11ShaderResourceView* textureSRV;				 // Indicates the (sub resources) a shader can access during rendering, could be a constant buffer, a texture buffer, or a texture
 	ID3D11SamplerState* wrapSampler;					 // Wrap sampler - wraps or "loops" the texture
 	ID3D11SamplerState* clampSampler;					 // Clamp sampler - clamps the UV values [0.0 - 1.0]
 
@@ -244,7 +244,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	Model* cameraModel = new Model(device, "cube", { 0.0f, -5.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, {0.05f, 0.05f, 0.05f});
 	models.push_back(cameraModel);
 
-	Model* dust = new Model(device, "buildings", { -10.0f, 0.0f, -5.0f }, { 0.0f, 0.0f, 0.0f }, { 1, 1, 1 });
+	Model* dust = new Model(device, "buildings", { -10.0f, -0.2f, -5.0f }, { 0.0f, 0.0f, 0.0f }, { 1, 1, 1 });
 	models.push_back(dust);
 
 	Model* statue = new Model(device, "Statue", { 8.0f, 1.5f, 7.0f }, { 0.0f, XM_PIDIV2 + 0.623598776f, 0.0f }, { 0.25f, 0.25f, 0.25f });
