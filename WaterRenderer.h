@@ -64,8 +64,8 @@ public:
 		UpdateBuffer(context, matricesBuffer, matrices);
 		context->VSSetConstantBuffers(1, 1, &matricesBuffer);
 
-		context->PSSetShaderResources(1, 1, model->GetTextures(1));
-
+		model->BindTextures(context);
+		
 		context->PSSetConstantBuffers(0, 1, model->GetWaterBuffer());
 
 		context->IASetVertexBuffers(0, 1, model->GetBuffer(), &stride, &offset);

@@ -31,21 +31,15 @@ public:
 			std::cout << "FAILED TO LOAD MATERIAL DATA" << std::endl;
 		}
 	}
-	~Mesh();
+	~Mesh() { this->mtlBuffer->Release(); }
 	// Getting the DiffuseTexture and DisplacementTexture from Material.h (Material.h has included Texture.h)
-	void AddDiffuseTexture(ID3D11Device* device, std::string fileName) { material.diffuseTexures.push_back(Texture(device, "Models/" + name + "/" + fileName)); }
+	//void AddDiffuseTexture(ID3D11Device* device, std::string fileName) { material.diffuseTexures.push_back(Texture(device, "Models/" + name + "/" + fileName)); }
 		
-	void AddDisplacementTexture(ID3D11Device* device, std::string fileName) { material.displacementTexture = Texture(device, "Models/" + name + "/" + fileName); }
+	//void AddDisplacementTexture(ID3D11Device* device, std::string fileName) { material.displacementTexture = Texture(device, "Models/" + name + "/" + fileName); }
 
 	ID3D11Buffer* GetMTLBuffer() { return this->mtlBuffer; }
 
 	int vertexCount = 0;
 	std::vector<Face> faces;
 	std::vector<XMFLOAT3> positions;
-
-	void Shutdown()
-	{
-		mtlBuffer->Release();
-		//material.Shutdown();
-	}
 };

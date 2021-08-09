@@ -89,7 +89,3 @@ void ParticleSystem::UpdateBuffer(ID3D11DeviceContext* context)
 	context->Unmap(vertexBuffer, 0);
 }
 
-ParticleSystem::~ParticleSystem()
-{
-
-}

@@ -158,8 +158,7 @@ public:
 		reader.close();
 
 	}
-	void ShutDown()
-	{		
+	~TerrainRenderer(){
 		vertexShader->Release();
 		hullShader->Release();
 		domainShader->Release();
@@ -167,10 +166,9 @@ public:
 		geometryShader->Release();
 		matricesBuffer->Release();
 		lightBuffer->Release();
-		
 	}
 
-	void Render(ID3D11DeviceContext* context, Model* model)
+	void Render(ID3D11DeviceContext* context, std::shared_ptr<Model> model)
 	{
 		// Terrain uses the same input layout as models since it is a model 
 		context->IASetInputLayout(ShaderData::model_layout);
@@ -193,9 +191,8 @@ public:
 		UpdateBuffer(context, lightBuffer, ShaderData::lightMatrix);
 		context->PSSetConstantBuffers(0, 1, &lightBuffer);
 		// Textures used
-		context->PSSetShaderResources(0, 2, model->GetTextures(2));
-		context->PSSetShaderResources(2, 1, model->GetDisplacementTexture());
-		context->DSSetShaderResources(0, 1, model->GetDisplacementTexture());
+		model->BindDisplacementTexture(context);
+		model->BindTextures(context);
 		// Set the Vertexbuffer, draw and reset the shaders for the next renderer (particles)
 		context->IASetVertexBuffers(0, 1, model->GetBuffer(), &stride, &offset);
 		context->Draw(model->GetVertexCount(), 0);

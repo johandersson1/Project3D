@@ -12,6 +12,7 @@ struct PSInput
     float2 tex : TEXCOORD;
     float3 normal : NORMAL;
     float3 worldPos : WORLDPOS;
+	float blendValue : BLENDVALUE;
 };
 
 struct PSOutput
@@ -46,7 +47,7 @@ PSOutput main(PSInput input)
     
     float4 lowColour = textures[0].Sample(wrapSampler, input.tex);
     float4 hiColour = textures[1].Sample(wrapSampler, input.tex);
-    float blendValue = blendTexture.Sample(clampSampler, input.tex).r;
+	float blendValue = input.blendValue; // blendTexture.Sample(clampSampler, input.tex).r;
         
     float highAmount = blendValue;
     float lowAmount = 1.0f - blendValue;

@@ -6,7 +6,8 @@
 #include "Camera.h"
 #include "ShadowMap.h"
 #include "Lights.h"
-//#include "Lights.h"
+#include <memory>
+
 using namespace DirectX;
 
 

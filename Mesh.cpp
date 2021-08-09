@@ -172,7 +172,7 @@ bool Mesh::LoadMaterial(ID3D11Device* device, std::string name)
 		{
 			std::string diffuse;
 			reader >> diffuse;
-			material.diffuseTexures.push_back(Texture(device, "Models/" + name + "/" + diffuse));
+			material.diffuseTexures.push_back(new Texture(device, "Models/" + name + "/" + diffuse));
 		}
 
 	}
@@ -195,7 +195,3 @@ bool Mesh::LoadMaterial(ID3D11Device* device, std::string name)
 	return true;
 }
 
-Mesh::~Mesh()
-{
-	//mtlBuffer->Release();
-}

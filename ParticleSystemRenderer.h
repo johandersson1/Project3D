@@ -76,7 +76,7 @@ public:
 		reader.close();
 
 	}
-	void ShutDown()
+	~ParticleRenderer()
 	{
 		cameraBuffer->Release();
 		viewPersPectiveBuffer->Release();
@@ -84,7 +84,8 @@ public:
 		pixelShader->Release();
 	}
 
-	void Render(ID3D11DeviceContext* context, ParticleSystem* particlesystem)
+
+	void Render(ID3D11DeviceContext* context, std::shared_ptr<ParticleSystem> particlesystem)
 	{
 		// Update the buffer containing the users position ( used for billboarding )
 		UpdateBuffer(context, cameraBuffer, ShaderData::cameraPosition);

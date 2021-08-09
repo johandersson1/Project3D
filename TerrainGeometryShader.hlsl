@@ -4,6 +4,7 @@ struct GSInput
     float2 tex : TEXCOORD;
     float3 normal : NORMAL;
     float3 worldPos : WORLDPOS;
+	float blendValue : BLENDVALUE;
 };
 
 struct GSOutput
@@ -12,6 +13,7 @@ struct GSOutput
     float2 tex : TEXCOORD;
     float3 normal : NORMAL;
     float3 worldPos : WORLDPOS;
+	float blendValue : BLENDVALUE;
 };
 
 [maxvertexcount(3)]

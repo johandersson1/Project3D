@@ -108,10 +108,10 @@ public:
 		reader.close();
 	}
 	
-	void Render(ID3D11Device* device, ID3D11DeviceContext* context, Model* model, bool water, bool rotation)
+	void Render(ID3D11Device* device, ID3D11DeviceContext* context, std::shared_ptr<Model> model, bool water, bool rotation)
 	{
-		// Get the WorldMatrix, store and update the buffer for the model
-		XMStoreFloat4x4(&matrices.worldSpace,XMMatrixTranspose( model->GetWorldMatrix()));
+		// Get the WorldMatrix, store and update the buffer for the model (columnmayor)
+		XMStoreFloat4x4(&matrices.worldSpace,XMMatrixTranspose(model->GetWorldMatrix()));
 		XMMATRIX WVP = XMMatrixTranspose(model->GetWorldMatrix() * ShaderData::viewMatrix * ShaderData::perspectiveMatrix);
 		XMStoreFloat4x4(&matrices.WVP, WVP);
 		UpdateBuffer(context, matricesBuffer, matrices);
@@ -152,7 +152,7 @@ public:
 		// Update the lightbuffer for each model, used for the shadows (sent to the clipspace target in the PS)
 		UpdateBuffer(context, lightBuffer, ShaderData::lightMatrix);
 		context->PSSetConstantBuffers(1, 1, &lightBuffer); // set the CB containing light info
-		context->PSSetShaderResources(0, 1, model->GetTextures(1)); // Set the shader resource with the specific texture used for the model
+		model->BindTextures(context); // Set the shader resource with the specific texture used for the model
 		context->VSSetConstantBuffers(1, 1, &matricesBuffer); // set the CB for the vs with the WVP and worldspace matrices
 		// DS and HS not used for regular models
 		context->HSSetShader(NULL, NULL, 0);
@@ -178,8 +178,7 @@ public:
 
 	}
 	std::string GetByteCode() const { return this->byteCode; }
-
-	void ShutDown()
+	~ModelRenderer()
 	{
 		pixelShader->Release();
 		vertexShader->Release();
@@ -187,4 +186,5 @@ public:
 		matricesBuffer->Release();
 		lightBuffer->Release();
 	}
+
 };

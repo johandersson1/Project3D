@@ -49,7 +49,7 @@ public:
 		reader.close();
 
 	}
-	void Render(ID3D11DeviceContext* context, Model* model)
+	void Render(ID3D11DeviceContext* context, std::shared_ptr<Model> model)
 	{
 		// Shadows use an positions only input layout to determin the position of each pixel
 		context->IASetInputLayout(ShaderData::positionOnly_layout);
@@ -68,11 +68,10 @@ public:
 		context->Draw(model->GetVertexCount(), 0); // draw the model for the shadow pass
 
 	}
-
-	void ShutDown()
+	~ShadowRenderer()
 	{
 		matrixBuffer->Release();
 		vertexShader->Release();
-
 	}
+
 };

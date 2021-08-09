@@ -14,37 +14,18 @@ struct Material
         float specularPower = 0.0f;
         XMFLOAT3 padding = { 0.0f, 0.0f, 0.0f };
     } data;
-
-    bool hasDiffuseTexture = false;
-    Texture diffuseTexture; 
-    
-    std::vector<Texture> diffuseTexures;
-
-    std::vector<Texture> tempVector;
-
+   
+    std::vector<Texture*> diffuseTexures;
 
     bool hasDisplacementTexture = false;
-    Texture displacementTexture;
-
-    ID3D11ShaderResourceView** GetDiffuseTextures(int count)
-    {
-        ID3D11ShaderResourceView** srvs = new ID3D11ShaderResourceView* [diffuseTexures.size()];
-
-        for (int i = 0; i < count; i++)
-        {
-            if (i > diffuseTexures.size())
-                break;
-            srvs[i] = *diffuseTexures[i].Get();
-        }
-        return srvs;
-		for (int i = 0; i < count; i++)
-		{
-            diffuseTexures.clear();
-            diffuseTexures.swap(tempVector);
-			srvs[i]->Release();
-		}
-    }
-
+    Texture* displacementTexture;
+	~Material() 
+	{
+		if (displacementTexture)
+			delete displacementTexture;
+		for (auto& texture : diffuseTexures)
+			delete texture;
+	}
     Material() = default;
 
 	//void Shutdown()

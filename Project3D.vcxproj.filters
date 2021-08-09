@@ -78,9 +78,6 @@
     <ClInclude Include="Timer.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="ParticleSystemRenderer.h">
-      <Filter>Header Files\Particles</Filter>
-    </ClInclude>
     <ClInclude Include="ShadowMap.h">
       <Filter>Header Files\Shadow</Filter>
     </ClInclude>
@@ -119,6 +116,9 @@
     </ClInclude>
     <ClInclude Include="Geometry.h">
       <Filter>Header Files\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleSystemRenderer.h">
+      <Filter>Header Files\Renderers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

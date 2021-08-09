@@ -11,6 +11,8 @@
 #include "TerrainRenderer.h"
 #include "ShadowRenderer.h"
 #include "WaterRenderer.h"
+#include <memory>
+
 
 // For the console
 #include<io.h>
@@ -54,8 +56,8 @@ void clearView(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rt
 
 // Update function to update the camera, the directional light, cameramodel and water
 void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera,
-	ParticleSystem* particlesystem, DirectionalLight& dirLight, ID3D11Buffer* dirLightBuffer, Model* water, Model* cameraModel,
-	const std::vector<Model*> models)
+	std::shared_ptr<ParticleSystem> particlesystem, DirectionalLight& dirLight, ID3D11Buffer* dirLightBuffer, /*std::shared_ptr<Model> water,*/ 
+	std::shared_ptr<Model> cameraModel,	const std::vector<std::shared_ptr<Model>> models)
 {
 	camera.Update(dt); // Update the camera 
 	particlesystem->Update(immediateContext, dt); // Update the particles
@@ -73,18 +75,18 @@ void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera,
 	std::cout << xPos.x << " " << xPos.y << " " << xPos.z << std::endl; */
 
 	
-	water->WaterSettings(DirectX::XMFLOAT2(-0.1f, 0.1f), dt); // Function for the water UV animation
-	UpdateBuffer(immediateContext, *water->GetWaterBuffer(), water->GetUVOffset()); // Update the buffer containing the data of UVs for the water
+	//water->WaterSettings(DirectX::XMFLOAT2(-0.1f, 0.1f), dt); // Function for the water UV animation
+	//UpdateBuffer(immediateContext, *water->GetWaterBuffer(), water->GetUVOffset()); // Update the buffer containing the data of UVs for the water
 }
 
 // Geometry Pass for deferred rendering (and shadows)
 void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsView, 
 	D3D11_VIEWPORT& viewport, ID3D11PixelShader* pShaderDeferredRender, ID3D11VertexShader* vShaderDeferred,
 	ID3D11InputLayout* inputLayout, ID3D11SamplerState* sampler, GeometryBuffer gBuffer,
-	ID3D11ShaderResourceView* textureSRV, ID3D11Buffer* vertexBuffer,ParticleSystem* particlesystem, 
-	ParticleRenderer* pRenderer, ModelRenderer* mRenderer, const std::vector <Model*>&models, TerrainRenderer* tRenderer, Model* terrain,
+	ID3D11ShaderResourceView* textureSRV, ID3D11Buffer* vertexBuffer, std::shared_ptr<ParticleSystem> particlesystem,
+	ParticleRenderer* pRenderer, ModelRenderer* mRenderer, const std::vector <std::shared_ptr<Model>>&models, TerrainRenderer* tRenderer, std::shared_ptr<Model> terrain,
 	ShadowRenderer* sRenderer, ID3D11RasterizerState*& rasterizerStateWireFrame, ID3D11RasterizerState*& rasterizerStateSolid,
-	Model* water, ID3D11Device * device, Model* cameraModel, ID3D11SamplerState* clampSampler)
+	/*std::shared_ptr<Model> water,*/ ID3D11Device * device, std::shared_ptr<Model> cameraModel, ID3D11SamplerState* clampSampler)
 {
 	// Binds the shadowmap (sets resources)
 	ShaderData::shadowmap->Bind(immediateContext); 
@@ -99,7 +101,7 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 		sRenderer->Render(immediateContext, model);
 
 	// Same thing for the terrain and water, they are not in the same vector as the other "regular" models
-	sRenderer->Render(immediateContext, water);
+	//sRenderer->Render(immediateContext, water);
 	sRenderer->Render(immediateContext, terrain);
 
 	// Reset the Viewport for the next pass (geometry pass)
@@ -121,7 +123,7 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	for (auto model : models)
 		mRenderer->Render(device, immediateContext, model, false, false);
 
-	mRenderer->Render(device, immediateContext, water, true, false);
+	//mRenderer->Render(device, immediateContext, water, true, false);
 
 	// Render the terrain and particles 
 	tRenderer->Render(immediateContext, terrain);
@@ -186,11 +188,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 	ID3D11Texture2D* texture;
 
-	ID3D11InputLayout* inputLayout;						 // Information stored with each vertex to improve the rendering speed
-	ID3D11Buffer* vertexBuffer;							 // Buffer resource, which is unstructured memory
-	ID3D11ShaderResourceView* textureSRV;				 // Indicates the (sub resources) a shader can access during rendering, could be a constant buffer, a texture buffer, or a texture
-	ID3D11SamplerState* wrapSampler;					 // Wrap sampler - wraps or "loops" the texture
-	ID3D11SamplerState* clampSampler;					 // Clamp sampler - clamps the UV values [0.0 - 1.0]
+	ID3D11InputLayout* inputLayout;						// Information stored with each vertex to improve the rendering speed
+	ID3D11Buffer* vertexBuffer;							// Buffer resource, which is unstructured memory
+	ID3D11ShaderResourceView* textureSRV;				// Indicates the (sub resources) a shader can access during rendering, could be a constant buffer, a texture buffer, or a texture
+	ID3D11SamplerState* wrapSampler;					// Wrap sampler - wraps or "loops" the texture
+	ID3D11SamplerState* clampSampler;					// Clamp sampler - clamps the UV values [0.0 - 1.0]
 
 	//Deferred
 	ID3D11PixelShader* lightPShaderDeferred;			// Pixel Shader for the light pass ( quad )
@@ -237,32 +239,34 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	}
 
 	// Creating a vector that stores the models
-	std::vector <Model*>models;
+	std::vector <std::shared_ptr<Model>>models;
 	
 	// Creating a new model for each mesh in the scene
 
-	Model* bike = new Model(device, "biker", { 3.0f, 2.0f, 0.0f }, { XM_PIDIV4, 0.0f, XM_PIDIV4 }, { 0.5f, 0.5f, 0.5f });
+	std::shared_ptr<Model> bike = std::make_shared<Model>(device, "biker", XMVECTOR{ 3.0f, 2.0f, 0.0f }, XMVECTOR{ XM_PIDIV4, 0.0f, XM_PIDIV4 }, XMVECTOR{ 0.5f, 0.5f, 0.5f });
 	models.push_back(bike);
 	
-	Model* cameraModel = new Model(device, "cube", { 0.0f, -5.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, {0.05f, 0.05f, 0.05f});
+	std::shared_ptr<Model> cameraModel = std::make_shared<Model>(device, "cube", XMVECTOR{ 0.0f, -5.0f, 0.0f }, XMVECTOR{ 0.0f, 0.0f, 0.0f }, XMVECTOR{0.05f, 0.05f, 0.05f});
 	models.push_back(cameraModel);
 
-	Model* dust = new Model(device, "buildings", { -10.0f, -0.2f, -5.0f }, { 0.0f, 0.0f, 0.0f }, { 1, 1, 1 });
+	std::shared_ptr<Model> dust = std::make_shared<Model>(device, "buildings", XMVECTOR{ -10.0f, -0.2f, -5.0f }, XMVECTOR{ 0.0f, 0.0f, 0.0f }, XMVECTOR{ 1, 1, 1 });
 	models.push_back(dust);
 
-	Model* statue = new Model(device, "Statue", { 8.0f, 1.5f, 7.0f }, { 0.0f, XM_PIDIV2 + 0.623598776f, 0.0f }, { 0.25f, 0.25f, 0.25f });
+	std::shared_ptr<Model> statue = std::make_shared<Model>(device, "Statue", XMVECTOR{ 8.0f, 1.5f, 7.0f }, XMVECTOR{ 0.0f, XM_PIDIV2 + 0.623598776f, 0.0f }, XMVECTOR{ 0.25f, 0.25f, 0.25f });
 	models.push_back(statue);
 
-	Model* water = new Model(device, "water", { -5.0f, 5.0f, 8.0f }, { 0.0f, XM_PIDIV2 - 0.623598776f , -XM_PIDIV2 }, { 10.0f, 10.0f, 10.0f });
-	
-	Model* sword = new Model(device, "sword", { 8.0f, 1.5f, -7.0f }, { -XM_PIDIV4, XM_PIDIV2, 0 }, { 0.7f, 0.7, 0.7f });
+	//std::shared_ptr<Model> water = std::make_shared<Model>(device, "water", XMVECTOR{ -5.0f, 5.0f, 8.0f }, XMVECTOR{ 0.0f, XM_PIDIV2 - 0.623598776f , -XM_PIDIV2 }, XMVECTOR{ 10.0f, 10.0f, 10.0f });
+	//water->AddTexture(device, "Models/water/water.jpg");
+
+	std::shared_ptr<Model> sword = std::make_shared<Model>(device, "sword", XMVECTOR{ 8.0f, 1.5f, -7.0f }, XMVECTOR{ -XM_PIDIV4, XM_PIDIV2, 0 }, XMVECTOR{ 0.7f, 0.7, 0.7f });
 	models.push_back(sword);
 
-	Model* terrain = new Model(device, "Ground", { 0.0f, 0.0f, 0 }, { 0.0f, 0.0f, 0.0f }, { 7.0f, 7.0f, 7.0f });
+	std::shared_ptr<Model> terrain = std::make_shared<Model>(device, "Ground", XMVECTOR{ 0.0f, 0.0f, 0 }, XMVECTOR{ 0.0f, 0.0f, 0.0f }, XMVECTOR{ 7.0f, 7.0f, 7.0f });
 	terrain->SetDisplacementTexture(device, "Models/Ground/Displacement2.png");
-	terrain->AddTexture(device, "lava.jpg");
+	terrain->AddTexture(device, "Models/Ground/lava.jpg");
 	
-	ParticleSystem* particlesystem = new ParticleSystem(device, 200, 5, 1, { 60, 25, 60 }, { 0, 20, 0 });
+	std::shared_ptr<ParticleSystem> particlesystem = std::make_shared<ParticleSystem>(device, 200, 5, 1, XMFLOAT3{ 60, 25, 60 }, XMFLOAT3{ 0, 20, 0 });
+	
 	ParticleRenderer* pRenderer = new ParticleRenderer(device);
 	ModelRenderer* mRenderer = new ModelRenderer(device);
 	TerrainRenderer* tRenderer = new TerrainRenderer(device);
@@ -273,7 +277,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	CreateBuffer(device, dirLightBuffer, sizeof(DirectionalLight::Data));
 	UpdateBuffer(immediateContext, dirLightBuffer, dirLight.data);
 	CreateBuffer(device, cameraBuffer, sizeof(XMFLOAT4));
-	CreateBuffer(device, *water->GetWaterBuffer(), sizeof(XMFLOAT4));
+	//CreateBuffer(device, *water->GetWaterBuffer(), sizeof(XMFLOAT4));
 
 	MSG msg = {};
 
@@ -287,13 +291,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 			DispatchMessage(&msg);
 		}
 
-		update(immediateContext, dt, camera, particlesystem, dirLight, dirLightBuffer, water, cameraModel, models);
+		update(immediateContext, dt, camera, particlesystem, dirLight, dirLightBuffer, /*water,*/ cameraModel, models);
 	
 		ShaderData::Update(immediateContext, camera, dirLight);
 
 		RenderGBufferPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout,
 			wrapSampler, gBuffer, textureSRV, vertexBuffer, particlesystem, pRenderer, mRenderer,models, tRenderer, terrain, sRenderer, 
-			rasterizerStateWireFrame, rasterizerStateSolid, water, device, cameraModel, clampSampler);
+			rasterizerStateWireFrame, rasterizerStateSolid, /*water,*/ device, cameraModel, clampSampler);
 
 		RenderLightPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout, vertexBuffer,
 			textureSRV, wrapSampler, gBuffer, lightPShaderDeferred,	lightVShaderDeferred, renderTargetMeshInputLayout, screenQuadMesh, 
@@ -313,36 +317,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 
 	// Clear the vector
-	models.clear();
-
-	// Vet inte var alla minnesläckor finns, kolla outputten efter live objects ( ny grej som sophia löste (otippat))
-	// Tror det är i material & texture men klurigt hur det ska gå till, tror att vi försöker fixa så mycket som möjligt sen skriva kommentarer och låta sophia lösa det eller något
-
-	bike->Shutdown();
-	dust->Shutdown();
-	sword->Shutdown();
-	statue->Shutdown();
-	cameraModel->Shutdown();
-	terrain->Shutdown();
-	water->waterBuffer->Release();
-	water->Shutdown();
-
-	delete bike;
-	delete dust;
-	delete sword;
-	delete statue;
-	delete water;
-	delete cameraModel;
-	delete terrain;
-	
-	pRenderer->ShutDown();
-	tRenderer->ShutDown();
-	sRenderer->ShutDown();
-	mRenderer->ShutDown();
 	
 	ShaderData::Shutdown();
-	particlesystem->Shutdown();
-	delete particlesystem;
 	delete pRenderer;
 	delete mRenderer;
 	delete tRenderer;
