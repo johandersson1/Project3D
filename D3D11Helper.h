@@ -9,21 +9,16 @@
 // Geometry buffer, the information about our geometry is stored in a gBuffer
 struct GeometryBuffer 
 {
-    // Enum constants are public, static and final, används detta?? 
-    enum indexName {
-        indexPosition,
-        indexColor,
-        indexNormal,
-        indexCount
-    };
-    static const int NROFBUFFERS = 8;
+    static const int NROFBUFFERS = 8; // Numbers of buffers that we want
     int screenWidth;
     int screenHeight;
-    ID3D11Texture2D* gBufferTexture[NROFBUFFERS];
+
+	// Create Texture, RTV, SRV arrays
+    ID3D11Texture2D* gBufferTexture[NROFBUFFERS]; 
     ID3D11RenderTargetView* gBuffergBufferRtv[NROFBUFFERS];
     ID3D11ShaderResourceView* gBufferSrv[NROFBUFFERS];
 };
-
+// Setup all things D3D11
 bool SetupD3D11( UINT width, UINT height, HWND window, ID3D11Device*& device, 
 	             ID3D11DeviceContext*& immidateContext, IDXGISwapChain*& swapChain,
 	             ID3D11RenderTargetView*& rtv, ID3D11Texture2D*& dsTexture, 

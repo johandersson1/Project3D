@@ -114,8 +114,7 @@ void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera,
 // Geometry Pass for deferred rendering (and shadows)
 void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsView, 
 	D3D11_VIEWPORT& viewport, ID3D11PixelShader* pShaderDeferredRender, ID3D11VertexShader* vShaderDeferred,
-	ID3D11InputLayout* inputLayout, ID3D11SamplerState* sampler, GeometryBuffer gBuffer,
-	ID3D11ShaderResourceView* textureSRV, ID3D11Buffer* vertexBuffer,ParticleSystem* particlesystem, 
+    ID3D11SamplerState* sampler, GeometryBuffer gBuffer, ID3D11ShaderResourceView* textureSRV, ParticleSystem* particlesystem, 
 	ParticleRenderer* pRenderer, ModelRenderer* mRenderer, const std::vector <Model*>&models, TerrainRenderer* tRenderer, Model* terrain,
 	ShadowRenderer* sRenderer, ID3D11RasterizerState*& rasterizerStateWireFrame, ID3D11RasterizerState*& rasterizerStateSolid,
 	Model* water, ID3D11Device * device, Model* cameraModel, ID3D11SamplerState* clampSampler)
@@ -163,7 +162,7 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 
 // Light pass -- renders the geometry and lighting on the final screen quad
 void RenderLightPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsView, D3D11_VIEWPORT& viewport,
-	ID3D11PixelShader* pShaderDeferredRender,ID3D11VertexShader* vShaderDeferred, ID3D11InputLayout* inputLayout, ID3D11Buffer* vertexBuffer,
+	ID3D11PixelShader* pShaderDeferredRender,ID3D11VertexShader* vShaderDeferred,
 	ID3D11ShaderResourceView* textureSRV, ID3D11SamplerState* sampler, GeometryBuffer gBuffer, ID3D11PixelShader* lightPShaderDeferred, 
 	ID3D11VertexShader* lightVShaderDeferred, ID3D11InputLayout* renderTargetMeshInputLayout, ID3D11Buffer* screenQuadMesh, DirectionalLight &dirLight, 
 	ID3D11Buffer* dirLightBuffer, Camera camera, ID3D11Buffer* cameraPos, ID3D11SamplerState* clampSampler)
@@ -219,8 +218,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 	ID3D11Texture2D* texture;
 
-	ID3D11InputLayout* inputLayout;						 // Information stored with each vertex to improve the rendering speed
-	ID3D11Buffer* vertexBuffer;							 // Buffer resource, which is unstructured memory
 	ID3D11ShaderResourceView* textureSRV;				 // Indicates the (sub resources) a shader can access during rendering, could be a constant buffer, a texture buffer, or a texture
 	ID3D11SamplerState* wrapSampler;					 // Wrap sampler - wraps or "loops" the texture
 	ID3D11SamplerState* clampSampler;					 // Clamp sampler - clamps the UV values [0.0 - 1.0]
@@ -263,7 +260,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		return -2;
 	}
 
-	if (!SetupPipeline(device, vertexBuffer, inputLayout, texture, textureSRV, wrapSampler, pShaderDeferred, vShaderDeferred, lightPShaderDeferred, lightVShaderDeferred,
+	if (!SetupPipeline(device, texture, textureSRV, wrapSampler, pShaderDeferred, vShaderDeferred, lightPShaderDeferred, lightVShaderDeferred,
 		renderTargetMeshInputLayout, screenQuadMesh, rasterizerStateWireFrame, rasterizerStateSolid, clampSampler))
 	{
 		std::cerr << "Failed to setup pipeline!" << std::endl;
@@ -331,11 +328,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	
 		ShaderData::Update(immediateContext, camera, dirLight);
 
-		RenderGBufferPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout,
-			wrapSampler, gBuffer, textureSRV, vertexBuffer, particlesystem, pRenderer, mRenderer,models, tRenderer, terrain, sRenderer, 
+		RenderGBufferPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred,
+			wrapSampler, gBuffer, textureSRV, particlesystem, pRenderer, mRenderer,models, tRenderer, terrain, sRenderer, 
 			rasterizerStateWireFrame, rasterizerStateSolid, water, device, cameraModel, clampSampler);
 
-		RenderLightPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred, inputLayout, vertexBuffer,
+		RenderLightPass(immediateContext, rtv, dsView, viewport, pShaderDeferred, vShaderDeferred,
 			textureSRV, wrapSampler, gBuffer, lightPShaderDeferred,	lightVShaderDeferred, renderTargetMeshInputLayout, screenQuadMesh, 
 			dirLight, dirLightBuffer, camera, cameraBuffer, clampSampler);
 
@@ -405,8 +402,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	clampSampler->Release();
 	wrapSampler->Release();
 	textureSRV->Release();
-	vertexBuffer->Release();
-	inputLayout->Release();
 	dsTexture->Release();
 	dsView->Release();
 	rtv->Release();

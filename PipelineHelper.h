@@ -5,14 +5,7 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 
-//// Två matriser för worldViewProj och worldspace
-//struct WVP
-//{
-//    DirectX::XMFLOAT4X4 worldViewProj;
-//    DirectX::XMFLOAT4X4 worldSpace;
-//};
-
-//struct för SimpleVertex
+// struct for Vertex2, screenQuad
 struct Vertex2
 {
     float pos[3];
@@ -37,8 +30,7 @@ struct Vertex2
     }
 };
 
-bool SetupPipeline(ID3D11Device* device, ID3D11Buffer*& vertexBuffer,                    
-                   ID3D11InputLayout*& inputLayout, ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& textureSRV, 
+bool SetupPipeline(ID3D11Device* device, ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& textureSRV, 
                    ID3D11SamplerState*& sampler, ID3D11PixelShader*& pShaderDeferred, ID3D11VertexShader*& vShaderDeferred, 
                    ID3D11PixelShader*& lightPShaderDeferred, ID3D11VertexShader*& lightVShaderDeferred, 
                    ID3D11InputLayout*& renderTargetMesh, ID3D11Buffer*& screenQuadMesh, ID3D11RasterizerState*& rasterizerStateWireFrame, 

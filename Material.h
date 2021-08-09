@@ -11,17 +11,12 @@ struct Material
         XMFLOAT4 diffuse = { 0.0f, 0.0f, 0.0f, 1.0f };
         XMFLOAT4 ambient = { 0.0f, 0.0f, 0.0f, 1.0f };
         XMFLOAT4 specular = { 0.0f, 0.0f, 0.0f, 1.0f };
-        float specularPower = 0.0f;
-        XMFLOAT3 padding = { 0.0f, 0.0f, 0.0f };
     } data;
 
     bool hasDiffuseTexture = false;
     Texture diffuseTexture; 
     
     std::vector<Texture> diffuseTexures;
-
-    std::vector<Texture> tempVector;
-
 
     bool hasDisplacementTexture = false;
     Texture displacementTexture;
@@ -40,7 +35,6 @@ struct Material
 		for (int i = 0; i < count; i++)
 		{
             diffuseTexures.clear();
-            diffuseTexures.swap(tempVector);
 			srvs[i]->Release();
 		}
     }

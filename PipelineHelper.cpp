@@ -113,55 +113,57 @@ bool LoadShadersLight(ID3D11Device* device, ID3D11PixelShader*& lightPShaderDefe
 
 }
 //Funktion för att beskriva input-buffer data
-bool CreateInputLayout(ID3D11Device* device, ID3D11InputLayout*& inputLayout, const std::string& defVShaderByteCode)
-{
-	// Array of elements with a description
-	D3D11_INPUT_ELEMENT_DESC inputDesc[] =
-    {   
-		// name, index, format, slot, byteOffset, inputSlotClass, stepRate
-        {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}, // Input data is per-vertex data.
-        {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-        {"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-	    {"WORLDPOS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0 }
-    };
-	// Important! Everything needs to be in the right order because if it is loaded in the wrong order, it will not work
-    HRESULT hr = device->CreateInputLayout(inputDesc, ARRAYSIZE(inputDesc), defVShaderByteCode.c_str(), defVShaderByteCode.length(), &inputLayout);
+//bool CreateInputLayout(ID3D11Device* device, ID3D11InputLayout*& inputLayout, const std::string& defVShaderByteCode)
+//{
+//	// Array of elements with a description
+//	D3D11_INPUT_ELEMENT_DESC inputDesc[] =
+//    {   
+//		// name, index, format, slot, byteOffset, inputSlotClass, stepRate
+//        {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}, // Input data is per-vertex data.
+//        {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+//        {"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+//	    {"WORLDPOS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0 }
+//    };
+//	// Important! Everything needs to be in the right order because if it is loaded in the wrong order, it will not work
+//    HRESULT hr = device->CreateInputLayout(inputDesc, ARRAYSIZE(inputDesc), defVShaderByteCode.c_str(), defVShaderByteCode.length(), &inputLayout);
+//
+//    return !FAILED(hr);
+//}
 
-    return !FAILED(hr);
-}
 // VertexBuffer
-bool CreateVertexBuffer(ID3D11Device* device, ID3D11Buffer*& vertexBuffer)
-{
-	Vertex2 TheQuad[] =
-	{
-	 { {0.5f, 0.5f, 0.0f}, {1.0f, 0.0f}, {0,0,-1 }},
-	 
-	 { {0.5f, -0.5f, 0.0f}, {1.0f, 1.0f}, {0,0,-1 }},
-	 
-	 { {-0.5f, 0.5f, 0.0f}, {0.0f, 0.0f}, {0,0,-1 }},
-	
-	 { {-0.5f, -0.5f, 0.0f}, {0.0f, 1.0f}, {0,0,-1 }}
-	 // (X, Y, Z), UVs, Normals
-	};
+//bool CreateVertexBuffer(ID3D11Device* device, ID3D11Buffer*& vertexBuffer)
+//{
+//	Vertex2 TheQuad[] =
+//	{
+//	 { {0.5f, 0.5f, 0.0f}, {1.0f, 0.0f}, {0,0,-1 }},
+//	 
+//	 { {0.5f, -0.5f, 0.0f}, {1.0f, 1.0f}, {0,0,-1 }},
+//	 
+//	 { {-0.5f, 0.5f, 0.0f}, {0.0f, 0.0f}, {0,0,-1 }},
+//	
+//	 { {-0.5f, -0.5f, 0.0f}, {0.0f, 1.0f}, {0,0,-1 }}
+//	 // (X, Y, Z), UVs, Normals
+//	};
+//
+//	// Description of the buffer being created
+//	D3D11_BUFFER_DESC bufferDesc;
+//	bufferDesc.ByteWidth = sizeof(TheQuad); // Bytesize 
+//	bufferDesc.Usage = D3D11_USAGE_IMMUTABLE; // Only GPU can read, can not write, CPU does not access at all, does not change after it has been started
+//	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER; // Binds the buffer as a Vertex buffer
+//	bufferDesc.CPUAccessFlags = 0; // Is set to 0 because we use immutable, no more info is needed
+//	bufferDesc.MiscFlags = 0; // No need for additional flags
+//	bufferDesc.StructureByteStride = 0; // Defines the size of each element in buffer, not needed
+//
+//	D3D11_SUBRESOURCE_DATA data; // Specify the data for initializing a subresource
+//	data.pSysMem = TheQuad; // Pointer to TheQuad, initialization data
+//	data.SysMemPitch = 0; // The distance between the beginning of a line in a texture to the next line, in bytes
+//	data.SysMemSlicePitch = 0; // The distance (in bytes) from the beginning of one depth level to the next
+//
+//
+//	HRESULT hr = device->CreateBuffer(&bufferDesc, &data, &vertexBuffer);
+//	return !FAILED(hr);
+//}
 
-	// Description of the buffer being created
-	D3D11_BUFFER_DESC bufferDesc;
-	bufferDesc.ByteWidth = sizeof(TheQuad); // Bytesize 
-	bufferDesc.Usage = D3D11_USAGE_IMMUTABLE; // Only GPU can read, can not write, CPU does not access at all, does not change after it has been started
-	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER; // Binds the buffer as a Vertex buffer
-	bufferDesc.CPUAccessFlags = 0; // Is set to 0 because we use immutable, no more info is needed
-	bufferDesc.MiscFlags = 0; // No need for additional flags
-	bufferDesc.StructureByteStride = 0; // Defines the size of each element in buffer, not needed
-
-	D3D11_SUBRESOURCE_DATA data; // Specify the data for initializing a subresource
-	data.pSysMem = TheQuad; // Pointer to TheQuad, initialization data
-	data.SysMemPitch = 0; // The distance between the beginning of a line in a texture to the next line, in bytes
-	data.SysMemSlicePitch = 0; // The distance (in bytes) from the beginning of one depth level to the next
-
-
-	HRESULT hr = device->CreateBuffer(&bufferDesc, &data, &vertexBuffer);
-	return !FAILED(hr);
-}
 bool CreateRenderTargetMesh(ID3D11Device* device, ID3D11Buffer*& renderTargetMesh)
 {
 	Vertex2 rtvMeshData[] =
@@ -367,8 +369,7 @@ bool SetUpRasterizer(ID3D11Device*& device, ID3D11RasterizerState*& rasterizerSt
 }
 
 // Calls the various functions
-bool SetupPipeline(ID3D11Device* device, ID3D11Buffer*& vertexBuffer, ID3D11InputLayout*& inputLayout,
-	ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& textureSRV, ID3D11SamplerState*& sampler, 
+bool SetupPipeline(ID3D11Device* device, ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& textureSRV, ID3D11SamplerState*& sampler, 
 	ID3D11PixelShader*& pShaderDeferred, ID3D11VertexShader*& vShaderDeferred, ID3D11PixelShader*& lightPShaderDeferred,
 	ID3D11VertexShader*& lightVShaderDeferred, ID3D11InputLayout*& renderTargetMesh, ID3D11Buffer*& screenQuadMesh, 
 	ID3D11RasterizerState*& rasterizerStateWireFrame, ID3D11RasterizerState*& rasterizerStateSolid, ID3D11SamplerState*& clampSampler)
@@ -400,30 +401,6 @@ bool SetupPipeline(ID3D11Device* device, ID3D11Buffer*& vertexBuffer, ID3D11Inpu
         std::cerr << "Error creating input layout!" << std::endl;
         return false;
     }
-
-	//if (!/*LoadShaders(device, vShader, pShader, vShaderByteCode))*/
-	//{
-	//	std::cerr << "Error loading shaders!" << std::endl;
-	//	return false;
-	//}
-
-	if (!CreateInputLayout(device, inputLayout, defVShaderByteCode))
-	{
-		std::cerr << "Error creating input layout!" << std::endl;
-		return false;
-	}
-
-	if (!CreateVertexBuffer(device, vertexBuffer))
-	{
-		std::cerr << "Error creating vertex buffer!" << std::endl;
-		return false;
-	}
-
-	//if (!CreateConstantBuffer(device, constantBuffers))
-	//{
-	//	std::cerr << "Error creating constant buffer!" << std::endl;
-	//	return false;
-	//}
 
 	if (!CreateTexture(device, texture, textureSRV))
 	{
