@@ -26,7 +26,7 @@
 		model_layout->Release();
 		cameraPos->Release();
 		geometryShader->Release();
-		//shadowmap->ShutDown();
+		shadowmap->ShutDown();
 		
 	}
 
