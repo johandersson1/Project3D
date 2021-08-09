@@ -20,7 +20,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="D3D11Help.h" />
     <ClInclude Include="D3D11Helper.h" />
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="Lights.h" />

@@ -3,7 +3,7 @@
 #include "Geometry.h"
 #include "Material.h"
 #include <vector>
-#include "D3D11Help.h"
+#include "D3D11Helper.h"
 
 using namespace DirectX;
 

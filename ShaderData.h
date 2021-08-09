@@ -1,6 +1,5 @@
 #pragma once
 #include "D3D11Helper.h"
-#include "D3D11Help.h"
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include "Camera.h"
@@ -17,8 +16,6 @@ class ShaderData
 	friend class ModelRenderer;
 	friend class TerrainRenderer;
 	friend class ShadowRenderer;
-	friend class BlendModelRenderer;
-	friend class WaterRenderer;
 
 private:
 	static std::string positionOnly_vs_path;

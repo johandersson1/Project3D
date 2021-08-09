@@ -50,7 +50,6 @@ PixelOutput main(PixelInput input)
     
     output.lightClipPos = mul(float4(output.worldPos, 1.0f), lightMatrix);
     
-    
     return output; 
 }
 

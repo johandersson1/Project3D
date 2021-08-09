@@ -72,6 +72,8 @@ void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera,
 														 // (Directionallights dont have a positions, only used to represent where the light is coming from
 	cameraModel->Update(); // Update the mesh
 
+
+	// Stuff for the game
 	bool max = false;
 
 	XMFLOAT4 tempPos;
@@ -98,10 +100,9 @@ void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera,
 	ball->SetTranslation(pos);
 	ball->Update();
 
+	// Water
 	water->WaterSettings(DirectX::XMFLOAT2(-0.1f, 0.1f), dt); // Function for the water UV animation
-	UpdateBuffer(immediateContext, *water->GetWaterBuffer(), water->GetUVOffset()); // Update the buffer containing the data of UVs for the water
-
-
+	
 	// POSITIONS
 	//std::cout << tempPos.y << std::endl;
 	// Variable to used to print the position of the light (used when debugging)
@@ -361,7 +362,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	statue->Shutdown();
 	cameraModel->Shutdown();
 	terrain->Shutdown();
-	water->waterBuffer->Release();
 	water->Shutdown();
 	ball->Shutdown();
 	board->Shutdown();
@@ -414,5 +414,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	debug->ReportLiveDeviceObjects(D3D11_RLDO_SUMMARY);
 	debug->Release();
 	clearUp(immediateContext);
+
 	return 0;
 }

@@ -27,7 +27,6 @@
 		cameraPos->Release();
 		geometryShader->Release();
 		shadowmap->ShutDown();
-		
 	}
 
 	void ShaderData::Initialize(ID3D11Device* device, std::string modelVSByteCode)

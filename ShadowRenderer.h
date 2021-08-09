@@ -1,5 +1,4 @@
 #pragma once
-#include "D3D11Help.h"
 #include "D3D11Helper.h"
 #include "ShaderData.h"
 #include "Model.h"
@@ -15,8 +14,7 @@ private:
 	ID3D11VertexShader* vertexShader;
 
 	ID3D11Buffer* matrixBuffer;
-
-
+	
 public:
 
 	ShadowRenderer(ID3D11Device* device) :matrixBuffer(nullptr), vertexShader(nullptr)
@@ -55,7 +53,7 @@ public:
 		context->IASetInputLayout(ShaderData::positionOnly_layout);
 		context->VSSetShader(vertexShader, NULL, 0); // VS containting a position 
 		context->PSSetShader(NULL, NULL, 0); // not using a pixelshader
-		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); 
 		context->GSSetShader(nullptr, nullptr, 0);
 
 		XMFLOAT4X4 WVP1;
@@ -66,13 +64,11 @@ public:
 		context->VSSetConstantBuffers(0, 1, &matrixBuffer); // Set the CB for the VS
 		context->IASetVertexBuffers(0, 1, model->GetPositionsBuffer(), &stride, &offset); // Set the VB with the vertex information
 		context->Draw(model->GetVertexCount(), 0); // draw the model for the shadow pass
-
 	}
 
 	void ShutDown()
 	{
 		matrixBuffer->Release();
 		vertexShader->Release();
-
 	}
 };

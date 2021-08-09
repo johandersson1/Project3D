@@ -72,9 +72,6 @@
     <ClInclude Include="ShaderData.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="D3D11Help.h">
-      <Filter>Header Files\Utility</Filter>
-    </ClInclude>
     <ClInclude Include="Timer.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>

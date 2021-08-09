@@ -43,6 +43,7 @@ struct Face
 	Face() = default;
 	Face(Vertex v1, Vertex v2, Vertex v3)
 	{
+		// Using the assignment-operator
 		vertices[0] = v1;
 		vertices[1] = v2;
 		vertices[2] = v3;

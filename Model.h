@@ -6,6 +6,7 @@
 class Model
 {
 private:
+
 	Mesh mesh;
 	XMMATRIX worldMatrix;
 
@@ -32,6 +33,7 @@ public:
 		  XMVECTOR rotation = { 0.0f,0.0f,0.0f }, XMVECTOR scale = { 1.0f, 1.0f, 1.0f });
 	~Model();
 
+	// For the game
 	bool complete = false;
 
 	ID3D11Buffer* waterBuffer;
@@ -42,7 +44,8 @@ public:
 		vertexBuffer->Release();
 		positionsBuffer->Release();
 		mesh.Shutdown();
-		//waterBuffer->Release();
+		if (waterBuffer)
+			waterBuffer->Release();
 	}
 
 

@@ -69,7 +69,6 @@ LightResult LightCalculation(float4 P, float3 N, float4 D, float4 S)
 
 float4 main(PixelInput input) : SV_Target
 {
-    
     float3 normal = normalTexture.Sample(wrapSampler, input.tex).xyz;
     float4 albedo = diffuseAlbedoTexture.Sample(wrapSampler, input.tex);
     float4 worldPos = worldPosTexture.Sample(wrapSampler, input.tex);
@@ -83,7 +82,7 @@ float4 main(PixelInput input) : SV_Target
     
     float4 lightClip = lightClipPos.Sample(wrapSampler, input.tex);
     
-   //SHADOWS
+    //SHADOWS
     lightClip.xyz /= lightClip.w;
     float depth = lightClip.z;
     float2 tx = float2(0.5f * lightClip.x + 0.5f, -0.5f * lightClip.y + 0.5); // [-1,1] => [0, 1]

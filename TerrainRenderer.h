@@ -1,6 +1,5 @@
 #pragma once
 #include "Model.h"
-#include "D3D11Help.h"
 #include "D3D11Helper.h"
 #include "ShaderData.h"
 #include <fstream>

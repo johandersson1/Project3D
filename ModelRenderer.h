@@ -1,6 +1,5 @@
 #pragma once
 #include "Model.h"
-#include "D3D11Help.h"
 #include "D3D11Helper.h"
 #include "ShaderData.h"
 #include <fstream>
@@ -110,7 +109,7 @@ public:
 	
 	void Render(ID3D11Device* device, ID3D11DeviceContext* context, Model* model, bool water, bool rotation)
 	{
-		// Get the WorldMatrix, store and update the buffer for the model
+		// Get the WorldMatrix, store and update the buffer for the model (Transposed WorldMatrix HLSL is columnmayor)
 		XMStoreFloat4x4(&matrices.worldSpace,XMMatrixTranspose( model->GetWorldMatrix()));
 		XMMATRIX WVP = XMMatrixTranspose(model->GetWorldMatrix() * ShaderData::viewMatrix * ShaderData::perspectiveMatrix);
 		XMStoreFloat4x4(&matrices.WVP, WVP);
@@ -119,7 +118,7 @@ public:
 		// Set the inputlayout, VS and topology
 		context->IASetInputLayout(ShaderData::model_layout);
 		context->VSSetShader(vertexShader, NULL, 0);
-		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); // TriangleList, otherwise the models are broken (something to do with draw-order maybe)
 		
 		// Water specific stuff
 		if (water == true)
