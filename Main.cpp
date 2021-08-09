@@ -10,7 +10,6 @@
 #include "ModelRenderer.h"
 #include "TerrainRenderer.h"
 #include "ShadowRenderer.h"
-#include "WaterRenderer.h"
 
 // For the console
 #include<io.h>
@@ -27,6 +26,12 @@ void RedirectIOToConsole()
 	fp = _fdopen(hConsole, "w");
 
 	freopen_s(&fp, "CONOUT$", "w", stdout);
+}
+
+void clearUp(ID3D11DeviceContext* immediateContext)
+{
+	immediateContext->ClearState();
+	immediateContext->Flush();
 }
 
 // Function to clear the window
@@ -55,7 +60,7 @@ void clearView(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rt
 // Update function to update the camera, the directional light, cameramodel and water
 void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera,
 	ParticleSystem* particlesystem, DirectionalLight& dirLight, ID3D11Buffer* dirLightBuffer, Model* water, Model* cameraModel,
-	const std::vector<Model*> models)
+	const std::vector<Model*> models, Model* ball)
 {
 	camera.Update(dt); // Update the camera 
 	particlesystem->Update(immediateContext, dt); // Update the particles
@@ -67,14 +72,43 @@ void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera,
 														 // (Directionallights dont have a positions, only used to represent where the light is coming from
 	cameraModel->Update(); // Update the mesh
 
+	bool max = false;
+
+	XMFLOAT4 tempPos;
+	XMStoreFloat4(&tempPos, ball->GetPosition());
+
+	if (ball->complete == false)
+		tempPos.y += 3 * dt;
+	
+	if (tempPos.y >= 8.0f)
+		tempPos.y = 1.0f;
+
+	if (GetAsyncKeyState('R'))
+	{
+		if (tempPos.y > 3.5f && tempPos.y < 4.5f)
+		{
+			std::cout << "CONGRATULATIONS, YOU STOPPED THE BALL AT THE RIGHT PLACE" << std::endl;
+			ball->complete = true;
+		}
+		else
+			std::cout << "FAILED TO STOP THE BALL AT THE RIGHT PLACE" << std::endl;
+	}
+
+	XMVECTOR pos = XMVectorSet(tempPos.x, tempPos.y, tempPos.z, tempPos.z);
+	ball->SetTranslation(pos);
+	ball->Update();
+
+	water->WaterSettings(DirectX::XMFLOAT2(-0.1f, 0.1f), dt); // Function for the water UV animation
+	UpdateBuffer(immediateContext, *water->GetWaterBuffer(), water->GetUVOffset()); // Update the buffer containing the data of UVs for the water
+
+
+	// POSITIONS
+	//std::cout << tempPos.y << std::endl;
 	// Variable to used to print the position of the light (used when debugging)
 	/*XMFLOAT3 xPos;
 	XMStoreFloat3(&xPos, dirLight.GetPosition());
 	std::cout << xPos.x << " " << xPos.y << " " << xPos.z << std::endl; */
 
-	
-	water->WaterSettings(DirectX::XMFLOAT2(-0.1f, 0.1f), dt); // Function for the water UV animation
-	UpdateBuffer(immediateContext, *water->GetWaterBuffer(), water->GetUVOffset()); // Update the buffer containing the data of UVs for the water
 }
 
 // Geometry Pass for deferred rendering (and shadows)
@@ -113,8 +147,7 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	immediateContext->DSSetSamplers(1, 1, &clampSampler);
 	immediateContext->RSSetState(rasterizerStateSolid);
 	immediateContext->GSSetShader(ShaderData::geometryShader, nullptr, 0);
-
-	
+		
 	clearView(immediateContext, rtv, dsView, gBuffer); 	// Clear the window for next render pass
 
 	// Render the models using different renderers (mRenderer, tRendererm pRenderer)
@@ -200,7 +233,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	ID3D11InputLayout* renderTargetMeshInputLayout;		// Input layout for the quad covering the sqreen							
 	ID3D11Buffer* screenQuadMesh;						// Quad covering the screen used in the deferred rendering- light pass
 
-
+	// GAME
+	std::cout << "PRESS R TO TRY TO STOP THE BALL (GREEN GOOD, RED BAD)" << std::endl;
 
 	//Gbuffer struct
 	GeometryBuffer gBuffer;
@@ -258,6 +292,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	Model* sword = new Model(device, "sword", { 8.0f, 1.5f, -7.0f }, { -XM_PIDIV4, XM_PIDIV2, 0 }, { 0.7f, 0.7, 0.7f });
 	models.push_back(sword);
 
+	Model* ball = new Model(device, "ball", { 9.0f, 0.0f, 8.5f }, { 0.0f, 0.0f, 0 }, { 0.5f, 0.5f, 0.5f });
+	models.push_back(ball);
+
+	Model* board = new Model(device, "board", { 8.5f, 0.0f, 9.0f }, { 0.0f, XM_PIDIV4, 0 }, { 0.5f, 0.5f, 0.5f });
+	models.push_back(board);
+
 	Model* terrain = new Model(device, "Ground", { 0.0f, 0.0f, 0 }, { 0.0f, 0.0f, 0.0f }, { 7.0f, 7.0f, 7.0f });
 	terrain->SetDisplacementTexture(device, "Models/Ground/Displacement2.png");
 	terrain->AddTexture(device, "lava.jpg");
@@ -287,7 +327,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 			DispatchMessage(&msg);
 		}
 
-		update(immediateContext, dt, camera, particlesystem, dirLight, dirLightBuffer, water, cameraModel, models);
+		update(immediateContext, dt, camera, particlesystem, dirLight, dirLightBuffer, water, cameraModel, models, ball);
 	
 		ShaderData::Update(immediateContext, camera, dirLight);
 
@@ -326,6 +366,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	terrain->Shutdown();
 	water->waterBuffer->Release();
 	water->Shutdown();
+	ball->Shutdown();
+	board->Shutdown();
 
 	delete bike;
 	delete dust;
@@ -334,6 +376,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	delete water;
 	delete cameraModel;
 	delete terrain;
+	delete board;
+	delete ball;
 	
 	pRenderer->ShutDown();
 	tRenderer->ShutDown();
@@ -374,6 +418,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	device->QueryInterface(__uuidof(ID3D11Debug), (void**)&debug);
 	debug->ReportLiveDeviceObjects(D3D11_RLDO_SUMMARY);
 	debug->Release();
-
+	clearUp(immediateContext);
 	return 0;
 }

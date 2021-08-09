@@ -32,6 +32,8 @@ public:
 		  XMVECTOR rotation = { 0.0f,0.0f,0.0f }, XMVECTOR scale = { 1.0f, 1.0f, 1.0f });
 	~Model();
 
+	bool complete = false;
+
 	ID3D11Buffer* waterBuffer;
 	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* positionsBuffer;
@@ -53,6 +55,7 @@ public:
 	ID3D11Buffer** GetMTLBuffer() { return &this->mesh.mtlBuffer; }
 	ID3D11Buffer** GetWaterBuffer() { return &this->waterBuffer; }
 	ID3D11Buffer** GetPositionsBuffer() { return &this->positionsBuffer; }
+	XMVECTOR GetPosition() { return this->transform.translation; }
 	XMFLOAT2* GetUVOffset() { return &this->offsetUV; }
 	const Material::Data& GetMaterial() {return this->mesh.material.data;}
 	// Varför två GetTexture, för att hålla koll på count eller? 
