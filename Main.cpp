@@ -163,7 +163,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	const UINT HEIGHT = 900;
 	HWND window; 
 
-	RedirectIOToConsole(); // Console window-function
+	// Console window-function
+	RedirectIOToConsole();
 
 	// Camera
 	Camera camera(XM_PIDIV4, (float)WIDTH / (float)HEIGHT, 0.1, 100, 2.5, 5.0f, { 15.0f, 10.0f ,0.0f });
@@ -196,9 +197,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	ID3D11VertexShader* lightVShaderDeferred;		    // Vertex Shader for the light pass ( quad ) 
 	ID3D11PixelShader* pShaderDeferred;					// Pixel Shader for the geometry pass
 	ID3D11VertexShader* vShaderDeferred;				// Vertex Shader for the geometry pass
-	ID3D11InputLayout* renderTargetMeshInputLayout;		// Input layout for the quad covering the sqreen
-													
+	ID3D11InputLayout* renderTargetMeshInputLayout;		// Input layout for the quad covering the sqreen							
 	ID3D11Buffer* screenQuadMesh;						// Quad covering the screen used in the deferred rendering- light pass
+
+
 
 	//Gbuffer struct
 	GeometryBuffer gBuffer;
@@ -209,16 +211,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		gBuffer.gBufferTexture[i] = nullptr;
 	}
 
+	// Directional light (both lighting and shadows)
 	DirectionalLight dirLight(14, { 0, 1,0 });
 	ID3D11Buffer* dirLightBuffer;
 
-
+	// Creates the window
 	if (!SetupWindow(hInstance, WIDTH, HEIGHT, nCmdShow, window))
 	{
 		std::cerr << "Failed to setup window!" << std::endl;
 		return -1; 
 	}
-
+	// Setups DirectX11
 	if (!SetupD3D11(WIDTH, HEIGHT, window, device, immediateContext, 
 		swapChain, rtv, dsTexture, dsView, viewport, gBuffer))
 	{
