@@ -12,7 +12,8 @@ using namespace DirectX;
 
 class ShaderData
 {
-	friend class ParticleRenderer;
+	// A friend class can access private and protected members of another class in which it is declared as friend
+	friend class ParticleRenderer; 
 	friend class ModelRenderer;
 	friend class TerrainRenderer;
 	friend class ShadowRenderer;

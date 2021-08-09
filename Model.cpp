@@ -46,7 +46,6 @@ void Model::Update()
 	XMMATRIX rotation = XMMatrixRotationRollPitchYawFromVector(transform.rotation);
 	XMMATRIX scale = XMMatrixScalingFromVector(transform.scale);
 	worldMatrix = scale * rotation * translation;
-
 }
 
 void Model::WaterSettings(XMFLOAT2 movementSpeedUv, float deltatime)

@@ -8,7 +8,7 @@
 using namespace DirectX;
 class ParticleSystem
 {
-	friend class ParticleRenderer;
+	friend class ParticleRenderer; 
 private:
 	struct Particle
 	{
