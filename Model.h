@@ -58,7 +58,7 @@ public:
 	XMVECTOR GetPosition() { return this->transform.translation; }
 	XMFLOAT2* GetUVOffset() { return &this->offsetUV; }
 	const Material::Data& GetMaterial() {return this->mesh.material.data;}
-	// Varför två GetTexture, för att hålla koll på count eller? 
+
 	ID3D11ShaderResourceView** GetTexture() { return this->mesh.material.diffuseTexture.Get(); }
 	// Blend
 	ID3D11ShaderResourceView** GetTextures(int count) { return this->mesh.material.GetDiffuseTextures(count); }
