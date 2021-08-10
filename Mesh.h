@@ -40,6 +40,8 @@ public:
 	ID3D11Buffer* GetMTLBuffer() { return this->mtlBuffer; }
 
 	int vertexCount = 0;
+
+	// Struct from geometry
 	std::vector<Face> faces;
 	std::vector<XMFLOAT3> positions;
 

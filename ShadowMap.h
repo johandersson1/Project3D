@@ -30,7 +30,7 @@ public:
 		texDesc.Height = size;
 		texDesc.MipLevels = 1;
 		texDesc.ArraySize = 1;
-		texDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
+		texDesc.Format = DXGI_FORMAT_R24G8_TYPELESS; // A two-component, 32-bit typeless format that supports 24 bits for the red channel and 8 bits for the green channel.
 		texDesc.SampleDesc.Count = 1;
 		texDesc.SampleDesc.Quality = 0;
 		texDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -49,8 +49,8 @@ public:
 
 		D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
 		dsvDesc.Flags = 0;
-		dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-		dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+		dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; // A 32-bit z-buffer format that supports 24 bits for depth and 8 bits for stencil.
+		dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D; // The resource will be accessed as a 2D texture.
 		dsvDesc.Texture2D.MipSlice = 0;
 		hr = (device->CreateDepthStencilView(depthmap, &dsvDesc, &depthMapDSV));
 		if ((FAILED(hr)))
@@ -70,7 +70,7 @@ public:
 			return;
 		}
 
-		depthmap->Release(); // View saves as a referemce to the texture so we can release our reference
+		depthmap->Release(); // View saves as a reference to the texture so we can release our reference
 
 	}
 	void ShutDown()
@@ -96,7 +96,7 @@ public:
 		context->OMSetRenderTargets(1, renderTargets, depthMapDSV);
 		context->ClearDepthStencilView(depthMapDSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-		// Cleares the 
+		// Clears the depth-stencil resource.
 	}
 
 };

@@ -9,12 +9,11 @@ class ShadowRenderer
 private:
 	const unsigned int stride = sizeof(XMFLOAT3);
 	const unsigned int offset = 0;
-
+	// Only using the vertexshader
 	const std::string vs_path = "x64/Debug/ShadowMapVertex.cso";
 	ID3D11VertexShader* vertexShader;
 
 	ID3D11Buffer* matrixBuffer;
-	
 public:
 
 	ShadowRenderer(ID3D11Device* device) :matrixBuffer(nullptr), vertexShader(nullptr)
@@ -51,16 +50,18 @@ public:
 	{
 		// Shadows use an positions only input layout to determin the position of each pixel
 		context->IASetInputLayout(ShaderData::positionOnly_layout);
-		context->VSSetShader(vertexShader, NULL, 0); // VS containting a position 
+		context->VSSetShader(vertexShader, NULL, 0); // VS containing a position 
 		context->PSSetShader(NULL, NULL, 0); // not using a pixelshader
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); 
 		context->GSSetShader(nullptr, nullptr, 0);
 
+		// Lightmatrix has got the dirLight.GetMatrix() with the matrix = XMMatrixTranspose(viewMatrix * ortographicMatrix) from DirectionalLight 
+
 		XMFLOAT4X4 WVP1;
 		XMMATRIX WVP = ShaderData::lightMatrix * XMMatrixTranspose(model->GetWorldMatrix());
-		
+		// WVP1 is the address at which to store the data from WVP, WVP is the matrix contining the data that we want to store 
 		XMStoreFloat4x4(&WVP1, WVP);
-		UpdateBuffer(context, matrixBuffer, WVP1); // Update the buffer containing the models TRANSPOSED worldmatrix (unsure why the matrix has to be transposed)
+		UpdateBuffer(context, matrixBuffer, WVP1); // Update the buffer containing the models TRANSPOSED worldmatrix, To write out column-major data it requires the XMMATRIX be transposed
 		context->VSSetConstantBuffers(0, 1, &matrixBuffer); // Set the CB for the VS
 		context->IASetVertexBuffers(0, 1, model->GetPositionsBuffer(), &stride, &offset); // Set the VB with the vertex information
 		context->Draw(model->GetVertexCount(), 0); // draw the model for the shadow pass

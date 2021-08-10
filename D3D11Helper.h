@@ -18,7 +18,7 @@ struct GeometryBuffer
     ID3D11RenderTargetView* gBuffergBufferRtv[NROFBUFFERS];
     ID3D11ShaderResourceView* gBufferSrv[NROFBUFFERS];
 };
-
+// Default UpdateBuffer with map,unmap and specify the buffer and the data that we need 
 template<typename T>
 inline void UpdateBuffer(ID3D11DeviceContext* context, ID3D11Buffer*& buffer, const T& data)
 {
@@ -34,7 +34,7 @@ inline void UpdateBuffer(ID3D11DeviceContext* context, ID3D11Buffer*& buffer, co
 	memcpy(mappedResource.pData, &data, sizeof(data));
 	context->Unmap(buffer, 0);
 }
-
+// Default CreateBuffer, specify which buffer and size we want for it
 inline void CreateBuffer(ID3D11Device* device, ID3D11Buffer*& buffer, unsigned int size)
 {
 	D3D11_BUFFER_DESC bufferDesc = {};

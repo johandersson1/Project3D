@@ -7,7 +7,7 @@ class Texture
 private:
     ID3D11ShaderResourceView* texture;
 public:
-
+    
     ID3D11ShaderResourceView** Get() { return &this->texture; }
 
     Texture() = default;

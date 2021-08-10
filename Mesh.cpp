@@ -21,7 +21,7 @@ bool Mesh::LoadModel(std::string name)
 	{
 		std::string text;
 		reader >> text;
-		if (text == "v")
+		if (text == "v") // v is a vertex
 		{
 			std::array<float, 3> vertex;
 
@@ -32,7 +32,7 @@ bool Mesh::LoadModel(std::string name)
 			v.push_back(vertex);
 		}
 
-		if (text == "vt")
+		if (text == "vt") // vt is the texture coordinate of one vertex
 		{
 			std::array<float, 2> texCoord;
 
@@ -44,7 +44,7 @@ bool Mesh::LoadModel(std::string name)
 			vt.push_back(texCoord);
 		}
 
-		if (text == "vn")
+		if (text == "vn") // vn is the normal of one vertex
 		{
 			std::array<float, 3> normal;
 
@@ -55,7 +55,7 @@ bool Mesh::LoadModel(std::string name)
 			vn.push_back(normal);
 		}
 
-		if (text == "f")
+		if (text == "f") // f is a face
 		{
 			std::array<std::array<int, 3>, 3> face;
 

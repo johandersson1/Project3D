@@ -7,6 +7,7 @@
 class TerrainRenderer
 {
 private:
+	// Struct in Geometry
 	const unsigned int stride = sizeof(Vertex);
 	const unsigned int offset = 0;
 	//Deferred
@@ -24,10 +25,14 @@ private:
 	ID3D11Buffer* matricesBuffer;
 	ID3D11Buffer* lightBuffer;
 
-	struct Matrices { XMFLOAT4X4 viewPerspective; XMFLOAT4X4 worldSpace; }matrices;
+	struct Matrices
+	{ 
+		XMFLOAT4X4 viewPerspective; 
+		XMFLOAT4X4 worldSpace; 
+	}matrices;
 public:
 
-	TerrainRenderer(ID3D11Device* device) :matrices(), hullShader(nullptr), domainShader(nullptr), vertexShader(nullptr)
+	TerrainRenderer(ID3D11Device* device) :matrices(), hullShader(nullptr), domainShader(nullptr), vertexShader(nullptr), geometryShader(nullptr), pixelShader(nullptr)
 	{
 		CreateBuffer(device, matricesBuffer, sizeof(Matrices));
 		CreateBuffer(device, lightBuffer, sizeof(XMMATRIX));
@@ -57,7 +62,6 @@ public:
 			return;
 		}
 
-
 		shaderData.clear();
 		reader.close();
 
@@ -81,7 +85,6 @@ public:
 			std::cout << "FAILED TO CREATE PIXEL SHADER" << std::endl;
 			return;
 		}
-
 
 		shaderData.clear();
 		reader.close();
@@ -132,6 +135,7 @@ public:
 		shaderData.clear();
 		reader.close();
 
+		// GEOMETRY SHADER
 		reader.open(gs_path, std::ios::binary | std::ios::beg);
 		if (!reader.is_open())
 		{
@@ -166,7 +170,6 @@ public:
 		geometryShader->Release();
 		matricesBuffer->Release();
 		lightBuffer->Release();
-		
 	}
 
 	void Render(ID3D11DeviceContext* context, Model* model)

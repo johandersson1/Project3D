@@ -29,19 +29,17 @@ ParticleSystem::ParticleSystem(ID3D11Device* device, int maxParticles, float max
 
 }
 
-
-
 void ParticleSystem::Update(ID3D11DeviceContext* context, float dt)
 {
-    positions.clear(); // clear the data within the positions-vector
+    positions.clear(); // Clear the data within the positions-vector
 
-	// If we dont have max amount or particles - create a new one
+	// If we dont have max amount of particles - create a new one
     if (particleCount < maxParticles)
     {
-		// add the deltatime to make the particles spawn "smoothly"
+		// Add the deltatime to make the particles spawn "smoothly"
         timeSinceLastParticle += dt;
 
-		// create 
+		// Create 
         if (timeSinceLastParticle >= timeBetweenParticles)
         {
             timeSinceLastParticle = 0;

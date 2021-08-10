@@ -7,6 +7,7 @@
 class ModelRenderer
 {
 private:
+	// Struct in Geometry
 	const unsigned int stride = sizeof(Vertex);
 	const unsigned int offset = 0;
 	std::string byteCode;
@@ -21,7 +22,13 @@ private:
 
 	ID3D11Buffer* matricesBuffer;
 	ID3D11Buffer* lightBuffer;
-	struct Matrices { XMFLOAT4X4 WVP; XMFLOAT4X4 worldSpace; }matrices;
+
+	struct Matrices 
+	{ 
+		XMFLOAT4X4 WVP; 
+		XMFLOAT4X4 worldSpace; 
+	}matrices;
+
 public: 
 	
 	ModelRenderer(ID3D11Device* device)
@@ -109,7 +116,7 @@ public:
 	
 	void Render(ID3D11Device* device, ID3D11DeviceContext* context, Model* model, bool water, bool rotation)
 	{
-		// Get the WorldMatrix, store and update the buffer for the model (Transposed WorldMatrix HLSL is columnmayor)
+		// Get the WorldMatrix, store and update the buffer for the model ( Transposed WorldMatrix HLSL is columnmayor )
 		XMStoreFloat4x4(&matrices.worldSpace,XMMatrixTranspose( model->GetWorldMatrix()));
 		XMMATRIX WVP = XMMatrixTranspose(model->GetWorldMatrix() * ShaderData::viewMatrix * ShaderData::perspectiveMatrix);
 		XMStoreFloat4x4(&matrices.WVP, WVP);
@@ -144,9 +151,7 @@ public:
 		// If the model isnt water, use the "regular" PS for each model
 		else
 		{
-			
 			context->PSSetShader(pixelShader, NULL, 0);
-
 		}
 		// Update the lightbuffer for each model, used for the shadows (sent to the clipspace target in the PS)
 		UpdateBuffer(context, lightBuffer, ShaderData::lightMatrix);
@@ -161,16 +166,15 @@ public:
 		D3D11_MAPPED_SUBRESOURCE mappedBuffer = {};
 
 		// Get, update and set the MTL data for each model
-
 		HRESULT hr = context->Map(*model->GetMTLBuffer(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedBuffer);
 		if FAILED(hr)
 		{
 			std::cout << "FAILED TO UPDATE MTL BUFFER" << std::endl;
 			return;
 		}
-
 		memcpy(mappedBuffer.pData, &model->GetMaterial(), sizeof(model->GetMaterial()));
 		context->Unmap(*model->GetMTLBuffer(), 0);
+
 		context->PSSetConstantBuffers(0, 1, model->GetMTLBuffer());
 		context->IASetVertexBuffers(0, 1, model->GetBuffer(), &stride, &offset);
 		context->Draw(model->GetVertexCount(), 0);

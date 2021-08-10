@@ -8,6 +8,9 @@ class Model
 private:
 
 	Mesh mesh;
+	// The World matrix is unique for every object within your world, 
+	// and is responsible for transforming the vertices of an object from its own local space, 
+	// to a common coordinate system called world space
 	XMMATRIX worldMatrix;
 
 	// Water-effect
@@ -15,7 +18,7 @@ private:
 	XMFLOAT2 offsetUV;
 
 	std::string name;
-
+	// Struct created and declared here 
 	struct Transform
 	{
 		XMVECTOR translation;
@@ -39,17 +42,9 @@ public:
 	ID3D11Buffer* waterBuffer;
 	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* positionsBuffer;
-	void Shutdown()
-	{
-		vertexBuffer->Release();
-		positionsBuffer->Release();
-		mesh.Shutdown();
-		if (waterBuffer)
-			waterBuffer->Release();
-	}
-
-
+	
 	void Update();
+	// Getting the vertexCount ( needed for draw function in ModelRenderer.h )
 	int GetVertexCount() { return this->mesh.vertexCount; }
 
 	XMMATRIX GetWorldMatrix() { return this->worldMatrix; }
@@ -76,4 +71,13 @@ public:
 	XMVECTOR GetRotation() { return this->transform.rotation; }
 	// Water
 	void WaterSettings(XMFLOAT2 movementSpeedUv, float deltatime);
+
+	void Shutdown()
+	{
+		mesh.Shutdown();
+		vertexBuffer->Release();
+		positionsBuffer->Release();
+		if (waterBuffer)
+			waterBuffer->Release();
+	}
 };

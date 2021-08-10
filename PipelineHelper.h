@@ -11,7 +11,7 @@ struct Vertex2
     float pos[3];
     float uv[2];
     float norm[3];
-
+    // std::array is a container that encapsulates fixed size arrays
     Vertex2(const std::array<float, 3>& position, const std::array<float, 2>& uvCoords, const std::array<float, 3>& normal)
     {
         for (int i = 0; i < 3; ++i)
