@@ -144,10 +144,9 @@ public:
 		// If the model isnt water, use the "regular" PS for each model
 		else
 		{
-			
 			context->PSSetShader(pixelShader, NULL, 0);
-
 		}
+		
 		// Update the lightbuffer for each model, used for the shadows (sent to the clipspace target in the PS)
 		UpdateBuffer(context, lightBuffer, ShaderData::lightMatrix);
 		context->PSSetConstantBuffers(1, 1, &lightBuffer); // set the CB containing light info
@@ -172,7 +171,9 @@ public:
 		memcpy(mappedBuffer.pData, &model->GetMaterial(), sizeof(model->GetMaterial()));
 		context->Unmap(*model->GetMTLBuffer(), 0);
 		context->PSSetConstantBuffers(0, 1, model->GetMTLBuffer());
-		context->IASetVertexBuffers(0, 1, model->GetBuffer(), &stride, &offset);
+		context->IASetVertexBuffers(0, 1, model->GetBuffer(), &stride, &offset);				// Sends vertex buffer, per model, to the input assembly 
+																								// ( first stage of the graphics pipeline ) that tells the vertex 
+																								// shader how to read the data
 		context->Draw(model->GetVertexCount(), 0);
 
 	}

@@ -1,3 +1,6 @@
+
+// Geometry Pass Pixel Shader
+
 Texture2D diffuseTex : register(t0);
 
 SamplerState mySampler : register(s0);
