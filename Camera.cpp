@@ -1,14 +1,16 @@
-#include "Camera.h"
+﻿#include "Camera.h"
 char debugText[100];
 
 Camera::Camera()
 	:pitch(0), yaw(0), rotationSpeed(0), speed(0)
 {
-	this->up = { 0,1,0 };
-	this->forward = { 0,0,1 };
-	this->right = { 1,0,0 };
-	this->viewMatrix = XMMatrixLookAtLH(XMLoadFloat3(&position), forward, up);
-
+	this->up = { 0,1,0 }; // Y
+	this->forward = { 0,0,1 }; // Z
+	this->right = { 1,0,0 }; 
+	// Builds a view matrix for a left-handed coordinate system using a camera position, an up direction, and a focal point, XMLoadFloat3 = Loads an XMFLOAT3 into an XMVECTOR
+	// kanske ändra namnet (forward)? check this!
+	this->viewMatrix = XMMatrixLookAtLH(XMLoadFloat3(&position), forward, up); 
+	// Builds a left-handed perspective projection matrix based on a field of view, XM_PIDIV4 =  π/4
 	perspectiveMatrix = XMMatrixPerspectiveFovLH(XM_PIDIV4, (float)1024 / float(576), 0.1f, 100.0f);
 
 	this->direction = forward;
