@@ -24,15 +24,14 @@ public:
 		float range;
 	}data;
 
-public:
-
 	DirectionalLight() = default;
 	DirectionalLight(float range, XMVECTOR direction)
 	{
 		data.range = range;
+		// ortographicMatrix = Builds a custom orthogonal projection matrix for a left-handed coordinate system.
 		ortographicMatrix = XMMatrixOrthographicOffCenterLH(-range, range, -range, range, -range, range * 12.0f);
 	}
-
+	// Förklara mer om de olika delarna som uppdateras här! 
 	void Update(float dt)
 	{
 		//currentAngle += dt * 0.35f * dir;
