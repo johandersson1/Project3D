@@ -1,23 +1,28 @@
+
+// Geometry Pass Vertex Shader
+
 cbuffer constantBuffer : register(b1)
 {
-    float4x4 WVP; //projectionMatrix
-    float4x4 worldSpace; // worldMatrix
+    float4x4 WVP;			//projectionMatrix
+    float4x4 worldSpace;    // worldMatrix
 }
 
 struct VertexInput
 {
-    float3 position : POSITION; //deferred
+	// The vertices of the model has a position, texcoord (UV), and a normal
+
+    float3 position : POSITION; 
     float2 tex : TEXCOORD;
     float3 normal : NORMAL;
 };
 
 struct PixelInput
 {
+	// 
     float4 position : SV_POSITION;
     float2 tex : TEXCOORD;
     float3 normal : NORMAL;
     float3 worldPos : WORLDPOS;
-
 };
 
 PixelInput main(VertexInput input)
