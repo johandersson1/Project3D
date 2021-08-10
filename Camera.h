@@ -31,8 +31,6 @@ private:
 
 	float pickingDistance;
 	XMVECTOR direction;
-
-
 public:
 	Camera();
 	Camera(float FOV, float aspectRatio, float nearZ, float farZ, float rotationSpeed, float speed, XMFLOAT3 position);

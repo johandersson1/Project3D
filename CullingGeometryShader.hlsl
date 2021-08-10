@@ -31,7 +31,6 @@ void main(triangle GSINPUT input[3] : SV_POSITION, inout TriangleStream<GSOOUTPU
     //Calc normal from vertices
     float3 faceNormal = normalize(cross(p1 - p0, p2 - p0));
 
-
     // Get dot value, if value >= 0.0f the triangle is frontfaced. (p0 = (0,0,0) - (p0), a vector from pov to point).
     float dotVal = dot(faceNormal, -p0);
 

@@ -37,7 +37,6 @@ Camera::Camera(float FOV, float aspectRatio, float nearZ, float farZ, float rota
 
 }
 
-
 void Camera::MoveRight(float dt)
 {
 	XMVECTOR forwardVec = XMVector3Transform(forward,

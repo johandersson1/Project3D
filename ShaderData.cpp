@@ -18,7 +18,7 @@
 	ID3D11Buffer* ShaderData::cameraPos;
 
 	ShadowMap* ShaderData::shadowmap;
-
+	 
 	void ShaderData::Shutdown()
 	{
 		positionOnly_vs->Release();
@@ -72,11 +72,11 @@
 		std::cout << "FAILED TO CREATE POSITION INPUT LAYOUT" << std::endl;
 	}
 
-	//array av element med en beskrivning
+	// Array av element med en beskrivning
 	D3D11_INPUT_ELEMENT_DESC inputDesc[] =
 	{
 		//name, index, format, slot, byteOffset, inputSlotClass, stepRate
-		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}, //Input data is per-vertex data.
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}, // Input data is per-vertex data.
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};

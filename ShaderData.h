@@ -31,7 +31,7 @@ private:
 	static ID3D11InputLayout* model_layout;
 	// For GeometryShader 
 	static std::string gs_path;
-	// Used for the backfaced culling? check here!
+	// Used for the backfaced culling
 	static ID3D11Buffer* cameraPos;
 
 public:
