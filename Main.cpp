@@ -409,11 +409,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	immediateContext->Release();
 	device->Release();
 
-	ID3D11Debug* debug;
-	device->QueryInterface(__uuidof(ID3D11Debug), (void**)&debug);
-	debug->ReportLiveDeviceObjects(D3D11_RLDO_SUMMARY);
-	debug->Release();
-	clearUp(immediateContext);
+	//ID3D11Debug* debug;
+	//device->QueryInterface(__uuidof(ID3D11Debug), (void**)&debug);
+	//debug->ReportLiveDeviceObjects(D3D11_RLDO_SUMMARY);
+	//debug->Release();
+	//clearUp(immediateContext);
 
 	return 0;
 }
