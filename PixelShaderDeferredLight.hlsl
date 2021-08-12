@@ -90,7 +90,7 @@ float4 main(PixelInput input) : SV_Target
     float sm = shadowMapTex.Sample(wrapSampler, tx).r;
     float shadow = (sm + 0.005 < depth) ? sm : 1.0f;								 // If sm (closest) < clip-depth there is a primitive castings shadow.
 																					 // else - no shadows
-    if (diffuseMaterial.x < 0)
+    if (diffuseMaterial.x < 0)														 // For the particles
     {
         return albedo;
     }

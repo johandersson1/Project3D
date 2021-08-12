@@ -21,11 +21,11 @@ void main(
 {
 	// point input[i] =  one single point used per particle
 
-    float3 up = float3(0.0f, 1.0f, 0.0f); // Up-vector
-    float3 lookAt = cameraPosition - input[0].xyz; // Vector from the point to camera
+    float3 up = float3(0.0f, 1.0f, 0.0f);									// Up-vector
+    float3 lookAt = cameraPosition - input[0].xyz;						    // Vector from the point to camera
     lookAt.y = 0.0f;
-    lookAt = normalize(lookAt); // Set y to 0 since we are using the Up-vector to determine which way is up
-    float3 right = cross(up, lookAt); // Get the right-vector used to determine where the vertices of the quad will be placed
+    lookAt = normalize(lookAt);											    // Set y to 0 since we are using the Up-vector to determine which way is up
+    float3 right = cross(up, lookAt);										// Get the right-vector used to determine where the vertices of the quad will be placed
     
 	// The quad itself and the positions of the vertices of the quad
     float4 corners[4];

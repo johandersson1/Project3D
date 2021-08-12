@@ -17,9 +17,11 @@ struct HS_OUTPUT
 // Output patch constant data.
 struct HS_CONSTANT_DATA_OUTPUT
 {
-	float EdgeTessFactor[3]			: SV_TessFactor; // e.g. would be [4] for a quad domain
-	float InsideTessFactor			: SV_InsideTessFactor; // e.g. would be Inside[2] for a quad domain
-	// TODO: change/add other stuff
+	// Minumum amount possible
+
+	float EdgeTessFactor[3]			: SV_TessFactor;				// e.g. would be [4] for a quad domain
+	float InsideTessFactor			: SV_InsideTessFactor;			// e.g. would be Inside[2] for a quad domain
+
 };
 
 #define NUM_CONTROL_POINTS 3
@@ -35,7 +37,7 @@ HS_CONSTANT_DATA_OUTPUT CalcHSPatchConstants(
 	Output.EdgeTessFactor[0] = 
 		Output.EdgeTessFactor[1] = 
 		Output.EdgeTessFactor[2] = 
-		Output.InsideTessFactor = 5; // e.g. could calculate dynamic tessellation factors instead
+		Output.InsideTessFactor = 10; // e.g. could calculate dynamic tessellation factors instead
 
 	return Output;
 }

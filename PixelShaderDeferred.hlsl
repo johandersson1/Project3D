@@ -3,7 +3,7 @@
 
 Texture2D diffuseTex : register(t0);
 
-SamplerState mySampler : register(s0);
+SamplerState wrapSampler : register(s0);
 SamplerState clampSampler : register(s1);
 
 struct PixelInput
@@ -46,7 +46,7 @@ PixelOutput main(PixelInput input)
     output.position = input.position;
     output.normal = input.normal;
     output.worldPos = input.worldPos;
-    output.diffuse = diffuseTex.Sample(mySampler, input.tex);
+    output.diffuse = diffuseTex.Sample(wrapSampler, input.tex);
     output.ambientMTL = kA;
     output.diffuseMTL = kD;
     output.specularMTL = kS;

@@ -58,7 +58,7 @@ PixelOutput main(PixelInput input)
     // MTL
     
     output.ambientMTL = kA;
-    output.diffuseMTL = float4(-1.0f, -1.0f, -1.0f, 0.0f);
+	output.diffuseMTL = kD; //float4(-1.0f, -1.0f, -1.0f, 0.0f);
     output.specularMTL = kS;
 
     return output;

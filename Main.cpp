@@ -65,14 +65,6 @@ void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera,
 	camera.Update(dt); // Update the camera 
 	particlesystem->Update(immediateContext, dt); // Update the particles
 
-	dirLight.Update(dt); // Update the directionalLight
-	UpdateBuffer(immediateContext, dirLightBuffer, dirLight.data); // Update the buffer for the directional light
-
-	cameraModel->SetTranslation(dirLight.GetPosition()); // Set the lightCameraModels position to the lights "position" 
-														 // (Directionallights dont have a positions, only used to represent where the light is coming from
-	cameraModel->Update(); // Update the mesh
-
-
 	// Stuff for the game
 	bool max = false;
 
@@ -244,7 +236,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	}
 
 	// Directional light (both lighting and shadows)
-	DirectionalLight dirLight(14, { 0, 1,0 });
+	DirectionalLight dirLight(14);
 	ID3D11Buffer* dirLightBuffer;
 
 	// Creates the window
@@ -273,7 +265,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	
 	// Creating a new model for each mesh in the scene
 
-	Model* bike = new Model(device, "biker", { 3.0f, 2.0f, 0.0f }, { XM_PIDIV4, 0.0f, XM_PIDIV4 }, { 0.5f, 0.5f, 0.5f });
+	Model* bike = new Model(device, "biker", { 3.0f, 3.0f, 0.0f }, { XM_PIDIV4, 0.0f, XM_PIDIV4 }, { 0.5f, 0.5f, 0.5f });
 	models.push_back(bike);
 	
 	Model* cameraModel = new Model(device, "cube", { 0.0f, -5.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, {0.05f, 0.05f, 0.05f});
@@ -287,7 +279,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 	Model* water = new Model(device, "water", { -5.0f, 5.0f, 8.0f }, { 0.0f, XM_PIDIV2 - 0.623598776f , -XM_PIDIV2 }, { 10.0f, 10.0f, 10.0f });
 	
-	Model* sword = new Model(device, "sword", { 8.0f, 1.5f, -7.0f }, { -XM_PIDIV4, XM_PIDIV2, 0 }, { 0.7f, 0.7, 0.7f });
+	Model* sword = new Model(device, "sword", { 8.0f, 3.0f, -7.0f }, { -XM_PIDIV4, XM_PIDIV2, 0 }, { 0.7f, 0.7, 0.7f });
 	models.push_back(sword);
 
 	Model* ball = new Model(device, "ball", { 9.0f, 0.0f, 8.5f }, { 0.0f, 0.0f, 0 }, { 0.5f, 0.5f, 0.5f });

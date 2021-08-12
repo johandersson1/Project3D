@@ -16,7 +16,7 @@ struct VertexInput
     float3 normal : NORMAL;
 };
 
-struct PixelInput
+struct VertexOutput
 {
 	// 
     float4 position : SV_POSITION;
@@ -25,9 +25,9 @@ struct PixelInput
     float3 worldPos : WORLDPOS;
 };
 
-PixelInput main(VertexInput input)
+VertexOutput main(VertexInput input)
 {
-    PixelInput output;
+	VertexOutput output;
     
     output.position = float4(input.position, 1);
     output.worldPos = mul(output.position, worldSpace);

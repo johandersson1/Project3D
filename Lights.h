@@ -8,12 +8,6 @@ class DirectionalLight
 {
 private:
 
-	float range;
-	int dir = 1;
-	float currentAngle = 0.7;
-	XMVECTOR position;
-	XMMATRIX viewMatrix;
-	XMMATRIX ortographicMatrix;
 	XMMATRIX matrix = XMMatrixIdentity();
 
 public:
@@ -25,42 +19,23 @@ public:
 	}data;
 
 	DirectionalLight() = default;
-	DirectionalLight(float range, XMVECTOR direction)
+	DirectionalLight(float range)
 	{
 		data.range = range;
 		// ortographicMatrix = Builds a custom orthogonal projection matrix for a left-handed coordinate system.
-		ortographicMatrix = XMMatrixOrthographicOffCenterLH(-range, range, -range, range, -range, range * 12.0f);
-	}
-	// Förklara mer om de olika delarna som uppdateras här! 
-	void Update(float dt)
-	{
-		//currentAngle += dt * 0.35f * dir;
-	/*	if (currentAngle > XM_PI - 0.5f || currentAngle < 0 + 0.5f)
-		{
-			dir *= -1;
-		}*/
-		float x = cos(currentAngle);
-		float y = sin(currentAngle);
+		XMMATRIX ortographicMatrix = XMMatrixOrthographicOffCenterLH(-range, range, -range, range, -range, range * 12.0f);
 
-		XMVECTOR direction = { x, y, 0 };
+		XMVECTOR direction = { 0.75f, 0.65f, 0 };
 		XMVector3Normalize(direction);
 
-		position = direction * data.range;
-
-		XMVECTOR up = { 0 ,1 ,0 };
-
-		if (currentAngle > XM_PIDIV2)
-		{
-			up = { 0, -1, 0 };
-		}
+		XMVECTOR position = direction * data.range;
 
 		XMStoreFloat3(&data.direction, direction);
 
-		this->viewMatrix = XMMatrixLookAtLH(position, { 0,0,0 }, up);
+		XMMATRIX viewMatrix = XMMatrixLookAtLH(position, { 0,0,0 }, { 0 ,1 ,0 });
 		matrix = XMMatrixTranspose(viewMatrix * ortographicMatrix);
 	}
 
-	XMVECTOR GetPosition() { return this->position; }
 
 	XMMATRIX GetMatrix() const { return this->matrix; }
 };

@@ -30,11 +30,12 @@ public:
 		texDesc.Height = size;
 		texDesc.MipLevels = 1;
 		texDesc.ArraySize = 1;
-		texDesc.Format = DXGI_FORMAT_R24G8_TYPELESS; // A two-component, 32-bit typeless format that supports 24 bits for the red channel and 8 bits for the green channel.
+		texDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;									// A two-component, 32-bit typeless format that supports 24 bits for the red channel and 8 bits for the green channel.
+																						// this is how depth is defined
 		texDesc.SampleDesc.Count = 1;
 		texDesc.SampleDesc.Quality = 0;
-		texDesc.Usage = D3D11_USAGE_DEFAULT;
-		texDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+		texDesc.Usage = D3D11_USAGE_DEFAULT;								
+		texDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;		
 		texDesc.CPUAccessFlags = 0;
 		texDesc.MiscFlags = 0;
 
