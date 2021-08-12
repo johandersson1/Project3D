@@ -83,13 +83,13 @@ float4 main(PixelInput input) : SV_Target
     float4 lightClip = lightClipPos.Sample(wrapSampler, input.tex);
     
     //SHADOWS
-    lightClip.xyz /= lightClip.w;
-    float depth = lightClip.z;
-    float2 tx = float2(0.5f * lightClip.x + 0.5f, -0.5f * lightClip.y + 0.5); // [-1,1] => [0, 1]
+    lightClip.xyz /= lightClip.w;													 // Complete projection by doing division by w. --- Frank Luna 21.4.5 The Shadow Factor
+    float depth = lightClip.z;														 // Depth in the NDC-Space --- Frank Luna 21.4.5 The Shadow Factor --- Normalized Device Coordinates - Figure out what obscures what
+    float2 tx = float2(0.5f * lightClip.x + 0.5f, -0.5f * lightClip.y + 0.5);        // [-1,1] => [0, 1]
 
     float sm = shadowMapTex.Sample(wrapSampler, tx).r;
-    float shadow = (sm + 0.005 < depth) ? sm : 1.0f; //if closest depth (sample) < clip-depth there is a primitive castings shadow.
-    
+    float shadow = (sm + 0.005 < depth) ? sm : 1.0f;								 // If sm (closest) < clip-depth there is a primitive castings shadow.
+																					 // else - no shadows
     if (diffuseMaterial.x < 0)
     {
         return albedo;

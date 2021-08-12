@@ -51,9 +51,9 @@ public:
 		// Shadows use an positions only input layout to determin the position of each pixel
 		context->IASetInputLayout(ShaderData::positionOnly_layout);
 		context->VSSetShader(vertexShader, NULL, 0); // VS containing a position 
-		context->PSSetShader(NULL, NULL, 0); // not using a pixelshader
-		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); 
-		context->GSSetShader(nullptr, nullptr, 0);
+		context->PSSetShader(NULL, NULL, 0); // not using a pixelshader since the shadow does not need it
+		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); // Trianglelist
+		context->GSSetShader(NULL, NULL, 0); // Not using a GS for the shadowpass
 
 		// Lightmatrix has got the dirLight.GetMatrix() with the matrix = XMMatrixTranspose(viewMatrix * ortographicMatrix) from DirectionalLight 
 

@@ -349,7 +349,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		gBuffer.gBufferTexture[i]->Release();
 	}
 
-
 	// Clear the vector
 	models.clear();
 

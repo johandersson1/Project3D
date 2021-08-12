@@ -26,7 +26,7 @@ bool CreateInterfaces(UINT width, UINT height, HWND window, ID3D11Device*& devic
     UINT flags = 0;
     if (_DEBUG)
         flags = 0;
-            //flags = D3D11_CREATE_DEVICE_DEBUG;
+		//flags = D3D11_CREATE_DEVICE_DEBUG;
 
     D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_0 }; //Targets features supported by Direct3D 11.0, including shader model 5.
 
