@@ -38,7 +38,7 @@ void clearUp(ID3D11DeviceContext* immediateContext)
 void clearView(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsView, const GeometryBuffer& gBuffer)
 {
 	// Background Color
-	float clearcolor[4] = { 0.75f, 0.75f, 0.75f,0 };
+	float clearcolor[4] = { 0,0,0,0 };
 
 	// Clean SRVs to clean the OS
 	ID3D11ShaderResourceView* nullSrvs[gBuffer.NROFBUFFERS] = { nullptr };
@@ -277,7 +277,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	Model* statue = new Model(device, "Statue", { 8.0f, 1.5f, 7.0f }, { 0.0f, XM_PIDIV2 + 0.623598776f, 0.0f }, { 0.25f, 0.25f, 0.25f });
 	models.push_back(statue);
 
-	Model* water = new Model(device, "water", { -5.0f, 5.0f, 8.0f }, { 0.0f, XM_PIDIV2 - 0.623598776f , -XM_PIDIV2 }, { 10.0f, 10.0f, 10.0f });
+	Model* water = new Model(device, "water", { 0.0f, 5.0f, 8.0f }, { 0.0f, XM_PIDIV2 - 0.623598776f , -XM_PIDIV2 }, { 10.0f, 10.0f, 10.0f });
 	
 	Model* sword = new Model(device, "sword", { 8.0f, 3.0f, -7.0f }, { -XM_PIDIV4, XM_PIDIV2, 0 }, { 0.7f, 0.7, 0.7f });
 	models.push_back(sword);
