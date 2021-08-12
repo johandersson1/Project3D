@@ -76,11 +76,11 @@ bool Mesh::LoadModel(std::string name)
 				// f 1/2/3 4/5/6 7/8/9
 				//    v0	v1	  v2     position, texcoord(uv), normal
 
-				face[0][i] = std::stoi(temp.substr(0, temp.find("/"))); // position 
+				face[0][i] = std::stoi(temp.substr(0, temp.find("/")));								 // position 
 
 				substr = temp.substr(temp.find("/") + 1, temp.length());
-				face[1][i] = std::stoi(substr.substr(0, substr.find("/")));
-				face[2][i] = std::stoi(substr.substr(substr.find("/") + 1, substr.length()));
+				face[1][i] = std::stoi(substr.substr(0, substr.find("/")));							 // texcoord
+				face[2][i] = std::stoi(substr.substr(substr.find("/") + 1, substr.length()));		 // normal
 			}
 
 			f.push_back(face);

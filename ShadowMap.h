@@ -50,8 +50,8 @@ public:
 
 		D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
 		dsvDesc.Flags = 0;
-		dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;									// A 32-bit z-buffer format that supports 24 bits for depth and 8 bits for stencil.
-		dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;							// The resource will be accessed as a 2D texture.
+		dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;								 // A 32-bit z-buffer format that supports 24 bits for depth and 8 bits for stencil.
+		dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;						 // The resource will be accessed as a 2D texture.
 		dsvDesc.Texture2D.MipSlice = 0;
 		hr = (device->CreateDepthStencilView(depthmap, &dsvDesc, &depthMapDSV));
 		if ((FAILED(hr)))
@@ -98,4 +98,3 @@ public:
 		// Clears the depth-stencil resource.
 	}
 };
-
