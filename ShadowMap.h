@@ -86,7 +86,7 @@ public:
 	// Function to bind (initialize?) the shadowmap
 	void Bind(ID3D11DeviceContext* context)
 	{
-		// Set the viewport and the shader resource to the specific SR that we are going to write the depth texture to
+		// Set the viewport and the shader resource to the specific SRV that we are going to write the depth texture to
 		ID3D11ShaderResourceView* null = nullptr;
 		context->PSSetShaderResources(8, 1, &null);
 		context->RSSetViewports(1, &viewPort);

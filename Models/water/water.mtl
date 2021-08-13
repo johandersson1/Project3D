@@ -3,6 +3,6 @@ illum 4
 Kd 1 1 1
 Ka 1 1 1 
 Tf 1.00 1.00 1.00
-map_Kd lava.jpg
+map_Kd water.jpg
 Ni 1.00
 Ks 0.3 0.3 0.3

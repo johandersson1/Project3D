@@ -42,7 +42,6 @@ DS_OUTPUT main(
 	float3 domain : SV_DomainLocation,
 	const OutputPatch<DS_INPUT, NUM_CONTROL_POINTS> patch)
 {
-    
     DS_OUTPUT output;
 	output.position = patch[0].position * domain.x + patch[1].position * domain.y + patch[2].position * domain.z;
     output.tex = patch[0].tex * domain.x + patch[1].tex * domain.y + patch[2].tex * domain.z;

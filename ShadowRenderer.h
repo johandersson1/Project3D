@@ -48,14 +48,14 @@ public:
 	}
 	void Render(ID3D11DeviceContext* context, Model* model)
 	{
-		// Shadows use an positions only input layout to determin the position of each pixel
+		// Shadows use an positions only input layout to determine the position of each pixel
 		context->IASetInputLayout(ShaderData::positionOnly_layout);
-		context->VSSetShader(vertexShader, NULL, 0); // VS containing a position 
-		context->PSSetShader(NULL, NULL, 0); // not using a pixelshader since the shadow does not need it
+		context->VSSetShader(vertexShader, NULL, 0);							// VS containing a position 
+		context->PSSetShader(NULL, NULL, 0);									// not using a pixelshader since the shadow does not need it
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); // Trianglelist
-		context->GSSetShader(NULL, NULL, 0); // Not using a GS for the shadowpass
+		context->GSSetShader(NULL, NULL, 0);									// Not using a GS for the shadowpass
 
-		// Lightmatrix has got the dirLight.GetMatrix() with the matrix = XMMatrixTranspose(viewMatrix * ortographicMatrix) from DirectionalLight 
+		// ShaderData::lightMatrix has got the dirLight.GetMatrix() with the matrix = XMMatrixTranspose(viewMatrix * ortographicMatrix) from DirectionalLight 
 
 		XMFLOAT4X4 WVP1;
 		XMMATRIX WVP = ShaderData::lightMatrix * XMMatrixTranspose(model->GetWorldMatrix());
@@ -66,7 +66,7 @@ public:
 		context->IASetVertexBuffers(0, 1, model->GetPositionsBuffer(), &stride, &offset); // Set the VB with the vertex information
 		context->Draw(model->GetVertexCount(), 0); // draw the model for the shadow pass
 	}
-
+	// Release the things
 	void ShutDown()
 	{
 		matrixBuffer->Release();

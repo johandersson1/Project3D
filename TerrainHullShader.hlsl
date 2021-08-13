@@ -42,11 +42,12 @@ HS_CONSTANT_DATA_OUTPUT CalcHSPatchConstants(
 	return Output;
 }
 // Patch Control point Function
-[domain("tri")]
-[partitioning("fractional_odd")]
-[outputtopology("triangle_cw")]
-[outputcontrolpoints(3)]
-[patchconstantfunc("CalcHSPatchConstants")]
+
+[domain("tri")]									// triangle
+[partitioning("fractional_odd")]				// Partitioning fractional_odd = smooth transition when	increasing or decreasing the tesselation amount, rounds to odds numbers
+[outputtopology("triangle_cw")]					// clocwise triangles
+[outputcontrolpoints(3)]						// three vertices
+[patchconstantfunc("CalcHSPatchConstants")]		
 HS_OUTPUT main( 
 	InputPatch<HS_INPUT, NUM_CONTROL_POINTS> input,
 	uint i : SV_OutputControlPointID,

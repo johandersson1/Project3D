@@ -24,7 +24,6 @@ struct PixelOutput
     float4 diffuseMTL : SV_TARGET5;
     float4 specularMTL : SV_TARGET6;
     float4 lightClipPos : SV_TARGET7;
-    
 };
 
 cbuffer mtlData : register(b0)

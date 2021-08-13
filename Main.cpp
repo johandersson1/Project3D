@@ -14,7 +14,8 @@
 // For the console
 #include<io.h>
 #include<fcntl.h>
-// Console Function -- found online
+
+// Console Function -- from canvas
 void RedirectIOToConsole()
 {
 	AllocConsole();
@@ -28,46 +29,48 @@ void RedirectIOToConsole()
 	freopen_s(&fp, "CONOUT$", "w", stdout);
 }
 
-void clearUp(ID3D11DeviceContext* immediateContext)
-{
-	immediateContext->ClearState();
-	immediateContext->Flush();
-}
-
 // Function to clear the window
 void clearView(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsView, const GeometryBuffer& gBuffer)
 {
 	// Background Color
-	float clearcolor[4] = { 0.5f, 0.5f, 0.5f,0 };
+	float backGroundColor[4] = { 0.5f, 0.5f, 0.5f, 0 };
 
 	// Clean SRVs to clean the OS
 	ID3D11ShaderResourceView* nullSrvs[gBuffer.NROFBUFFERS] = { nullptr };
 	immediateContext->PSSetShaderResources(0, gBuffer.NROFBUFFERS, nullSrvs);
-	
-	// Reset the RTVs
-	immediateContext->OMSetRenderTargets(gBuffer.NROFBUFFERS, gBuffer.gBuffergBufferRtv, dsView);
 
+	// Clear the DSV
+	immediateContext->ClearDepthStencilView(dsView, D3D11_CLEAR_DEPTH, 1, 0);
+
+	// Reset the RTVs
 	for (int i = 0; i < gBuffer.NROFBUFFERS; i++)
 	{
 		// Clear the RTVs with the BG-color
-		immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[i], clearcolor);
+		immediateContext->ClearRenderTargetView(gBuffer.gBuffergBufferRtv[i], backGroundColor);
 
 	}
-	// Clear the DSV
-	immediateContext->ClearDepthStencilView(dsView, D3D11_CLEAR_DEPTH , 1, 0);
+	immediateContext->OMSetRenderTargets(gBuffer.NROFBUFFERS, gBuffer.gBuffergBufferRtv, dsView);
 }
 
 // Update function to update the camera, the directional light, cameramodel and water
 void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera,
 	ParticleSystem* particlesystem, DirectionalLight& dirLight, ID3D11Buffer* dirLightBuffer, Model* water, Model* cameraModel,
-	const std::vector<Model*> models, Model* ball)
+	const std::vector<Model*> models, Model* ball, Model* bike)
 {
-	camera.Update(dt); // Update the camera 
-	particlesystem->Update(immediateContext, dt); // Update the particles
+	camera.Update(dt);									// Update the camera 
+	particlesystem->Update(immediateContext, dt);		// Update the particles
+
+	// Rotation of bike-model
+	XMFLOAT4 tempRot;
+	XMStoreFloat4(&tempRot, bike->GetRotation());
+
+	tempRot.y += 1.3f * dt;
+
+	XMVECTOR rot = XMVectorSet(tempRot.x, tempRot.y, tempRot.z, tempRot.z);
+	bike->SetRotation(rot);
+	bike->Update();
 
 	// Stuff for the game
-	bool max = false;
-
 	XMFLOAT4 tempPos;
 	XMStoreFloat4(&tempPos, ball->GetPosition());
 
@@ -77,7 +80,7 @@ void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera,
 	if (tempPos.y >= 8.0f)
 		tempPos.y = 1.0f;
 
-	if (GetAsyncKeyState('R'))
+	if (GetAsyncKeyState('R' ))
 	{
 		if (tempPos.y > 3.5f && tempPos.y < 4.5f)
 		{
@@ -93,15 +96,7 @@ void update(ID3D11DeviceContext* immediateContext, float dt, Camera& camera,
 	ball->Update();
 
 	// Water
-	water->WaterSettings(DirectX::XMFLOAT2(-0.1f, 0.1f), dt); // Function for the water UV animation
-	
-	// POSITIONS
-	//std::cout << tempPos.y << std::endl;
-	// Variable to used to print the position of the light (used when debugging)
-	/*XMFLOAT3 xPos;
-	XMStoreFloat3(&xPos, dirLight.GetPosition());
-	std::cout << xPos.x << " " << xPos.y << " " << xPos.z << std::endl; */
-
+	water->WaterSettings(DirectX::XMFLOAT2(-0.1f, 0.2f), dt);		// Function for the water UV animation
 }
 
 // Geometry Pass for deferred rendering (and shadows)
@@ -155,20 +150,21 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 
 // Light pass -- renders the geometry and lighting on the final screen quad
 void RenderLightPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsView, D3D11_VIEWPORT& viewport,
-	ID3D11PixelShader* pShaderDeferredRender,ID3D11VertexShader* vShaderDeferred,
-	ID3D11ShaderResourceView* textureSRV, ID3D11SamplerState* sampler, GeometryBuffer gBuffer, ID3D11PixelShader* lightPShaderDeferred, 
-	ID3D11VertexShader* lightVShaderDeferred, ID3D11InputLayout* renderTargetMeshInputLayout, ID3D11Buffer* screenQuadMesh, DirectionalLight &dirLight, 
-	ID3D11Buffer* dirLightBuffer, Camera camera, ID3D11Buffer* cameraPos, ID3D11SamplerState* clampSampler)
+	ID3D11PixelShader* pShaderDeferredRender,ID3D11VertexShader* vShaderDeferred, ID3D11ShaderResourceView* textureSRV, ID3D11SamplerState* sampler, 
+	GeometryBuffer gBuffer, ID3D11PixelShader* lightPShaderDeferred, ID3D11VertexShader* lightVShaderDeferred, 
+	ID3D11InputLayout* renderTargetMeshInputLayout, ID3D11Buffer* screenQuadMesh, DirectionalLight &dirLight, 
+	ID3D11Buffer* dirLightBuffer, Camera camera, ID3D11Buffer* cameraPos, ID3D11SamplerState* clampSampler
+)
 {
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 
-	immediateContext->OMSetRenderTargets(1, &rtv, dsView); 
-	immediateContext->IASetVertexBuffers(0, 1, &screenQuadMesh, &stride, &offset);
-	immediateContext->IASetInputLayout(renderTargetMeshInputLayout);
-	immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-	immediateContext->VSSetShader(lightVShaderDeferred, nullptr, 0);
-	immediateContext->PSSetShader(lightPShaderDeferred, nullptr, 0);
+	immediateContext->OMSetRenderTargets(1, &rtv, dsView);										// Backbuffer
+	immediateContext->IASetVertexBuffers(0, 1, &screenQuadMesh, &stride, &offset);				// quads vertexbuffer set
+	immediateContext->IASetInputLayout(renderTargetMeshInputLayout);							// set the Input Layout
+	immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);			// triangletstrip since we know how many points we have
+	immediateContext->VSSetShader(lightVShaderDeferred, nullptr, 0);							// setting the shaders
+	immediateContext->PSSetShader(lightPShaderDeferred, nullptr, 0);							// setting the shaders
 
 	immediateContext->PSSetShaderResources(0, gBuffer.NROFBUFFERS, gBuffer.gBufferSrv);
 	immediateContext->PSSetShaderResources(8, 1, ShaderData::shadowmap->GetSRV());
@@ -209,11 +205,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	ID3D11RasterizerState* rasterizerStateWireFrame;	// RasterizerState - wireframe
 	ID3D11RasterizerState* rasterizerStateSolid;		// RasterizerState - solid
 
-	ID3D11Texture2D* texture;
-
-	ID3D11ShaderResourceView* textureSRV;				 // Indicates the (sub resources) a shader can access during rendering, could be a constant buffer, a texture buffer, or a texture
-	ID3D11SamplerState* wrapSampler;					 // Wrap sampler - wraps or "loops" the texture
-	ID3D11SamplerState* clampSampler;					 // Clamp sampler - clamps the UV values [0.0 - 1.0]
+	ID3D11ShaderResourceView* textureSRV;				// Indicates the (sub resources) a shader can access during rendering, could be a constant buffer, a texture buffer, or a texture
+	ID3D11SamplerState* wrapSampler;					// Wrap sampler - wraps or "loops" the texture
+	ID3D11SamplerState* clampSampler;					// Clamp sampler - clamps the UV values [0.0 - 1.0]
 
 	//Deferred
 	ID3D11PixelShader* lightPShaderDeferred;			// Pixel Shader for the light pass ( quad )
@@ -236,7 +230,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	}
 
 	// Directional light (both lighting and shadows)
-	DirectionalLight dirLight(14);
+	DirectionalLight dirLight(14); 
 	ID3D11Buffer* dirLightBuffer;
 
 	// Creates the window
@@ -253,7 +247,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		return -2;
 	}
 
-	if (!SetupPipeline(device, texture, textureSRV, wrapSampler, pShaderDeferred, vShaderDeferred, lightPShaderDeferred, lightVShaderDeferred,
+	if (!SetupPipeline(device, textureSRV, wrapSampler, pShaderDeferred, vShaderDeferred, lightPShaderDeferred, lightVShaderDeferred,
 		renderTargetMeshInputLayout, screenQuadMesh, rasterizerStateWireFrame, rasterizerStateSolid, clampSampler))
 	{
 		std::cerr << "Failed to setup pipeline!" << std::endl;
@@ -265,13 +259,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	
 	// Creating a new model for each mesh in the scene
 
-	Model* bike = new Model(device, "biker", { 3.0f, 3.0f, 0.0f }, { XM_PIDIV4, 0.0f, XM_PIDIV4 }, { 0.5f, 0.5f, 0.5f });
+	Model* bike = new Model(device, "biker", { 3.0f, 5.0f, 0.0f }, { 0.0f, 0.0f, XM_PIDIV4 }, { 0.6f, 0.6f, 0.6f });
 	models.push_back(bike);
 	
 	Model* cameraModel = new Model(device, "cube", { 0.0f, -5.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, {0.05f, 0.05f, 0.05f});
 	models.push_back(cameraModel);
 
-	Model* dust = new Model(device, "buildings", { -10.0f, -0.2f, -5.0f }, { 0.0f, 0.0f, 0.0f }, { 1, 1, 1 });
+	Model* dust = new Model(device, "buildings", { -10.0f, -0.2f, -5.0f }, { 0.0f, 0.0f, 0.0f }, { 1.1f, 1.1f, 1.1f });
 	models.push_back(dust);
 
 	Model* statue = new Model(device, "Statue", { 8.0f, 1.5f, 7.0f }, { 0.0f, XM_PIDIV2 + 0.623598776f, 0.0f }, { 0.25f, 0.25f, 0.25f });
@@ -290,7 +284,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 	Model* terrain = new Model(device, "Ground", { 0.0f, 0.0f, 0 }, { 0.0f, 0.0f, 0.0f }, { 7.0f, 7.0f, 7.0f });
 	terrain->SetDisplacementTexture(device, "Models/Ground/Displacement2.png");
-	terrain->AddTexture(device, "lava.jpg");
+	terrain->AddTexture(device, "rock.jpg");
 	
 	ParticleSystem* particlesystem = new ParticleSystem(device, 200, 5, 1, { 60, 25, 60 }, { 0, 20, 0 });
 	ParticleRenderer* pRenderer = new ParticleRenderer(device);
@@ -317,7 +311,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 			DispatchMessage(&msg);
 		}
 
-		update(immediateContext, dt, camera, particlesystem, dirLight, dirLightBuffer, water, cameraModel, models, ball);
+		update(immediateContext, dt, camera, particlesystem, dirLight, dirLightBuffer, water, cameraModel, models, ball, bike);
 	
 		ShaderData::Update(immediateContext, camera, dirLight);
 
@@ -389,7 +383,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	renderTargetMeshInputLayout->Release();
 	lightVShaderDeferred->Release();
 	lightPShaderDeferred->Release();
-	texture->Release();
 	clampSampler->Release();
 	wrapSampler->Release();
 	textureSRV->Release();
@@ -399,12 +392,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	swapChain->Release();
 	immediateContext->Release();
 	device->Release();
-
-	//ID3D11Debug* debug;
-	//device->QueryInterface(__uuidof(ID3D11Debug), (void**)&debug);
-	//debug->ReportLiveDeviceObjects(D3D11_RLDO_SUMMARY);
-	//debug->Release();
-	//clearUp(immediateContext);
 
 	return 0;
 }

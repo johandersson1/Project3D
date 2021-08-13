@@ -60,11 +60,6 @@ public:
 	void BindTextures(ID3D11DeviceContext* context, int startSlot = 0) { int slot = startSlot; for (auto texture : mesh.material.diffuseTexures) { texture->Bind(context, slot); slot++; } }
 	void BindDisplacementTexture(ID3D11DeviceContext* context, int startSlot = 0, shaders shader = shaders::DS) { mesh.material.displacementTexture->Bind(context, startSlot, shader); }
 
-
-	// Blend
-	//ID3D11ShaderResourceView** GetTextures(int count) { return this->mesh.material.GetDiffuseTextures(count); }
-	// Terrain
-	//ID3D11ShaderResourceView** GetDisplacementTexture() { return this->mesh.material.displacementTexture.Get(); }
 	void AddTexture(ID3D11Device* device, std::string fileName) { this->mesh.AddDiffuseTexture(device, fileName); }
 	void SetDisplacementTexture(ID3D11Device* device, std::string path) { this->mesh.material.displacementTexture = new Texture(device, path); }
 	// Setting Tranlation, Rotation and Scale
