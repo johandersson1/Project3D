@@ -33,9 +33,9 @@ public:
 	}
 	~Mesh();
 	// Getting the DiffuseTexture and DisplacementTexture from Material.h (Material.h has included Texture.h)
-	void AddDiffuseTexture(ID3D11Device* device, std::string fileName) { material.diffuseTexures.push_back(Texture(device, "Models/" + name + "/" + fileName)); }
+	void AddDiffuseTexture(ID3D11Device* device, std::string fileName) { material.diffuseTexures.emplace_back(new Texture(device, "Models/" + name + "/" + fileName)); }
 		
-	void AddDisplacementTexture(ID3D11Device* device, std::string fileName) { material.displacementTexture = Texture(device, "Models/" + name + "/" + fileName); }
+	//void AddDisplacementTexture(ID3D11Device* device, std::string fileName) { material.displacementTexture = new Texture(device, "Models/" + name + "/" + fileName); }
 
 	ID3D11Buffer* GetMTLBuffer() { return this->mtlBuffer; }
 

@@ -38,7 +38,7 @@ void clearUp(ID3D11DeviceContext* immediateContext)
 void clearView(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsView, const GeometryBuffer& gBuffer)
 {
 	// Background Color
-	float clearcolor[4] = { 0,0,0,0 };
+	float clearcolor[4] = { 0.5f, 0.5f, 0.5f,0 };
 
 	// Clean SRVs to clean the OS
 	ID3D11ShaderResourceView* nullSrvs[gBuffer.NROFBUFFERS] = { nullptr };
@@ -121,7 +121,7 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	immediateContext->GSSetShader(NULL, NULL, 0);
 
 	// Loops through the models-vector and renders shadows
-	for (auto model : models)
+	for (auto& model : models)
 		sRenderer->Render(immediateContext, model);
 
 	// Same thing for the terrain and water, they are not in the same vector as the other "regular" models
@@ -143,7 +143,7 @@ void RenderGBufferPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTarget
 	clearView(immediateContext, rtv, dsView, gBuffer); 	// Clear the window for next render pass
 
 	// Render the models using different renderers (mRenderer, tRendererm pRenderer)
-	for (auto model : models)
+	for (auto& model : models)
 		mRenderer->Render(device, immediateContext, model, false, false);
 
 	mRenderer->Render(device, immediateContext, water, true, false);

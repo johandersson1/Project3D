@@ -5,6 +5,8 @@
 #include <iostream>
 #include <DirectXMath.h>
 
+enum class shaders{ DS, PS};
+
 // The G-Buffer with NROFBUFFERS and the views & textures
 // Geometry buffer, the information about our geometry is stored in a gBuffer
 struct GeometryBuffer 

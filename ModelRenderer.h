@@ -157,7 +157,8 @@ public:
 		// Update the lightbuffer for each model, used for the shadows (sent to the clipspace target in the PS)
 		UpdateBuffer(context, lightBuffer, ShaderData::lightMatrix);
 		context->PSSetConstantBuffers(1, 1, &lightBuffer); // set the CB containing light info
-		context->PSSetShaderResources(0, 1, model->GetTextures(1)); // Set the shader resource with the specific texture used for the model
+		//context->PSSetShaderResources(0, 1, model-(1)); // Set the shader resource with the specific texture used for the modelm
+		model->BindTextures(context);
 		context->VSSetConstantBuffers(1, 1, &matricesBuffer); // set the CB for the vs with the WVP and worldspace matrices
 		// DS and HS not used for regular models
 		context->HSSetShader(NULL, NULL, 0);

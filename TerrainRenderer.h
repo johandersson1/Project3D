@@ -195,9 +195,14 @@ public:
 		UpdateBuffer(context, lightBuffer, ShaderData::lightMatrix);
 		context->PSSetConstantBuffers(0, 1, &lightBuffer);
 		// Textures used
-		context->PSSetShaderResources(0, 2, model->GetTextures(2));
-		context->PSSetShaderResources(2, 1, model->GetDisplacementTexture());
-		context->DSSetShaderResources(0, 1, model->GetDisplacementTexture());
+		//context->PSSetShaderResources(0, 2, model->GetTextures(2));
+		model->BindTextures(context);
+		model->BindDisplacementTexture(context);
+		model->BindDisplacementTexture(context, 2, shaders::PS);
+
+	/*	context->PSSetShaderResources(2, 1, model->GetDisplacementTexture());
+		context->DSSetShaderResources(0, 1, model->GetDisplacementTexture());*/
+
 		// Set the Vertexbuffer, draw and reset the shaders for the next renderer (particles)
 		context->IASetVertexBuffers(0, 1, model->GetBuffer(), &stride, &offset);
 		context->Draw(model->GetVertexCount(), 0);

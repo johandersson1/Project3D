@@ -57,13 +57,16 @@ public:
 	XMFLOAT2* GetUVOffset() { return &this->offsetUV; }
 	const Material::Data& GetMaterial() {return this->mesh.material.data;}
 
-	ID3D11ShaderResourceView** GetTexture() { return this->mesh.material.diffuseTexture.Get(); }
+	void BindTextures(ID3D11DeviceContext* context, int startSlot = 0) { int slot = startSlot; for (auto texture : mesh.material.diffuseTexures) { texture->Bind(context, slot); slot++; } }
+	void BindDisplacementTexture(ID3D11DeviceContext* context, int startSlot = 0, shaders shader = shaders::DS) { mesh.material.displacementTexture->Bind(context, startSlot, shader); }
+
+
 	// Blend
-	ID3D11ShaderResourceView** GetTextures(int count) { return this->mesh.material.GetDiffuseTextures(count); }
+	//ID3D11ShaderResourceView** GetTextures(int count) { return this->mesh.material.GetDiffuseTextures(count); }
 	// Terrain
-	ID3D11ShaderResourceView** GetDisplacementTexture() { return this->mesh.material.displacementTexture.Get(); }
+	//ID3D11ShaderResourceView** GetDisplacementTexture() { return this->mesh.material.displacementTexture.Get(); }
 	void AddTexture(ID3D11Device* device, std::string fileName) { this->mesh.AddDiffuseTexture(device, fileName); }
-	void SetDisplacementTexture(ID3D11Device* device, std::string path) { this->mesh.material.displacementTexture = Texture(device, path); }
+	void SetDisplacementTexture(ID3D11Device* device, std::string path) { this->mesh.material.displacementTexture = new Texture(device, path); }
 	// Setting Tranlation, Rotation and Scale
 	void SetTranslation(XMVECTOR translation) {this->transform.translation = translation; }
 	void SetRotation(XMVECTOR rotation) { this->transform.rotation = rotation; }
