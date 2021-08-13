@@ -41,7 +41,7 @@ HS_CONSTANT_DATA_OUTPUT CalcHSPatchConstants(
 
 	return Output;
 }
-
+// Patch Control point Function
 [domain("tri")]
 [partitioning("fractional_odd")]
 [outputtopology("triangle_cw")]
