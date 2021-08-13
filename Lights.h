@@ -22,10 +22,11 @@ public:
 	DirectionalLight(float range)
 	{
 		data.range = range;
-		// ortographicMatrix = Builds a custom orthogonal projection matrix for a left-handed coordinate system.
+		// OrtographicMatrix = Builds a custom orthogonal projection matrix for a left-handed coordinate system.
 		XMMATRIX ortographicMatrix = XMMatrixOrthographicOffCenterLH(-range, range, -range, range, -range, range * 12.0f);
 
 		XMVECTOR direction = { 0.75f, 0.65f, 0 };
+		// Returns the normalized version of a 3D vector
 		XMVector3Normalize(direction);
 
 		XMVECTOR position = direction * data.range;
