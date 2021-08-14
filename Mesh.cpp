@@ -1,6 +1,7 @@
 #include "Mesh.h"
 #include <fstream>
 
+// OBJ reader
 bool Mesh::LoadModel(std::string name)
 {
 	std::vector<std::array<float, 3>> v;
@@ -10,12 +11,11 @@ bool Mesh::LoadModel(std::string name)
 
 	std::ifstream reader;
 
-	reader.open("Models/" + name + "/" + name + ".obj", std::ios::beg);
+	reader.open("Models/" + name + "/" + name + ".obj", std::ios::beg); // Open the .obj-file
 
 	if (!reader.is_open())
 		return false;
 
-	int counter = 0;
 	std::string line;
 	while (std::getline(reader, line))
 	{
@@ -25,9 +25,9 @@ bool Mesh::LoadModel(std::string name)
 		{
 			std::array<float, 3> vertex;
 
-			reader >> vertex[0];
-			reader >> vertex[1];
-			reader >> vertex[2];
+			reader >> vertex[0];	// load the first float to index 0
+			reader >> vertex[1];	// load the second float to index 1
+			reader >> vertex[2];	// load the thrid float to index 2
 
 			v.push_back(vertex);
 		}
@@ -36,10 +36,10 @@ bool Mesh::LoadModel(std::string name)
 		{
 			std::array<float, 2> texCoord;
 
-			reader >> texCoord[0];
-			reader >> texCoord[1];
-
-			texCoord[1] = 1 - texCoord[1];
+			reader >> texCoord[0]; 	  // load the first float to index 0
+			reader >> texCoord[1];	  // load the second float to index 1
+									  
+			texCoord[1] = 1 - texCoord[1];	// inverting V because directX reads it upsidedown otherwise
 
 			vt.push_back(texCoord);
 		}
@@ -55,7 +55,7 @@ bool Mesh::LoadModel(std::string name)
 			vn.push_back(normal);
 		}
 
-		if (text == "f") // f is a face
+		if (text == "f") // f is a face containing 3 vertices
 		{
 			std::array<std::array<int, 3>, 3> face;
 
@@ -87,6 +87,7 @@ bool Mesh::LoadModel(std::string name)
 		}
 	}
 
+	// Kolla mer -- 2D array?
 	for (int i = 0; i < f.size(); ++i)
 	{
 		std::array<float, 3> pos;
@@ -125,11 +126,12 @@ bool Mesh::LoadModel(std::string name)
 	return true;
 }
 
+// Material Reader
 bool Mesh::LoadMaterial(ID3D11Device* device, std::string name)
 {
 	std::ifstream reader;
 
-	reader.open("Models/" + name + "/" + name + ".mtl", std::ios::beg);
+	reader.open("Models/" + name + "/" + name + ".mtl", std::ios::beg);		// Opens the MTL-file
 
 	if (!reader.is_open())
 		return false;
@@ -141,7 +143,7 @@ bool Mesh::LoadMaterial(ID3D11Device* device, std::string name)
 		std::string text;
 		reader >> text;
 
-		if (text == "Kd")
+		if (text == "Kd")										// Find the diffuse and store it in the struct
 		{
 			XMFLOAT4 diffuse;
 
@@ -153,7 +155,7 @@ bool Mesh::LoadMaterial(ID3D11Device* device, std::string name)
 			material.data.diffuse = diffuse;
 		}
 
-		if (text == "Ka")
+		if (text == "Ka")										// Find the ambient and store it in the struct
 		{
 			XMFLOAT4 ambient;
 
@@ -165,7 +167,7 @@ bool Mesh::LoadMaterial(ID3D11Device* device, std::string name)
 			material.data.ambient = ambient;
 		}
 
-		if (text == "Ks")
+		if (text == "Ks")										// Find the specular and store it in the struct
 		{
 			XMFLOAT4 specular;
 
@@ -177,7 +179,7 @@ bool Mesh::LoadMaterial(ID3D11Device* device, std::string name)
 			material.data.specular = specular;
 		}
 
-		if (text == "map_Kd")
+		if (text == "map_Kd")									// Find the texture used, create it and store it in the material-vector
 		{
 			std::string diffuse;
 			reader >> diffuse;
@@ -186,6 +188,7 @@ bool Mesh::LoadMaterial(ID3D11Device* device, std::string name)
 
 	}
 
+	// Create the buffer contaning the material-data, per model
 	D3D11_BUFFER_DESC bufferDesc = {};
 	bufferDesc.ByteWidth = sizeof(material.data);
 	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -194,17 +197,15 @@ bool Mesh::LoadMaterial(ID3D11Device* device, std::string name)
 	bufferDesc.MiscFlags = 0;
 	bufferDesc.StructureByteStride = 0;
 
-
 	HRESULT hr = device->CreateBuffer(&bufferDesc, nullptr, &mtlBuffer);
 	if FAILED(hr)
 	{
 		std::cout << "FAILED TO CREATE BUFFER" << std::endl;
 	}
-
 	return true;
 }
 
 Mesh::~Mesh()
 {
-	//mtlBuffer->Release();
+	
 }

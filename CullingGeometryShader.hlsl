@@ -41,7 +41,6 @@ void main(triangle GSINPUT input[3] : SV_POSITION, inout TriangleStream<GSOOUTPU
             GSOOUTPUT vertex = input[i];
             output.Append(vertex);
         }
-    }
-       
+    } 
 }
    

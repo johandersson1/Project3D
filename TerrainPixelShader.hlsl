@@ -43,7 +43,7 @@ PSOutput main(PSInput input)
     output.specularMTL = float4(0.2f, 0.2f, 0.2f, 1);
     //output.shadowMap = shadowTexture.Sample(mySampler, input.tex);
   
-    
+    // Sample the textures used for the terrain, [0] = base, [1] = blended texture
     float4 lowColour = textures[0].Sample(wrapSampler, input.tex);
     float4 hiColour = textures[1].Sample(wrapSampler, input.tex);
     float blendValue = blendTexture.Sample(clampSampler, input.tex).r;
@@ -51,7 +51,6 @@ PSOutput main(PSInput input)
     float highAmount = blendValue;
     float lowAmount = 1.0f - blendValue;
     
-
     output.lightClipPos = mul(float4(output.worldPos, 1.0f), lightMatrix);
    
     output.diffuse = highAmount * hiColour + lowAmount * lowColour;

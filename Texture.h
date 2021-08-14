@@ -4,7 +4,6 @@
 #include <DirectXMath.h>
 #include "D3D11Helper.h"
 
-
 class Texture
 {
 private:
@@ -28,7 +27,6 @@ public:
 			break;
 		}
 	}
-
 
     ~Texture() {this->texture->Release(); }
 };
