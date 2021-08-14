@@ -30,8 +30,7 @@ struct Vertex2
     }
 };
 
-bool SetupPipeline(ID3D11Device* device, ID3D11ShaderResourceView*& textureSRV, 
-                   ID3D11SamplerState*& sampler, ID3D11PixelShader*& pShaderDeferred, ID3D11VertexShader*& vShaderDeferred, 
+bool SetupPipeline(ID3D11Device* device, ID3D11SamplerState*& sampler, ID3D11PixelShader*& pShaderDeferred, ID3D11VertexShader*& vShaderDeferred, 
                    ID3D11PixelShader*& lightPShaderDeferred, ID3D11VertexShader*& lightVShaderDeferred, 
                    ID3D11InputLayout*& renderTargetMesh, ID3D11Buffer*& screenQuadMesh, ID3D11RasterizerState*& rasterizerStateWireFrame, 
                    ID3D11RasterizerState*& rasterizerStateSolid, ID3D11SamplerState*& clampSampler);
