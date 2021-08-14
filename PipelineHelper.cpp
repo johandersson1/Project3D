@@ -7,7 +7,6 @@
 #include <string>
 #include <iostream>
 
-
 bool LoadShadersGbuffer(ID3D11Device* device, ID3D11PixelShader*& pShaderDeferred, ID3D11VertexShader*& vShaderDeferred, std::string& defVShaderByteCode)
 {
 	std::string shaderData;
@@ -162,7 +161,7 @@ bool RenderMeshInputLayout(ID3D11Device* device, ID3D11InputLayout*& renderTarge
     return !FAILED(hr);
 }
 
-bool CreateSamplerState(ID3D11Device* device, ID3D11SamplerState*& sampler, ID3D11SamplerState*& clampSampler)
+bool CreateSamplerState(ID3D11Device* device, ID3D11SamplerState*& wrapSampler, ID3D11SamplerState*& clampSampler)
 {
 	D3D11_SAMPLER_DESC desc;
 	desc.Filter = D3D11_FILTER_ANISOTROPIC; // Improve image quality
@@ -179,7 +178,7 @@ bool CreateSamplerState(ID3D11Device* device, ID3D11SamplerState*& sampler, ID3D
 	// Upper end of the mipmap range to clamp access to, 
 	// where 0 is the largest and most detailed mipmap level and any level higher than that is less detailed
 
-	HRESULT hr = device->CreateSamplerState(&desc, &sampler);
+	HRESULT hr = device->CreateSamplerState(&desc, &wrapSampler);
 	if (FAILED(hr))
 		return false ;
 
