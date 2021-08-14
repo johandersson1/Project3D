@@ -15,8 +15,8 @@ struct VertexOutput
 VertexOutput main(VertexInput input)
 {
     VertexOutput output;
-    
-    output.position = float4(input.position, 1);
+    // Pass the information on, no need to do anything at this stage
+    output.position = float4(input.position, 1); // Waiting with the transformation until the domain shader
     output.tex = input.tex;
     output.normal = input.normal;
 
