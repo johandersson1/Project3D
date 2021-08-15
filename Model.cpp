@@ -5,8 +5,7 @@ Model::Model(ID3D11Device* device, std::string name, XMVECTOR position, XMVECTOR
 	:transform(position, rotation, scale), name(name), mesh(device, name)
 {
 	Update();
-	//this->mesh = Mesh(device, name);
-
+	
 	D3D11_BUFFER_DESC desc = {};
 	desc.ByteWidth = (int)mesh.faces.size() * sizeof(Face);
 	desc.Usage = D3D11_USAGE_IMMUTABLE;
@@ -36,12 +35,12 @@ Model::Model(ID3D11Device* device, std::string name, XMVECTOR position, XMVECTOR
 
 Model::~Model()
 {
-	//this->mesh.Shutdown();
+	
 }
+
 // Function to update the models matrices after changing either of them
 void Model::Update()
 {
-
 	XMMATRIX translation = XMMatrixTranslationFromVector(transform.translation);
 	XMMATRIX rotation = XMMatrixRotationRollPitchYawFromVector(transform.rotation);
 	XMMATRIX scale = XMMatrixScalingFromVector(transform.scale);

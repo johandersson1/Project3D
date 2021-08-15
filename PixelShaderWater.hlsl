@@ -1,6 +1,6 @@
 Texture2D diffuseTex : register(t0);
 
-SamplerState mySampler : register(s0);
+SamplerState wrapSampler : register(s0);
 
 struct PixelInput
 {
@@ -20,7 +20,6 @@ struct PixelOutput
     float4 diffuseMTL : SV_TARGET5;
     float4 specularMTL : SV_TARGET6;
     float4 lightClipPos : SV_TARGET7;
-    
 };
 
 cbuffer mtlData : register(b0)
@@ -48,15 +47,16 @@ PixelOutput main(PixelInput input)
     output.position = input.position;
     output.normal = input.normal;
     output.worldPos = input.worldPos;
+
+	// TexCoord moving done here 
     input.tex.x += uCord;
     input.tex.y += vCord;
-    output.diffuse = diffuseTex.Sample(mySampler, input.tex);
+    output.diffuse = diffuseTex.Sample(wrapSampler, input.tex);
+
+	// worldpos of vertices viewed from the lights perspective, used for shadowing
     output.lightClipPos = mul(float4(output.worldPos, 1.0f), lightMatrix);
-    // UV 
-  
   
     // MTL
-    
     output.ambientMTL = kA;
 	output.diffuseMTL = kD; //float4(-1.0f, -1.0f, -1.0f, 0.0f);
     output.specularMTL = kS;

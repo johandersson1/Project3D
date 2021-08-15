@@ -15,10 +15,7 @@ struct GSOutput
 };
 
 [maxvertexcount(3)]
-void main(
-	triangle GSInput input[3] : SV_POSITION, 
-	inout TriangleStream< GSOutput > output
-)
+void main(triangle GSInput input[3] : SV_POSITION, inout TriangleStream< GSOutput > output)
 {
 	// Recalculates the normals for each triangle after the tesselation and displacement
 
@@ -41,5 +38,4 @@ void main(
             output.Append(vertex);
         }
     }
-      
 }

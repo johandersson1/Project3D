@@ -167,7 +167,7 @@ void RenderLightPass(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetVi
 	immediateContext->PSSetShader(lightPShaderDeferred, nullptr, 0);							// setting the shaders
 
 	immediateContext->PSSetShaderResources(0, gBuffer.NROFBUFFERS, gBuffer.gBufferSrv);
-	immediateContext->PSSetShaderResources(8, 1, ShaderData::shadowmap->GetSRV());
+	immediateContext->PSSetShaderResources(8, 1, ShaderData::shadowmap->GetSRV());				// Get the shadow-map SRV and send it to the PixelShader
 	immediateContext->PSSetConstantBuffers(0, 1, &dirLightBuffer);
 	immediateContext->PSSetConstantBuffers(1, 1, &cameraPos);
 	immediateContext->PSSetSamplers(0, 1, &sampler);

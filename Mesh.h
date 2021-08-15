@@ -43,7 +43,7 @@ public:
 
 	// Struct from geometry
 	std::vector<Face> faces;
-	std::vector<XMFLOAT3> positions;
+	std::vector<XMFLOAT3> positions;	// used for storing the positions of every vertex, used in the shadow vertex-shader
 
 	void Shutdown()
 	{

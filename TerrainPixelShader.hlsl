@@ -31,6 +31,13 @@ cbuffer LightMatrix : register(b0)
     float4x4 lightMatrix;
 }
 
+cbuffer mtlData : register(b1)
+{
+	float4 kA;
+	float4 kD;
+	float4 kS;
+}
+
 PSOutput main(PSInput input)
 {
     PSOutput output;
@@ -38,9 +45,9 @@ PSOutput main(PSInput input)
     output.worldPos = input.worldPos;
     output.normal = input.normal;
     output.position = input.position;
-    output.ambientMTL = float4(0.5f, 0.5f, 0.5f, 1);
-    output.diffuseMTL = float4(0.5f, 0.5f, 0.5f, 1);
-    output.specularMTL = float4(0.2f, 0.2f, 0.2f, 1);
+	output.ambientMTL = kA;		//float4(0.5f, 0.5f, 0.5f, 1);
+	output.diffuseMTL = kD;		//float4(0.5f, 0.5f, 0.5f, 1);
+	output.specularMTL = kS;	//float4(0.2f, 0.2f, 0.2f, 1);
   
     // Sample the textures used for the terrain, [0] = base, [1] = blended texture
     float4 lowColour = textures[0].Sample(wrapSampler, input.tex);

@@ -6,7 +6,7 @@ struct VertexShaderInput
 
 struct VertexShaderOutput
 {
-    float4 position : SV_POSITION; // Kamerans clipspace
+    float4 position : SV_POSITION;
     float2 tex : TEXCOORD;
 };
 

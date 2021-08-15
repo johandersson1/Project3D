@@ -66,15 +66,12 @@ bool Mesh::LoadModel(std::string name)
 				reader >> temp;
 
 				std::string substr;
-
-				/*unsigned int positionID = std::stoi(temp.substr(0, temp.find_first_of("/")));
-				unsigned int texCoordsID = std::stoi(temp.substr(temp.find_first_of("/") + 1, temp.find_last_of("/")));
-				unsigned int normalID = std::stoi(temp.substr(temp.find_last_of("/") + 1, temp.length()));*/
-
 			
 				// in an obj:
 				// f 1/2/3 4/5/6 7/8/9
 				//    v0	v1	  v2     position, texcoord(uv), normal
+
+				// stoi = string to int
 
 				face[0][i] = std::stoi(temp.substr(0, temp.find("/")));								 // position 
 
@@ -186,7 +183,7 @@ bool Mesh::LoadMaterial(ID3D11Device* device, std::string name)
 		{
 			std::string diffuse;
 			reader >> diffuse;
-			material.diffuseTexures.emplace_back(new Texture(device, "Models/" + name + "/" + diffuse));
+			material.diffuseTexures.emplace_back(new Texture(device, "Models/" + name + "/" + diffuse));	//place into the container
 		}
 
 	}

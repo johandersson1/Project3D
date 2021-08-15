@@ -9,6 +9,7 @@ Texture::Texture(ID3D11Device* device, std::string path)
     int imgWidth, imgHeight;
     unsigned char* image = stbi_load((path).c_str(), &imgWidth, &imgHeight, nullptr, STBI_rgb_alpha);
 
+	// Desc from https://docs.microsoft.com/en-us/windows/win32/direct3d11/overviews-direct3d-11-resources-textures-create
     D3D11_TEXTURE2D_DESC textureDesc = {};
     textureDesc.Width = imgWidth;
     textureDesc.Height = imgHeight;
@@ -18,7 +19,7 @@ Texture::Texture(ID3D11Device* device, std::string path)
     textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     textureDesc.SampleDesc.Count = 1;
     textureDesc.SampleDesc.Quality = 0;
-    textureDesc.Usage = D3D11_USAGE_IMMUTABLE;
+    textureDesc.Usage = D3D11_USAGE_IMMUTABLE;	// GPU READ
     textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
     textureDesc.CPUAccessFlags = 0;
 

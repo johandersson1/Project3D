@@ -72,14 +72,14 @@ float4 main(PixelInput input) : SV_Target
     float3 normal = normalTexture.Sample(wrapSampler, input.tex).xyz;
     float4 albedo = diffuseAlbedoTexture.Sample(wrapSampler, input.tex);
     float4 worldPos = worldPosTexture.Sample(wrapSampler, input.tex);
-   // float4 shadowPosH = shadowMapTexture.Sample(testSampler, input.tex);
-    normal = normalize(normal);
+    //normal = normalize(normal);
 
     //Material properties
     float4 ambientMaterial = ambientMatTexture.Sample(wrapSampler, input.tex);
     float4 diffuseMaterial = diffuseMatTexture.Sample(wrapSampler, input.tex);
     float4 specularMaterial = specularMatTexture.Sample(wrapSampler, input.tex);
     
+	// LigtsClip --- Vertices from the lights perspective view
     float4 lightClip = lightClipPos.Sample(wrapSampler, input.tex);
     
     //SHADOWS
@@ -87,7 +87,6 @@ float4 main(PixelInput input) : SV_Target
     float depth = lightClip.z;														 // Depth in the NDC-Space --- Frank Luna 21.4.5 The Shadow Factor --- Normalized Device Coordinates - Figure out what obscures what
     float2 tx = float2(0.5f * lightClip.x + 0.5f, -0.5f * lightClip.y + 0.5);        // [-1,1] => [0, 1] -> in d3d11 the y-axis is positive when pointing in clip-space. 
 																				     // when working with UVs or texcoords the y-axis positive in HLSL y-axis is pointing downwards. invert here
-
     float sm = shadowMapTex.Sample(wrapSampler, tx).r;
     float shadow = (sm + 0.005f < depth) ? sm : 1.0f;								 // If sm + bias (closest) < clip-depth there is a primitive castings shadow.
 																					 // else - no shadows

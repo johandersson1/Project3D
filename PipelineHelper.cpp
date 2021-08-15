@@ -127,18 +127,18 @@ bool CreateRenderTargetMesh(ID3D11Device* device, ID3D11Buffer*& renderTargetMes
 	};
 
 	D3D11_BUFFER_DESC rtvMeshDesc;
-    rtvMeshDesc.ByteWidth = sizeof(rtvMeshData); // Bytesize of the vertices
-    rtvMeshDesc.Usage = D3D11_USAGE_IMMUTABLE; // Usage_Immutable -- Only read by the GPU, not accessable by the CPU. Not changeable after creation
-    rtvMeshDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER; // Binds the buffer as a Vertex Buffer. 
-    rtvMeshDesc.CPUAccessFlags = 0; // Set to 0 since the usage is Immutable. NO need to write or read since we have no access.
-    rtvMeshDesc.MiscFlags = 0; // No need for additional flags
-    rtvMeshDesc.StructureByteStride = 0; // Defines the size of each element in the buffer structure. No need for this buffer
+    rtvMeshDesc.ByteWidth = sizeof(rtvMeshData);		// Bytesize of the vertices
+    rtvMeshDesc.Usage = D3D11_USAGE_IMMUTABLE;			// Usage_Immutable -- Only read by the GPU, not accessable by the CPU. Not changeable after creation
+    rtvMeshDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;   // Binds the buffer as a Vertex Buffer. 
+    rtvMeshDesc.CPUAccessFlags = 0;						// Set to 0 since the usage is Immutable. NO need to write or read since we have no access.
+    rtvMeshDesc.MiscFlags = 0;							// No need for additional flags
+    rtvMeshDesc.StructureByteStride = 0;				// Defines the size of each element in the buffer structure. No need for this buffer
 
     // Specifies data for initializing a subresource
     D3D11_SUBRESOURCE_DATA data;
-    data.pSysMem = &rtvMeshData; // Pointer to the initialization data
-    data.SysMemPitch = 0; // The distance (in bytes) from the beginning of one line of a texture to the next line
-    data.SysMemSlicePitch = 0; // The distance (in bytes) from the beginning of one depth level to the next. (Used only for 3D-textures)
+    data.pSysMem = &rtvMeshData;						// Pointer to the initialization data
+    data.SysMemPitch = 0;								// The distance (in bytes) from the beginning of one line of a texture to the next line
+    data.SysMemSlicePitch = 0;							// The distance (in bytes) from the beginning of one depth level to the next. (Used only for 3D-textures)
 
     HRESULT hr = device->CreateBuffer(&rtvMeshDesc, &data, &renderTargetMesh);
 
@@ -146,7 +146,8 @@ bool CreateRenderTargetMesh(ID3D11Device* device, ID3D11Buffer*& renderTargetMes
 }
 
 bool RenderMeshInputLayout(ID3D11Device* device, ID3D11InputLayout*& renderTargetMeshInputLayout, const std::string& lightVShaderByteCode)
-{
+{	
+	// Input layout for the quad covering the screen
     D3D11_INPUT_ELEMENT_DESC inputDesc[] =
     {
         // Name, Index, Format, Slot, ByteOffset, InputSlotClass, StepRate

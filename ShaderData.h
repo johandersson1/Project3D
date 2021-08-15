@@ -5,7 +5,6 @@
 #include "Camera.h"
 #include "ShadowMap.h"
 #include "Lights.h"
-//#include "Lights.h"
 using namespace DirectX;
 
 class ShaderData
@@ -18,21 +17,18 @@ class ShaderData
 
 private:
 	static std::string positionOnly_vs_path;
-	// For particleSystemRenderer, setting vs
+	static ID3D11InputLayout* positionOnly_layout;	// positionOnly_layout used for particle and shadowRenderer
 	static ID3D11VertexShader* positionOnly_vs;
+	static std::string gs_path; 					// For GeometryShader 
+
+	static ID3D11InputLayout* model_layout;			// model_layout used for model- and terrainRenderer
+
 	// Setting this in update, and getting the values from Camera and DirectionalLight
-	static XMFLOAT3 cameraPosition;
-	static XMMATRIX viewMatrix;
-	static XMMATRIX perspectiveMatrix;
-	static XMMATRIX lightMatrix;
-	// positionOnly_layout used for particle and shadowRenderer
-	static ID3D11InputLayout* positionOnly_layout;
-	// Model_layout used for model and terrainRenderer
-	static ID3D11InputLayout* model_layout;
-	// For GeometryShader 
-	static std::string gs_path;
-	// Used for the backfaced culling
-	static ID3D11Buffer* cameraPos;
+	static XMFLOAT3 cameraPosition;					// XMFLOAT3 containg the cameras Position
+	static XMMATRIX viewMatrix;						// Matrix containing the cameras viewMatrix
+	static XMMATRIX perspectiveMatrix;				// Matrix containing the cameras perpectiveMatrix
+	static XMMATRIX lightMatrix;					// Matrix containing the light orthographic viewProjection-matrix
+	static ID3D11Buffer* cameraPos; 				// Used for the backfaced culling
 
 public:
 	static ID3D11GeometryShader* geometryShader;

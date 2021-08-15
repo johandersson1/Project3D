@@ -191,6 +191,20 @@ public:
 		UpdateBuffer(context, matricesBuffer, matrices);
 		context->DSSetConstantBuffers(0, 1, &matricesBuffer);
 
+		D3D11_MAPPED_SUBRESOURCE mappedBuffer = {};
+
+		// Get, update and set the MTL data for each model
+		HRESULT hr = context->Map(*model->GetMTLBuffer(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedBuffer);
+		if FAILED(hr)
+		{
+			std::cout << "FAILED TO UPDATE MTL BUFFER" << std::endl;
+			return;
+		}
+		memcpy(mappedBuffer.pData, &model->GetMaterial(), sizeof(model->GetMaterial()));
+		context->Unmap(*model->GetMTLBuffer(), 0);
+
+		context->PSSetConstantBuffers(1, 1, model->GetMTLBuffer());
+
 		// Update the light for the model used for the shadows (clipspace)
 		UpdateBuffer(context, lightBuffer, ShaderData::lightMatrix);
 		context->PSSetConstantBuffers(0, 1, &lightBuffer);

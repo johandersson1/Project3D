@@ -5,7 +5,7 @@
 class ShadowMap
 {
 private:
-	ID3D11ShaderResourceView* depthMapSRV;
+	ID3D11ShaderResourceView* depthMapSRV;	// 
 	ID3D11DepthStencilView* depthMapDSV;
 	D3D11_VIEWPORT viewPort;
 public:
@@ -21,9 +21,9 @@ public:
 		viewPort.MaxDepth = 1.0f;
 
 		// TEXTURE2D
-		//Use typeless format because the dsv is going to interpret
-		//The bits as DXGI_FORMATD24UNORM_S8UINT, where the SRV is going
-		//to interpret the bits as DXGI_FORMAT_R24_UNORM_X8_TYPELESS.
+		// Use typeless format because the dsv is going to interpret
+		// The bits as DXGI_FORMATD24UNORM_S8UINT, where the SRV is going
+		// to interpret the bits as DXGI_FORMAT_R24_UNORM_X8_TYPELESS.
 
 		D3D11_TEXTURE2D_DESC texDesc;
 		texDesc.Width = size;
@@ -35,7 +35,7 @@ public:
 		texDesc.SampleDesc.Count = 1;
 		texDesc.SampleDesc.Quality = 0;
 		texDesc.Usage = D3D11_USAGE_DEFAULT;								
-		texDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;		
+		texDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;		// Bound as a DS and SR since we are using it as both
 		texDesc.CPUAccessFlags = 0;
 		texDesc.MiscFlags = 0;
 
@@ -80,7 +80,6 @@ public:
 	}
 	~ShadowMap() { this->depthMapSRV->Release(); this->depthMapDSV->Release(); }
 	
-	ID3D11DepthStencilView** GetDSV() { return &this->depthMapDSV; }
 	ID3D11ShaderResourceView** GetSRV() { return &this->depthMapSRV; }
 
 	// Function to bind (initialize?) the shadowmap

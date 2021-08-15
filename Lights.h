@@ -23,7 +23,7 @@ public:
 	{
 		data.range = range;
 		// OrtographicMatrix = Builds a custom orthogonal projection matrix for a left-handed coordinate system.
-		XMMATRIX ortographicMatrix = XMMatrixOrthographicOffCenterLH(-range, range, -range, range, -range, range * 12.0f);
+		XMMATRIX ortographicMatrix = XMMatrixOrthographicOffCenterLH(-range, range, -range, range, -range, range * 8.0f);
 
 		XMVECTOR direction = { 0.75f, 0.65f, 0 };
 		// Returns the normalized version of a 3D vector
@@ -36,10 +36,5 @@ public:
 		XMMATRIX viewMatrix = XMMatrixLookAtLH(position, { 0,0,0 }, { 0 ,1 ,0 });
 		matrix = XMMatrixTranspose(viewMatrix * ortographicMatrix);
 	}
-
-
-	XMMATRIX GetMatrix() const { return this->matrix; }
+	XMMATRIX GetMatrix() const { return this->matrix; } // Called upon in shaderdata::Update()
 };
-
-
-

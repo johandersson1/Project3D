@@ -18,7 +18,6 @@ struct VertexInput
 
 struct VertexOutput
 {
-	// 
     float4 position : SV_POSITION;
     float2 tex : TEXCOORD;
     float3 normal : NORMAL;
@@ -34,7 +33,7 @@ VertexOutput main(VertexInput input)
     output.position = mul(output.position, WVP);
     output.tex = input.tex;
     output.normal = mul(float4(input.normal, 0), worldSpace);
-    //output.normal = normalize(output.normal);
+	output.normal = normalize(output.normal);
 
     return output;
 }

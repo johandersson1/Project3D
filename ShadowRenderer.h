@@ -63,7 +63,7 @@ public:
 		XMStoreFloat4x4(&WVP1, WVP);
 		UpdateBuffer(context, matrixBuffer, WVP1); // Update the buffer containing the models TRANSPOSED worldmatrix, To write out column-major data it requires the XMMATRIX be transposed
 		context->VSSetConstantBuffers(0, 1, &matrixBuffer); // Set the CB for the VS
-		context->IASetVertexBuffers(0, 1, model->GetPositionsBuffer(), &stride, &offset); // Set the VB with the vertex information
+		context->IASetVertexBuffers(0, 1, model->GetPositionsBuffer(), &stride, &offset); // Set the VB with the vertex position data from the vector in model.h
 		context->Draw(model->GetVertexCount(), 0); // draw the model for the shadow pass
 	}
 	// Release the things

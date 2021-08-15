@@ -14,13 +14,9 @@ struct GSOutput
 };
 
 [maxvertexcount(4)] // Four total vertices for each particle
-void main(
-	point float4 input[1] : SV_POSITION,
-	inout TriangleStream< GSOutput > output
-) 
+void main(point float4 input[1] : SV_POSITION, inout TriangleStream< GSOutput > output) 
 {
-	// point input[i] =  one single point used per particle
-
+	
     float3 up = float3(0.0f, 1.0f, 0.0f);									// Up-vector
     float3 lookAt = cameraPosition - input[0].xyz;						    // Vector from the point to camera
     lookAt.y = 0.0f;
@@ -29,10 +25,10 @@ void main(
     
 	// The quad itself and the positions of the vertices of the quad
     float4 corners[4];
-    corners[0] = float4(input[0].xyz + 0.1f * right + 0.1f * up, 1.0f);
-    corners[1] = float4(input[0].xyz - 0.1f * right + 0.1f * up, 1.0f);
-    corners[2] = float4(input[0].xyz + 0.1f * right - 0.1f * up, 1.0f);
-    corners[3] = float4(input[0].xyz - 0.1f * right - 0.1f * up, 1.0f);
+    corners[0] = float4(input[0].xyz + 0.1f * right + 0.1f * up, 1.0f);		// Top Left
+    corners[1] = float4(input[0].xyz - 0.1f * right + 0.1f * up, 1.0f);		// Top Right
+    corners[2] = float4(input[0].xyz + 0.1f * right - 0.1f * up, 1.0f);		// Bottom Left
+    corners[3] = float4(input[0].xyz - 0.1f * right - 0.1f * up, 1.0f);		// Bottom Right
 	
 	// Set the position of the quad in the viewPerspective space and send off to the PS
 	// Unroll can be used if you know that the loop will be the same each iteration and therefore optimize the program slightly ( i think )
