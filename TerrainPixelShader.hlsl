@@ -45,9 +45,9 @@ PSOutput main(PSInput input)
     output.worldPos = input.worldPos;
     output.normal = input.normal;
     output.position = input.position;
-	output.ambientMTL = kA;		//float4(0.5f, 0.5f, 0.5f, 1);
-	output.diffuseMTL = kD;		//float4(0.5f, 0.5f, 0.5f, 1);
-	output.specularMTL = kS;	//float4(0.2f, 0.2f, 0.2f, 1);
+	output.ambientMTL = kA;	
+	output.diffuseMTL = kD;	
+	output.specularMTL = kS;
   
     // Sample the textures used for the terrain, [0] = base, [1] = blended texture
     float4 lowColour = textures[0].Sample(wrapSampler, input.tex);

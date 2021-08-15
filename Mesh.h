@@ -48,6 +48,5 @@ public:
 	void Shutdown()
 	{
 		mtlBuffer->Release();
-		//material.Shutdown();
 	}
 };
