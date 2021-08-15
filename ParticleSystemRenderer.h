@@ -85,21 +85,17 @@ public:
 
 	void Render(ID3D11DeviceContext* context, ParticleSystem* particlesystem)
 	{
-		// Update the buffer containing the users position ( used for billboarding )
-		UpdateBuffer(context, cameraBuffer, ShaderData::cameraPosition);
-		// Get the viewPerspectiveMatrix
-		XMMATRIX viewPerspectiveMatrix = ShaderData::viewMatrix * ShaderData::perspectiveMatrix;
+		UpdateBuffer(context, cameraBuffer, ShaderData::cameraPosition);								// Update the buffer containing the users position ( used for billboarding )
+		XMMATRIX viewPerspectiveMatrix = ShaderData::viewMatrix * ShaderData::perspectiveMatrix; 		// Get the viewPerspectiveMatrix
 		XMFLOAT4X4 viewPersp;
 		XMStoreFloat4x4(&viewPersp, XMMatrixTranspose(viewPerspectiveMatrix));
 		UpdateBuffer(context, viewPersPectiveBuffer, viewPersp);
 
-		// The particles are made of points that are then used in the GS to create a quad
-		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-		// The points only uses a position
-		context->IASetInputLayout(ShaderData::positionOnly_layout);
+		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);		// The particles are made of points that are then used in the GS to create a quad
+		context->IASetInputLayout(ShaderData::positionOnly_layout); 				// The points only uses a position
 		context->VSSetShader(ShaderData::positionOnly_vs, NULL, 0);
-		context->PSSetShader(pixelShader, NULL, 0); // Used to set the color of the particles ( no texturing ) 
-		context->GSSetShader(geometryShader, NULL, 0); // Used to create and billboard the particle itself
+		context->PSSetShader(pixelShader, NULL, 0);									// Used to set the color of the particles ( no texturing ) 
+		context->GSSetShader(geometryShader, NULL, 0);							    // Used to create and billboard the particle itself
 
 		// Set the buffers for the GS, VS, Draw and reset the geometryshader for the next pass
 		context->GSSetConstantBuffers(1, 1, &cameraBuffer); 

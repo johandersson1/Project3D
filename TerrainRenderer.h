@@ -182,7 +182,7 @@ public:
 		context->HSSetShader(hullShader, NULL, 0);
 		context->DSSetShader(domainShader, NULL, 0);
 		context->GSSetShader(geometryShader, NULL, 0); // Used to recalculate the normals of the triangles
-		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST); // Used because if we use regular trianglelist, the HS and DS isnt called on ( i think )
+		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST); // Used because the tesselation pipeline uses patches
 
 		// Get the matrices (models worldmatrix and the viewPerspecive) and store send them to the domainshader
 		XMStoreFloat4x4(&matrices.worldSpace, XMMatrixTranspose(model->GetWorldMatrix()));
@@ -209,17 +209,16 @@ public:
 		UpdateBuffer(context, lightBuffer, ShaderData::lightMatrix);
 		context->PSSetConstantBuffers(0, 1, &lightBuffer);
 		// Textures used
-		//context->PSSetShaderResources(0, 2, model->GetTextures(2));
-		model->BindTextures(context);
-		model->BindDisplacementTexture(context);
-		model->BindDisplacementTexture(context, 2, shaders::PS);
-
-	/*	context->PSSetShaderResources(2, 1, model->GetDisplacementTexture());
-		context->DSSetShaderResources(0, 1, model->GetDisplacementTexture());*/
+		model->BindTextures(context);								// Bind all the available textures to the pixelshader
+		model->BindDisplacementTexture(context, 2, shaders::PS);	// Bind the displacement texture to the pixelshader
+		model->BindDisplacementTexture(context);					// Bind the displacement texture to the domainshader
+	
 
 		// Set the Vertexbuffer, draw and reset the shaders for the next renderer (particles)
 		context->IASetVertexBuffers(0, 1, model->GetBuffer(), &stride, &offset);
 		context->Draw(model->GetVertexCount(), 0);
+
+		// Reset
 		context->HSSetShader(NULL, NULL, 0);
 		context->DSSetShader(NULL, NULL, 0);
 		context->GSSetShader(NULL, NULL, 0);

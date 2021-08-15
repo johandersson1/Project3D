@@ -38,7 +38,7 @@ Model::~Model()
 	
 }
 
-// Function to update the models matrices after changing either of them
+// Function to update the models data
 void Model::Update()
 {
 	XMMATRIX translation = XMMatrixTranslationFromVector(transform.translation);

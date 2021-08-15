@@ -125,7 +125,7 @@ public:
 		// Set the inputlayout, VS and topology
 		context->IASetInputLayout(ShaderData::model_layout);
 		context->VSSetShader(vertexShader, NULL, 0);
-		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); // TriangleList, otherwise the models are broken (something to do with draw-order maybe)
+		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); 
 		
 		// Water specific stuff
 		if (water == true)
@@ -138,7 +138,7 @@ public:
 			HRESULT hr = context->Map(*model->GetWaterBuffer(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedBuffer);
 			if FAILED(hr)
 			{
-				std::cout << "FAILED TO UPDATE MTL BUFFER" << std::endl;
+				std::cout << "FAILED TO UPDATE WATER BUFFER" << std::endl;
 				return;
 			}
 
@@ -157,17 +157,15 @@ public:
 		// Update the lightbuffer for each model, used for the shadows (sent to the clipspace target in the PS)
 		UpdateBuffer(context, lightBuffer, ShaderData::lightMatrix);
 		context->PSSetConstantBuffers(1, 1, &lightBuffer); // set the CB containing light info
-		//context->PSSetShaderResources(0, 1, model-(1)); // Set the shader resource with the specific texture used for the modelm
-		model->BindTextures(context);
+		model->BindTextures(context);	// Set the shader resource with the specific texture used for the modelm
 		context->VSSetConstantBuffers(1, 1, &matricesBuffer); // set the CB for the vs with the WVP and worldspace matrices
 		// DS and HS not used for regular models
 		context->HSSetShader(NULL, NULL, 0);
 		context->DSSetShader(NULL, NULL, 0);
 		// GS already set outside the renderer
-		
-		D3D11_MAPPED_SUBRESOURCE mappedBuffer = {};
 
 		// Get, update and set the MTL data for each model
+		D3D11_MAPPED_SUBRESOURCE mappedBuffer = {};
 		HRESULT hr = context->Map(*model->GetMTLBuffer(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedBuffer);
 		if FAILED(hr)
 		{

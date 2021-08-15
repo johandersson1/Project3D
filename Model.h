@@ -18,7 +18,8 @@ private:
 	XMFLOAT2 offsetUV;
 
 	std::string name;
-	// Struct created and declared here 
+
+	// Struct containing data of the model
 	struct Transform
 	{
 		XMVECTOR translation;
@@ -39,15 +40,20 @@ public:
 	// For the game
 	bool complete = false;
 
+	// Buffers
 	ID3D11Buffer* waterBuffer;
 	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* positionsBuffer;
 	
+	// Update --> Function to update the models data
 	void Update();
+
 	// Getting the vertexCount ( needed for draw function in ModelRenderer.h )
 	int GetVertexCount() { return this->mesh.vertexCount; }
 
+	// Get the models worldMatrix -> used in the renderers
 	XMMATRIX GetWorldMatrix() { return this->worldMatrix; }
+
 	// Getting the differentBuffers, Mtl and WaterBuffer mostly for for map,unmap and for setting the constant buffers used by the pixel shader pipeline stage
 	ID3D11Buffer** GetBuffer() { return &this->vertexBuffer; }
 	ID3D11Buffer** GetMTLBuffer() { return &this->mesh.mtlBuffer; }
@@ -57,11 +63,31 @@ public:
 	XMFLOAT2* GetUVOffset() { return &this->offsetUV; }
 	const Material::Data& GetMaterial() {return this->mesh.material.data;}
 
-	void BindTextures(ID3D11DeviceContext* context, int startSlot = 0) { int slot = startSlot; for (auto texture : mesh.material.diffuseTexures) { texture->Bind(context, slot); slot++; } }
-	void BindDisplacementTexture(ID3D11DeviceContext* context, int startSlot = 0, shaders shader = shaders::DS) { mesh.material.displacementTexture->Bind(context, startSlot, shader); }
+	void BindTextures(ID3D11DeviceContext* context, int startSlot = 0) 
+	{ 
+		int slot = startSlot; 
+		for (auto texture : mesh.material.diffuseTexures) 
+		{
+			texture->Bind(context, slot); 
+			slot++; 
+		} 
+	}
 
-	void AddTexture(ID3D11Device* device, std::string fileName) { this->mesh.AddDiffuseTexture(device, fileName); }
-	void SetDisplacementTexture(ID3D11Device* device, std::string path) { this->mesh.material.displacementTexture = new Texture(device, path); }
+	void BindDisplacementTexture(ID3D11DeviceContext* context, int startSlot = 0, shaders shader = shaders::DS) 
+	{ 
+		mesh.material.displacementTexture->Bind(context, startSlot, shader); 
+	}
+
+	void AddTexture(ID3D11Device* device, std::string fileName) 
+	{ 
+		this->mesh.AddDiffuseTexture(device, fileName); 
+	}
+	
+	void SetDisplacementTexture(ID3D11Device* device, std::string path) 
+	{ 
+		this->mesh.material.displacementTexture = new Texture(device, path); 
+	}
+
 	// Setting Tranlation, Rotation and Scale
 	void SetTranslation(XMVECTOR translation) {this->transform.translation = translation; }
 	void SetRotation(XMVECTOR rotation) { this->transform.rotation = rotation; }
