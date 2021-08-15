@@ -5,11 +5,13 @@ struct GSOutput
 
 struct PixelOutput
 {
-    float4 position : SV_TARGET0;
-    float4 diffuse : SV_TARGET3;
-    float4 ambientMTL : SV_TARGET4;
-    float4 diffuseMTL : SV_TARGET5;
-    float4 specularMTL : SV_TARGET6;
+	float4 position : SV_TARGET0;
+	float4 normal : SV_TARGET1;
+	float4 worldPos : SV_TARGET2;
+	float4 diffuse : SV_TARGET3;
+	float4 ambientMTL : SV_TARGET4;
+	float4 diffuseMTL : SV_TARGET5;
+	float4 specularMTL : SV_TARGET6;
 };
 
 PixelOutput main(GSOutput input) 
@@ -24,6 +26,9 @@ PixelOutput main(GSOutput input)
     output.ambientMTL = float4(0.0f, 0.0f, 0.0f, 0.0f);	
     output.diffuseMTL = float4(-1.0f, 0.0f, 0.0f, 0.0f);
     output.specularMTL = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+	output.normal = float4(1, 1, 1, 1);
+	output.worldPos = float4(1, 1, 1, 1);
     
 	return output;
 }
