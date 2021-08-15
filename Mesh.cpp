@@ -97,24 +97,27 @@ bool Mesh::LoadModel(std::string name)
 
 		for (int j = 0; j < 3; ++j)
 		{
+			// Position of vJ
 			int index = f[i][0][j] - 1;
 
 			pos[0] = v[index][0];
 			pos[1] = v[index][1];
 			pos[2] = v[index][2];
 
+			// TexCoord of vJ
 			index = f[i][1][j] - 1;
 
 			tex[0] = vt[index][0];
 			tex[1] = vt[index][1];
 
+			// Normal of vJ
 			index = f[i][2][j] - 1;
 
 			nor[0] = vn[index][0];
 			nor[1] = vn[index][1];
 			nor[2] = vn[index][2];
 
-			positions.push_back({ pos[0],pos[1],pos[2] });
+			positions.push_back({ pos[0],pos[1],pos[2] });		//For shadow
 			vertices[j] = Vertex(pos, tex, nor);
 			vertexCount++;
 		}

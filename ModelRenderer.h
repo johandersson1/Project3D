@@ -118,7 +118,7 @@ public:
 	{
 		// Get the WorldMatrix, store and update the buffer for the model ( Transposed WorldMatrix HLSL is columnmayor )
 		XMStoreFloat4x4(&matrices.worldSpace,XMMatrixTranspose( model->GetWorldMatrix()));
-		XMMATRIX WVP = XMMatrixTranspose(model->GetWorldMatrix() * ShaderData::viewMatrix * ShaderData::perspectiveMatrix);
+		XMMATRIX WVP = XMMatrixTranspose(model->GetWorldMatrix() * ShaderData::viewMatrix * ShaderData::perspectiveMatrix); // Local to clipspace (camera)
 		XMStoreFloat4x4(&matrices.WVP, WVP);
 		UpdateBuffer(context, matricesBuffer, matrices);
 

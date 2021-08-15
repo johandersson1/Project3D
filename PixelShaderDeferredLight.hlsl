@@ -41,11 +41,11 @@ struct LightResult
 LightResult LightCalculation(float4 P, float3 N, float4 D, float4 S)
 {
     LightResult result = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
-    float4 V = { 1, 1, 1, 1 };
+    float4 V = { 1, 1, 1, 1 };		// safeguard
 
-    float3 E = normalize(cameraPosition - P.xyz);
+    float3 E = normalize(cameraPosition - P.xyz);	//	camera to pixel vector
 
-    float diffuse = saturate(dot(N, direction));
+    float diffuse = saturate(dot(N, direction));	// dot product of normal and direction
 
     if (diffuse < 0.0f) // IF BACKFACED
         continue;
@@ -86,17 +86,17 @@ float4 main(PixelInput input) : SV_Target
     lightClip.xyz /= lightClip.w;													 // Complete projection of textureCoords by doing division by w.  --- Frank Luna 21.4.5 The Shadow Factor
     float depth = lightClip.z;														 // Depth in the NDC-Space --- Frank Luna 21.4.5 The Shadow Factor --- Normalized Device Coordinates - Figure out what obscures what
     float2 tx = float2(0.5f * lightClip.x + 0.5f, -0.5f * lightClip.y + 0.5);        // [-1,1] => [0, 1] -> in d3d11 the y-axis is positive when pointing in clip-space. 
-																				     // when working with UVs or texcoords the y-axis positive y-axis is pointing downwards. invert here
+																				     // when working with UVs or texcoords the y-axis positive in HLSL y-axis is pointing downwards. invert here
 
     float sm = shadowMapTex.Sample(wrapSampler, tx).r;
-    float shadow = (sm + 0.005 < depth) ? sm : 1.0f;								 // If sm + bias (closest) < clip-depth there is a primitive castings shadow.
+    float shadow = (sm + 0.005f < depth) ? sm : 1.0f;								 // If sm + bias (closest) < clip-depth there is a primitive castings shadow.
 																					 // else - no shadows
     if (diffuseMaterial.x < 0)														 // For the particles
     {
         return albedo;
     }
     
-    LightResult lResult = LightCalculation(worldPos, normal, diffuseMaterial, specularMaterial);
+    LightResult lResult = LightCalculation(worldPos, normal, diffuseMaterial, specularMaterial);  // The light calculations
     
     float4 lighting = (lResult.diffuse + lResult.specular) * shadow;
         

@@ -4,7 +4,7 @@ char debugText[100];
 Camera::Camera()
 	:pitch(0), yaw(0), rotationSpeed(0), speed(0)
 {
-	this->up = { 0,1,0 }; // Y
+	this->up = { 0,1,0 };// Y
 	this->forward = { 0,0,1 }; // Z
 	this->right = { 1,0,0 }; 
 	// Builds a view matrix for a left-handed coordinate system using a camera position, an up direction, and a focal point, XMLoadFloat3 = Loads an XMFLOAT3 into an XMVECTOR
@@ -34,14 +34,11 @@ Camera::Camera(float FOV, float aspectRatio, float nearZ, float farZ, float rota
 	this->aspectRatio = aspectRatio;
 	this->nearZ = nearZ;
 	this->farZ = farZ;
-
 }
 
 void Camera::MoveRight(float dt)
 {
-	XMVECTOR forwardVec = XMVector3Transform(forward,
-		XMMatrixRotationRollPitchYaw(pitch, yaw, 0.0f) *
-		XMMatrixScaling(speed, speed, speed));
+	XMVECTOR forwardVec = XMVector3Transform(forward, XMMatrixRotationRollPitchYaw(pitch, yaw, 0.0f) * XMMatrixScaling(speed, speed, speed));
 
 	XMVECTOR rightVec = XMVector3Cross(up, forwardVec);
 	rightVec = XMVector3Normalize(rightVec);

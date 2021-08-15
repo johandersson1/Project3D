@@ -109,7 +109,7 @@ bool CreateGbuffer(ID3D11Device* device, GeometryBuffer& gBuffer)
 
     TextureGbufferDesc.Width = gBuffer.screenWidth;
     TextureGbufferDesc.Height = gBuffer.screenHeight;
-    TextureGbufferDesc.MipLevels = 1;
+    TextureGbufferDesc.MipLevels = 1;														// Lowest it can be, defaulted to -1 ( not possible )
     TextureGbufferDesc.ArraySize = 1;
     TextureGbufferDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
     TextureGbufferDesc.SampleDesc.Count = 1;
@@ -150,7 +150,7 @@ bool CreateGbuffer(ID3D11Device* device, GeometryBuffer& gBuffer)
     srvGbufferDesc.Format = TextureGbufferDesc.Format;										// Same format as the texture ( could just type it out but.. )
     srvGbufferDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;							
     srvGbufferDesc.Texture2D.MostDetailedMip = 0;
-    srvGbufferDesc.Texture2D.MipLevels = 1;
+    srvGbufferDesc.Texture2D.MipLevels = 1;													// Lowest it can be, defaulted to -1 ( not possible )
 
     for (int i = 0; i < gBuffer.NROFBUFFERS; i++)
     {

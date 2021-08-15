@@ -29,7 +29,7 @@ public:
 		// Returns the normalized version of a 3D vector
 		XMVector3Normalize(direction);
 
-		XMVECTOR position = direction * data.range;
+		XMVECTOR position = direction * data.range;		// from origo through direction, distance on range
 
 		XMStoreFloat3(&data.direction, direction);
 

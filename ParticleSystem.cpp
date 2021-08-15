@@ -7,7 +7,7 @@ ParticleSystem::ParticleSystem(ID3D11Device* device, int maxParticles, float max
 	// Create the vertexbuffer 
 	
     D3D11_BUFFER_DESC bufferDesc = {};
-    bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+    bufferDesc.Usage = D3D11_USAGE_DYNAMIC;					// Map UnMap
     bufferDesc.ByteWidth = sizeof(XMFLOAT3) * maxParticles; // Each particle has a postition (XMFLOAT3) * max amount of particles to set correct size of the buffer
     bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;

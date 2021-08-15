@@ -118,8 +118,8 @@ void ShaderData::Update(ID3D11DeviceContext*& context, Camera camera, Directiona
 {
 	cameraPosition = camera.GetPosition();
 	viewMatrix = camera.GetViewMatrix();
-	perspectiveMatrix = camera.GetPerspectiveMatrix();
-	lightMatrix = dirLight.GetMatrix();
+	perspectiveMatrix = camera.GetPerspectiveMatrix();		
+	lightMatrix = dirLight.GetMatrix();						// Lights transposed orthographic viewPerspective matrix
 
 	UpdateBuffer(context, cameraPos, camera.GetPosition());
 	context->GSSetConstantBuffers(0, 1, &cameraPos);

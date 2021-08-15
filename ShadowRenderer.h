@@ -58,7 +58,7 @@ public:
 		// ShaderData::lightMatrix has got the dirLight.GetMatrix() with the matrix = XMMatrixTranspose(viewMatrix * ortographicMatrix) from DirectionalLight 
 
 		XMFLOAT4X4 WVP1;
-		XMMATRIX WVP = ShaderData::lightMatrix * XMMatrixTranspose(model->GetWorldMatrix());
+		XMMATRIX WVP = ShaderData::lightMatrix * XMMatrixTranspose(model->GetWorldMatrix());	// Worldspace -> viewspace -> clipspace (lights clipspace)
 		// WVP1 is the address at which to store the data from WVP, WVP is the matrix contining the data that we want to store 
 		XMStoreFloat4x4(&WVP1, WVP);
 		UpdateBuffer(context, matrixBuffer, WVP1); // Update the buffer containing the models TRANSPOSED worldmatrix, To write out column-major data it requires the XMMATRIX be transposed

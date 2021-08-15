@@ -11,7 +11,6 @@ struct GSINPUT
 struct GSOOUTPUT
 {
 	// Output to the pixel shader
-
     float4 position : SV_POSITION;
     float2 tex : TEXCOORD;
     float3 normal : NORMAL;
