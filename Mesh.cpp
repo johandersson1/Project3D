@@ -75,7 +75,7 @@ bool Mesh::LoadModel(std::string name)
 
 				face[0][i] = std::stoi(temp.substr(0, temp.find("/")));								 // position 
 
-				substr = temp.substr(temp.find("/") + 1, temp.length());
+				substr = temp.substr(temp.find("/") + 1, temp.length());							 // new substring -> from where we found the last index to the end of the line
 				face[1][i] = std::stoi(substr.substr(0, substr.find("/")));							 // texcoord
 				face[2][i] = std::stoi(substr.substr(substr.find("/") + 1, substr.length()));		 // normal
 			}
@@ -84,7 +84,6 @@ bool Mesh::LoadModel(std::string name)
 		}
 	}
 
-	// Kolla mer -- 2D array?
 	for (int i = 0; i < f.size(); ++i)
 	{
 		std::array<float, 3> pos;
@@ -120,7 +119,7 @@ bool Mesh::LoadModel(std::string name)
 		}
 
 		Face face = Face(vertices[0], vertices[1], vertices[2]);
-		faces.push_back(face);
+		faces.push_back(face); // data for the vertexbuffer
 	}
 
 	return true;

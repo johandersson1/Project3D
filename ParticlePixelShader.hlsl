@@ -26,7 +26,6 @@ PixelOutput main(GSOutput input)
     output.ambientMTL = float4(0.0f, 0.0f, 0.0f, 0.0f);	
     output.diffuseMTL = float4(-1.0f, 0.0f, 0.0f, 0.0f);
     output.specularMTL = float4(0.0f, 0.0f, 0.0f, 0.0f);
-
 	output.normal = float4(1, 1, 1, 1);
 	output.worldPos = float4(1, 1, 1, 1);
     

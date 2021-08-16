@@ -208,6 +208,7 @@ public:
 		// Update the light for the model used for the shadows (clipspace)
 		UpdateBuffer(context, lightBuffer, ShaderData::lightMatrix);
 		context->PSSetConstantBuffers(0, 1, &lightBuffer);
+
 		// Textures used
 		model->BindTextures(context);								// Bind all the available textures to the pixelshader
 		model->BindDisplacementTexture(context, 2, shaders::PS);	// Bind the displacement texture to the pixelshader

@@ -110,11 +110,11 @@ bool CreateGbuffer(ID3D11Device* device, GeometryBuffer& gBuffer)
 
     TextureGbufferDesc.Width = gBuffer.screenWidth;
     TextureGbufferDesc.Height = gBuffer.screenHeight;
-    TextureGbufferDesc.MipLevels = 1;														// Lowest it can be, defaulted to -1 ( not possible )
+    TextureGbufferDesc.MipLevels = 1;														
     TextureGbufferDesc.ArraySize = 1;
     TextureGbufferDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
     TextureGbufferDesc.SampleDesc.Count = 1;
-    TextureGbufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    TextureGbufferDesc.Usage = D3D11_USAGE_DEFAULT;											// GPU READ WRITE
     TextureGbufferDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;	// Render target and Shader resource to write to and use in a shader
     TextureGbufferDesc.CPUAccessFlags = 0;
     TextureGbufferDesc.MiscFlags = 0;

@@ -30,7 +30,7 @@ VertexOutput main(VertexInput input)
     
     output.position = float4(input.position, 1);
     output.worldPos = mul(output.position, worldSpace);
-    output.position = mul(output.position, WVP);
+    output.position = mul(output.position, WVP); // clipspace
     output.tex = input.tex;
     output.normal = mul(float4(input.normal, 0), worldSpace);
 	output.normal = normalize(output.normal);

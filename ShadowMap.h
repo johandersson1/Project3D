@@ -87,7 +87,7 @@ public:
 	{
 		// Set the viewport and the shader resource to the specific SRV that we are going to write the depth texture to
 		ID3D11ShaderResourceView* null = nullptr;
-		context->PSSetShaderResources(8, 1, &null);
+		context->PSSetShaderResources(8, 1, &null);					//  nullptr --> texture cannot be bound as a depth stencil and a shader resource at the same time
 		context->RSSetViewports(1, &viewPort);
 		// Set null render target because we are only going to draw to depth buffer. 
 		// Setting a null render target will disable color writes.
