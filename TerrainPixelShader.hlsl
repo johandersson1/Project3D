@@ -55,7 +55,7 @@ PSOutput main(PSInput input)
     float blendValue = blendTexture.Sample(clampSampler, input.tex).r;
     
 	// Blend with lerp
-	output.diffuse = lerp(lowColour, hiColour, blendValue);
+	output.diffuse = lerp(lowColour, hiColour, blendValue /** 0.75f*/); // To show that blending works 
    
     output.lightClipPos = mul(float4(output.worldPos, 1.0f), lightMatrix);
        

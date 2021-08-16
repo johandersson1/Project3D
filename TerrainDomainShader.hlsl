@@ -54,7 +54,7 @@ DS_OUTPUT main(
     output.worldPos = mul(output.position, worldSpace);
     
     //Displacement done here
-    const float disfactor = 1.0f;													// amount of displacement
+    const float disfactor = 2.0f;													// amount of displacement
     float h = displacementTexture.SampleLevel(clampSampler, output.tex, 0).r;		// sample the displacement map, using one channel since the texture is 0->1 (grayscale)
     output.blendValue = h;															// set the blendvalue to the displacementmap ( used for the texture blending in the pixelshader)
     output.worldPos.xyz += h * disfactor * output.normal;							// displace the vertices based on the displacementmap, the amount and in the direction of their respective normal
