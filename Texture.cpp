@@ -20,7 +20,7 @@ Texture::Texture(ID3D11Device* device, std::string path)
     textureDesc.SampleDesc.Count = 1;
     textureDesc.SampleDesc.Quality = 0;
     textureDesc.Usage = D3D11_USAGE_IMMUTABLE;	// A resource that can only be read by the GPU. It cannot be written by the GPU, and cannot be accessed at all by the CPU
-    textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE; // Identifies how to bind a resource to the pipeline.
     textureDesc.CPUAccessFlags = 0;
 
     D3D11_SUBRESOURCE_DATA data = {};

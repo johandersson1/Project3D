@@ -34,7 +34,7 @@ public:
 																						// this is how depth is defined
 		texDesc.SampleDesc.Count = 1;
 		texDesc.SampleDesc.Quality = 0;
-		texDesc.Usage = D3D11_USAGE_DEFAULT;								
+		texDesc.Usage = D3D11_USAGE_DEFAULT;								            // A resource that requires read and write access by the GPU
 		texDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;		// Bound as a DS and SR since we are using it as both
 		texDesc.CPUAccessFlags = 0;
 		texDesc.MiscFlags = 0;
@@ -60,8 +60,8 @@ public:
 			return;
 		}
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-		srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
-		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;                          // A 32-bit format, that contains a 24 bit, single-component, unsigned-normalized integer, with an additional typeless 8 bits
+		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;                       // The resource will be accessed as a 2D texture.
 		srvDesc.Texture2D.MipLevels = texDesc.MipLevels;
 		srvDesc.Texture2D.MostDetailedMip = 0;
 		hr = (device->CreateShaderResourceView(depthmap, &srvDesc, &depthMapSRV));
