@@ -10,7 +10,7 @@ ParticleSystem::ParticleSystem(ID3D11Device* device, int maxParticles, float max
     bufferDesc.Usage = D3D11_USAGE_DYNAMIC;					// Map UnMap
     bufferDesc.ByteWidth = sizeof(XMFLOAT3) * maxParticles; // Each particle has a postition (XMFLOAT3) * max amount of particles to set correct size of the buffer
     bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; // The resource is to be mappable so that the CPU can change its contents
     bufferDesc.MiscFlags = 0;
     bufferDesc.StructureByteStride = 0;
 

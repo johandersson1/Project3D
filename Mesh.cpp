@@ -190,9 +190,9 @@ bool Mesh::LoadMaterial(ID3D11Device* device, std::string name)
 	// Create the buffer contaning the material-data, per model
 	D3D11_BUFFER_DESC bufferDesc = {};
 	bufferDesc.ByteWidth = sizeof(material.data);
-	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	bufferDesc.Usage = D3D11_USAGE_DYNAMIC; // A resource that is accessible by both the GPU(read only) and the CPU(write only).A dynamic resource is a good choice for a resource that will be updated by the CPU at least once per frame
 	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; // The resource is to be mappable so that the CPU can change its contents
 	bufferDesc.MiscFlags = 0;
 	bufferDesc.StructureByteStride = 0;
 

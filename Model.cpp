@@ -8,7 +8,7 @@ Model::Model(ID3D11Device* device, std::string name, XMVECTOR position, XMVECTOR
 	
 	D3D11_BUFFER_DESC desc = {};
 	desc.ByteWidth = (int)mesh.faces.size() * sizeof(Face);
-	desc.Usage = D3D11_USAGE_IMMUTABLE;
+	desc.Usage = D3D11_USAGE_IMMUTABLE; // A resource that can only be read by the GPU.It cannot be written by the GPU, and cannot be accessed at all by the CPU
 	desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = 0;

@@ -16,10 +16,10 @@ Texture::Texture(ID3D11Device* device, std::string path)
     textureDesc.MipLevels = 1;
     textureDesc.ArraySize = 1;
     textureDesc.MiscFlags = 0;
-    textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // A four-component, 32-bit unsigned-normalized-integer format that supports 8 bits per channel including alpha.
     textureDesc.SampleDesc.Count = 1;
     textureDesc.SampleDesc.Quality = 0;
-    textureDesc.Usage = D3D11_USAGE_IMMUTABLE;	// GPU READ
+    textureDesc.Usage = D3D11_USAGE_IMMUTABLE;	// A resource that can only be read by the GPU. It cannot be written by the GPU, and cannot be accessed at all by the CPU
     textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
     textureDesc.CPUAccessFlags = 0;
 
