@@ -17,8 +17,8 @@ struct GeometryBuffer
 
 	// Create Texture, RTV, SRV arrays
     ID3D11Texture2D* gBufferTexture[NROFBUFFERS]; 
-    ID3D11RenderTargetView* gBuffergBufferRtv[NROFBUFFERS];
-    ID3D11ShaderResourceView* gBufferSrv[NROFBUFFERS];
+    ID3D11RenderTargetView* gBuffergBufferRtv[NROFBUFFERS]; // Writes to this 
+    ID3D11ShaderResourceView* gBufferSrv[NROFBUFFERS]; // Read from this
 };
 // Default UpdateBuffer with map,unmap and specify the buffer and the data that we need 
 template<typename T>
